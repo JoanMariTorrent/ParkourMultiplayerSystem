@@ -63,8 +63,15 @@ public class ConnectionStarter : MonoBehaviour
     {
         _networkManager.transport = _udpTransport;
 
+#if UNITY_EDITOR
         if (!ParrelSync.ClonesManager.IsClone())
+        {
             _networkManager.StartServer();
+        }
+#else
+    _networkManager.StartServer();
+#endif
+
         _networkManager.StartClient();
     }
 
