@@ -56,38 +56,6 @@ public class ConnectionStarter : MonoBehaviour
             StartFromLobby();
         else
             StartNormal();
-
-        if (!_lobbyDataHolder)
-        {
-            PurrLogger.LogError($"Failed to start connection. {nameof(LobbyDataHolder)} is null!", this);
-            return;
-        }
-
-        if (!_lobbyDataHolder.CurrentLobby.IsValid)
-        {
-            PurrLogger.LogError($"Failed to start connection. Lobby is invalid!", this);
-            return;
-        }
-
-        if (_networkManager.transport is PurrTransport)
-        {
-            (_networkManager.transport as PurrTransport).roomName = _lobbyDataHolder.CurrentLobby.LobbyId;
-        }
-
-#if UTP_LOBBYRELAY
-            else if(_networkManager.transport is UTPTransport) {
-                if(_lobbyDataHolder.CurrentLobby.IsOwner) {
-                    (_networkManager.transport as UTPTransport).InitializeRelayServer((Allocation)_lobbyDataHolder.CurrentLobby.ServerObject);
-                }
-                (_networkManager.transport as UTPTransport).InitializeRelayClient(_lobbyDataHolder.CurrentLobby.Properties["JoinCode"]);
-            }
-#else
-        //P2P Connection, receive IP/Port from server
-#endif
-
-        if (_lobbyDataHolder.CurrentLobby.IsOwner)
-            _networkManager.StartServer();
-        StartCoroutine(StartClient());
     }
 
 
