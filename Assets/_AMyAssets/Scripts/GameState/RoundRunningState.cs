@@ -34,10 +34,12 @@ public class RoundRunningState : StateNode<List<PlayerHealth>>
     private void OnPlayerDeath(PlayerID _deadPlayer)
     {
         _players.Remove(_deadPlayer);
+        Debug.Log("111");
 
         if (_players.Count <= 1)
         {
-                machine.Next();
+            Debug.Log("next state");
+            machine.Next();
         }
     }
 }

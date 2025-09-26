@@ -1,17 +1,20 @@
 using System;
 using PurrNet;
+using PurrNet.Modules;
 using UnityEngine;
 
 public class ScoreManager : NetworkBehaviour
 {
     [SerializeField] private SyncDictionary<PlayerID, ScoreData> _scores = new();
-    
+    [SerializeField] SyncDictionary<PlayerID, int> _playersWins;
+
 
     private void Awake()
     {
         InstanceHandler.RegisterInstance(this);
         _scores.onChanged += OnScoresChanged;
     }
+
 
     protected override void OnDestroy()
     {
@@ -106,6 +109,8 @@ public class ScoreManager : NetworkBehaviour
 
     }
 
+
+    
 
 
 
