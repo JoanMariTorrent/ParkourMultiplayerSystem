@@ -18,7 +18,7 @@ public class PlayerSpawningState : StateNode
         if (!asServer)
             return;
 
-        DespawnPlayers();
+        //DespawnPlayers();
 
         var _spawnedPlayers = SpawnPlayers();
         machine.Next(_spawnedPlayers);
