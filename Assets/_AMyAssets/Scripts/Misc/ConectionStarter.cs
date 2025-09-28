@@ -61,6 +61,7 @@ public class ConnectionStarter : MonoBehaviour
 
     private void StartNormal()
     {
+        Debug.Log("start normal");
         _networkManager.transport = _udpTransport;
 
 #if UNITY_EDITOR
@@ -77,6 +78,7 @@ public class ConnectionStarter : MonoBehaviour
 
     private void StartFromLobby()
     {
+        Debug.Log("start form lobby");
         _networkManager.transport = _steamTransport;
         if (!_lobbyDataHolder)
         {
