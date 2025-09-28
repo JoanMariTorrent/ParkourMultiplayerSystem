@@ -157,7 +157,7 @@ public class Gun : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
+    
     private void ShootServerRpc(Vector3 origin, Vector3 direction)
     {
         if (recoilCamera != null)
