@@ -225,16 +225,16 @@ MonoBehaviour:
   _enviormentHit: {fileID: 2542180830717017700, guid: c23edada67e2ef946b2764574583bfaa, type: 3}
   _playerHitEffect: {fileID: 2446692518619174518, guid: bc337677c0f15bc45832afc868cb0229, type: 3}
   recoilCamera: {fileID: 0}
-  recoilX: -15.3
-  recoilY: 1
-  recoilZ: 0.1
+  recoilX: -12
+  recoilY: 3.5
+  recoilZ: 0.2
   aimRecoilX: -0.8
   aimRecoilY: 0.4
   aimRecoilZ: 0.06
   returnSpeed: 9.95
   snappiness: 5.48
   scopeEquiped: 1
-  scopeMesh: {fileID: 0}
+  scopeMesh: {fileID: 8873447187783223356}
   _inspectPositionOffset: {x: 0.021, y: 0.082, z: 0.04}
   _inspectRotationEuler: {x: -5.529, y: -52.521, z: -1.666}
 --- !u!1 &7521094356888337489

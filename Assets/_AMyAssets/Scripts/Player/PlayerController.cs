@@ -22,7 +22,10 @@ public class PlayerController : NetworkBehaviour
     [Header("Look Settings")]
     [SerializeField] private float lookSensitivity = 2f;
     [SerializeField] private float maxLookAngle = 80f;
+    [SerializeField] private int timesJump = 2;
     public bool _isAiming;
+    public bool isGrounded;
+
 
     [Header("References")]
     [SerializeField] private CinemachineCamera playerCamera;
@@ -88,10 +91,11 @@ public class PlayerController : NetworkBehaviour
 
     private void HandleMovement()
     {
-        bool isGrounded = IsGrounded();
+        isGrounded = IsGrounded();
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
+            timesJump = 2;
         }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -103,10 +107,15 @@ public class PlayerController : NetworkBehaviour
         float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : moveSpeed;
         characterController.Move(moveDirection * currentSpeed * Time.deltaTime);
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+
+        // Input de saltar
+        if (Input.GetButtonDown("Jump") && timesJump > 0)
         {
             velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+            timesJump--;
         }
+
+
 
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime);
