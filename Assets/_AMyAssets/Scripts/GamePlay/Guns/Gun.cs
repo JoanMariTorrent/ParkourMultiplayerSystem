@@ -105,7 +105,7 @@ public class Gun : NetworkBehaviour
 
         if (_inspecting)
         {
-            // Interpola suavemente a la pose de inspección
+            // Interpola suavemente a la pose de inspecciï¿½n
             transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(_inspectRotationEuler), Time.deltaTime * _inspectSpeed);
 
             transform.localPosition = Vector3.Lerp(transform.localPosition, _originalPosition + _inspectPositionOffset, Time.deltaTime * _inspectSpeed);
@@ -175,7 +175,7 @@ public class Gun : NetworkBehaviour
             return;
         }
 
-        //Mira si la colision que ha tocado el raycast contiene un PlayerHealth, si lo tiene hace todo el sistema de quitarle vida, VFX, añadirle daño al ScoreManager...
+        //Mira si la colision que ha tocado el raycast contiene un PlayerHealth, si lo tiene hace todo el sistema de quitarle vida, VFX, aï¿½adirle daï¿½o al ScoreManager...
 
         if (hit.transform.TryGetComponent(out PlayerHealth victim))
         {

@@ -37,8 +37,8 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
                 GameObject[] _primary = _weaponDataManager.GetRandomWeapons(1, true);
                 GameObject[] _secondary = _weaponDataManager.GetRandomWeapons(1, false);
 
-                weaponManager.NewWeapon(_primary[0], 0);
-                weaponManager.NewWeapon(_secondary[0], 2);
+                weaponManager.NewWeapon(_primary[0], true);
+                weaponManager.NewWeapon(_secondary[0], false);
                 weaponManager.SwitchWeapon(0);
 
                 Debug.Log($"{player.PlayerID} and {weaponManager.name}");
