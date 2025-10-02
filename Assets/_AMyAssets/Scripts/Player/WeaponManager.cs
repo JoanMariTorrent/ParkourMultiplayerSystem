@@ -70,8 +70,9 @@ public class WeaponManager : NetworkBehaviour
     {
         EnsureWeaponSlots();
         bool havePrimary = _ownedWeapons[0] || _ownedWeapons[1];
+        bool haveSecondary = _ownedWeapons[2] || _ownedWeapons[3];
 
-        if (primary && _currentGun != null)
+        if (primary && havePrimary)
         {
             if (_ownedWeapons[0] != null && _ownedWeapons[1] != null) // Si tiene 2 principales
             {
@@ -93,7 +94,7 @@ public class WeaponManager : NetworkBehaviour
                 }
             }
         }
-        else if (!primary && _currentGun != null)
+        else if (!primary && haveSecondary)
         {
 
             if (_ownedWeapons[2] != null && _ownedWeapons[3] != null) // si tiene 2 secundarias
@@ -116,7 +117,7 @@ public class WeaponManager : NetworkBehaviour
             }
         }
 
-        if (_currentGun == null)
+        if (!havePrimary || !haveSecondary)
         {
             EquipWeapon(weaponPrefab, false, primary);
             Debug.Log($"weapon manager: {primary}");
@@ -144,11 +145,12 @@ public class WeaponManager : NetworkBehaviour
 
         _currentGun = weaponInstance.GetComponent<Gun>();
         _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil);
+        
     }
     
     
 
-    public void SwitchWeapon(int index)
+    public void SwitchWeapon(int index) // FALTA ARREGLAR QUE AL CAMBIAR EL ARMA, SE OCULTE LA ANTERIOR Y SE ACTIVE LA NUEVA
     {
         if (index < 0 || index >= _ownedWeapons.Count)
             return;
@@ -159,19 +161,25 @@ public class WeaponManager : NetworkBehaviour
             return;
 
 
-        
+
         // ocultar arma actual
-        if (_currentGun.gameObject != null)
-            _currentGun.gameObject.SetActive(false);
+        for (int i = 0; i < _ownedWeapons.Count; i++)
+        {
+            if (_ownedWeapons[i] != null)
+                _ownedWeapons[i].SetActive(i == index); // solo el índice seleccionado se activa
+        }
 
         // Activar el arma
         _currentGun = weaponToSwitch.GetComponent<Gun>();
         _currentGun.gameObject.SetActive(true);
 
+        _currentGun.gameObject.transform.localPosition = Vector3.zero;
+        _currentGun.gameObject.transform.localRotation = Quaternion.identity;
+
         // reconfigurar camara y recoil
         _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil);
 
-        Debug.LogWarning(_currentGun.gameObject);
+        Debug.LogAssertion(weaponToSwitch);
         //Debug.Log($"Cambio de arma a {_currentGun.name} en el slot {index}");
     }
 
