@@ -2519,7 +2519,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 2
+  _minPlayers: 1
 --- !u!4 &1626096718
 Transform:
   m_ObjectHideFlags: 0
@@ -2957,9 +2957,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc64ff707d914a64e95f2ac0bf554c09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PurrNet.Runtime::PurrNet.Transports.UDPTransport
-  _serverPort: 5000
+  _serverPort: 3478
   _maxConnections: 100
-  _address: 127.0.0.1
+  _address: 192.168.56.1
   _timeoutInSeconds: 5
   _pollEventsInUpdate: 0
 --- !u!114 &1906733319
@@ -2979,7 +2979,7 @@ MonoBehaviour:
   _startClientFlags: 0
   _cookieScope: 1
   _dontDestroyOnLoad: 0
-  _transport: {fileID: 1906733318}
+  _transport: {fileID: 1906733324}
   _networkPrefabs: {fileID: 11400000, guid: 38de688ec1e275b408d94648e6972280, type: 2}
   _networkAssets: {fileID: 0}
   _networkRules: {fileID: 11400000, guid: d8799083b96579a42b8b2d03e4ceae98, type: 2}
@@ -3051,7 +3051,7 @@ MonoBehaviour:
   _serverPort: 5003
   _dedicatedServer: 0
   _peerToPeer: 1
-  _address: 127.0.0.1
+  _address: 192.168.56.1
 --- !u!114 &1906733325
 MonoBehaviour:
   m_ObjectHideFlags: 0
