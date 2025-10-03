@@ -141,7 +141,6 @@ public class WeaponManager : NetworkBehaviour
     }
 
 
-    [ObserversRpc]
     private void InstantiateGun(GameObject weaponPrefab) // Instancia armas nuevas, tanto para cuando hay que eliminar una porque no hay hueco y para cuando no hay armas
     {
         if (_currentGun != null)
@@ -162,6 +161,8 @@ public class WeaponManager : NetworkBehaviour
         int index = _ownedWeapons.IndexOf(weaponPrefab);
         if (index >= 0)
             _ownedWeapons[index] = weaponInstance;
+
+        SwitchWeapon(index);
     }
     
     [ObserversRpc]

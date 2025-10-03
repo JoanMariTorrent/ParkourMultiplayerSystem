@@ -79,8 +79,6 @@ public class Gun : NetworkBehaviour
 
     public void Update()
     {
-        // si este script no lo ejecuta el owner, no se hace la funcion entera
-        if (!isOwner) return;
 
         HandleShooting();
         HandleMods();
@@ -137,7 +135,6 @@ public class Gun : NetworkBehaviour
 
     private void HandleShooting()
     {
-        if(!isOwner) return;
         if (_knife)
         {
 
@@ -156,8 +153,12 @@ public class Gun : NetworkBehaviour
         }
     }
 
+
+    [ObserversRpc]
     private void ShootServerRpc()
     {
+        if (!isServer) return;
+
         Vector3 origin = _cameraTransform.position;
         Vector3 direction = _cameraTransform.forward;
 
@@ -200,7 +201,7 @@ public class Gun : NetworkBehaviour
 
 
 
-    [ObserversRpc(runLocally: true)]
+    [ObserversRpc(runLocally: false)]
     private void PlayerHitObserversRpc(PlayerHealth player, Vector3 localposition, Vector3 normal)
     {
         if (_playerHitEffect && player && player.transform)
@@ -211,7 +212,7 @@ public class Gun : NetworkBehaviour
     }
 
 
-    [ObserversRpc(runLocally: true)]
+    [ObserversRpc(runLocally: false)]
     private void EnviormentHitObserversRpc(Vector3 position, Vector3 normal)
     {
         if (_enviormentHit)
@@ -223,7 +224,7 @@ public class Gun : NetworkBehaviour
 
     
 
-    [ObserversRpc(runLocally:true)]
+    [ObserversRpc(runLocally:false)]
     private void PlayShotEffectObserversRpc()
     {
         if(_muzzleFlash)
