@@ -18,7 +18,7 @@ public class PlayerSpawningState : StateNode
         if (!asServer)
             return;
 
-        //DespawnPlayers();
+        DespawnPlayers();
 
         var _spawnedPlayers = SpawnPlayers();
         machine.Next(_spawnedPlayers);
@@ -38,7 +38,7 @@ public class PlayerSpawningState : StateNode
 
             var _newPlayer = Instantiate(_playerPrefab, _spawnPoint.position, _spawnPoint.rotation);
             _newPlayer.GiveOwnership(_player);
-            
+
             _spawnedPlayers.Add(_newPlayer);
             _currentSpawnIndex++;
 

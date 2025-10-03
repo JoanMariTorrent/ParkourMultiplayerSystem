@@ -209,7 +209,7 @@ MonoBehaviour:
   _cameraTransform: {fileID: 0}
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 343
+    m_Bits: 87
   _muzzleFlash: {fileID: 6800752134163572191}
   _renderers:
   - {fileID: 5567006457493690018}

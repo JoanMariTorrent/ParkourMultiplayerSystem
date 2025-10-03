@@ -196,6 +196,8 @@ public class Gun : NetworkBehaviour
             EnviormentHitObserversRpc(hit.point, hit.normal);
 
         }
+
+        Debug.Log(hit.transform.name);
     }
 
 

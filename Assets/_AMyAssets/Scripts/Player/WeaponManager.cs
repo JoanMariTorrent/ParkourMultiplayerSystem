@@ -87,7 +87,6 @@ public class WeaponManager : NetworkBehaviour
 
             if (_ownedWeapons[0] == null || _ownedWeapons[1] == null) // tiene un hueco libre en la arma principal
             {
-
                 if (_ownedWeapons.Contains(weaponPrefab)) // si la arma que esta pillando ya la tiene
                 {
                     EquipWeapon(weaponPrefab, true, true);

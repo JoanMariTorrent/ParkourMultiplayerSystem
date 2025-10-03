@@ -64,8 +64,6 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -87,7 +85,6 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -139,6 +136,7 @@ MonoBehaviour:
   _fireRate: 0.5
   _automatic: 0
   _knife: 0
+  _modificable: 0
   _recoilStrenght: 0.1
   _recoilDuration: 0.35
   _recoilCurve:
@@ -211,12 +209,25 @@ MonoBehaviour:
   _cameraTransform: {fileID: 0}
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 375
+    m_Bits: 119
   _muzzleFlash: {fileID: 3333162927624991419}
   _renderers:
   - {fileID: 8771229046220871736}
   _enviormentHit: {fileID: 2542180830717017700, guid: c23edada67e2ef946b2764574583bfaa, type: 3}
   _playerHitEffect: {fileID: 2446692518619174518, guid: bc337677c0f15bc45832afc868cb0229, type: 3}
+  recoilCamera: {fileID: 0}
+  recoilX: 0
+  recoilY: 0
+  recoilZ: 0
+  aimRecoilX: 0
+  aimRecoilY: 0
+  aimRecoilZ: 0
+  returnSpeed: 0
+  snappiness: 0
+  scopeEquiped: 0
+  scopeMesh: {fileID: 0}
+  _inspectPositionOffset: {x: 0, y: 0, z: 0}
+  _inspectRotationEuler: {x: 0, y: 0, z: 0}
 --- !u!1001 &3905714669375708293
 PrefabInstance:
   m_ObjectHideFlags: 0

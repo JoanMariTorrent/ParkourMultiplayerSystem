@@ -2519,7 +2519,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 1
+  _minPlayers: 2
 --- !u!4 &1626096718
 Transform:
   m_ObjectHideFlags: 0
@@ -3660,6 +3660,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1906733320}
+  - {fileID: 1700515021}
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 201362517}
@@ -3668,5 +3669,4 @@ SceneRoots:
   - {fileID: 510901696}
   - {fileID: 1466666033}
   - {fileID: 1933624560}
-  - {fileID: 1700515021}
   - {fileID: 113923399}
