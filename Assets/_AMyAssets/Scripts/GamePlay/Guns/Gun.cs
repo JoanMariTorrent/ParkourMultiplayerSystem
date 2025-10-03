@@ -249,9 +249,12 @@ public class Gun : NetworkBehaviour
         if (_recoilCoroutine != null)
             StopCoroutine(_recoilCoroutine);
 
+        if (!gameObject.activeInHierarchy) 
+            return;
+
         if (gameObject.layer == otherPlayerGunTag)
             return;
-            
+        
         _recoilCoroutine = StartCoroutine(PlayRecoil());
     }
 
