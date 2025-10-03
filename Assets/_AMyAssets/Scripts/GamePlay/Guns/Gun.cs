@@ -27,6 +27,7 @@ public class Gun : NetworkBehaviour
     [SerializeField] private List<Renderer> _renderers = new();
     [SerializeField] private ParticleSystem _enviormentHit, _playerHitEffect;
     [SerializeField] private RecoilCamera recoilCamera;
+    [SerializeField] private int ownerGunTag, otherPlayerGunTag;
 
     [Header("GunRecoil")]
     [Header("normal recoil")]
@@ -74,12 +75,12 @@ public class Gun : NetworkBehaviour
         if (!isOwner)
         {
             enabled = false;
-            gameObject.layer = 10;
+            gameObject.layer = otherPlayerGunTag;
         }
         else
         {
             enabled = true;
-            gameObject.layer = 9;
+            gameObject.layer = ownerGunTag;
         }
         
     }
@@ -243,11 +244,13 @@ public class Gun : NetworkBehaviour
     [ObserversRpc(runLocally:false)]
     private void PlayShotEffectObserversRpc()
     {
-        if(_muzzleFlash)
+        if (_muzzleFlash)
             _muzzleFlash.Play();
         if (_recoilCoroutine != null)
             StopCoroutine(_recoilCoroutine);
 
+        if (gameObject.layer == otherPlayerGunTag)
+            return;
         _recoilCoroutine = StartCoroutine(PlayRecoil());
     }
 
