@@ -71,7 +71,7 @@ public class WeaponManager : NetworkBehaviour
         }
     }
     
-    [ServerRpc]
+
     public void NewWeapon(GameObject weaponPrefab, bool primary)
     {
         // Se generan los todos los espacios del array
@@ -135,17 +135,18 @@ public class WeaponManager : NetworkBehaviour
 
 
     private void EnsureWeaponSlots() // Genera todos los slots y los pone en null, para tenerlos creados
-{
-    while (_ownedWeapons.Count < 4)
-        _ownedWeapons.Add(null);
-}
+    {
+        while (_ownedWeapons.Count < 4)
+            _ownedWeapons.Add(null);
+    }
 
 
+    [ObserversRpc]
     private void InstantiateGun(GameObject weaponPrefab) // Instancia armas nuevas, tanto para cuando hay que eliminar una porque no hay hueco y para cuando no hay armas
     {
         if (_currentGun != null)
             _currentGun.gameObject.SetActive(false);
-            
+
         // Instancia el arma y la setea en la posicion y rotacion correcta
         weaponInstance = Instantiate(weaponPrefab, _handTransform);
         weaponInstance.transform.localPosition = Vector3.zero;
@@ -163,7 +164,7 @@ public class WeaponManager : NetworkBehaviour
             _ownedWeapons[index] = weaponInstance;
     }
     
-
+    [ObserversRpc]
     public void SwitchWeapon(int index) // FALTA ARREGLAR QUE AL CAMBIAR EL ARMA, SE OCULTE LA ANTERIOR Y SE ACTIVE LA NUEVA
     {
         if (index < 0 || index >= _ownedWeapons.Count)
