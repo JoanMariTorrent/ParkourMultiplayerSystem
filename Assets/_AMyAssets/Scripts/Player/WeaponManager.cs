@@ -154,6 +154,9 @@ public class WeaponManager : NetworkBehaviour
         // Guarda el script de la nueva arma como el script actual
         _currentGun = weaponInstance.GetComponent<Gun>();
 
+        // Asignar el ownership al jugador que posee esta arma
+        _currentGun.GiveOwnership(owner.Value);
+
         // Setea la camara, la hitlayer y el recoil del arma en su script
         _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil);
 
