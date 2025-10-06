@@ -1,10 +1,7 @@
-using System;
 using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
-using NUnit.Framework;
 using UnityEngine.Rendering;
-using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using PurrNet.StateMachine;
 
@@ -18,6 +15,12 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float jumpForce = 1f;
     [SerializeField] private float gravity = -9.81f;
     [SerializeField] private float groundCheckDistance = 0.2f;
+    [SerializeField] private float wallCheckDistance = 0.4f;
+    [Space(2)]
+    [SerializeField] private float wallRunSpeed = 6f;
+    [SerializeField] private float wallRunGravity = -2f;
+    [SerializeField] private float wallInitialImpulse = 5f; // mini impulso inicial
+    [SerializeField] private float wallStickForce = 2f;
 
     [Header("Look Settings")]
     [SerializeField] private float lookSensitivity = 2f;
@@ -33,12 +36,22 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private StateMachine _stateMachine;
     [SerializeField] private WeaponManager _weaponManager;
     [SerializeField] private Transform _checkGround;
+    [SerializeField] private Transform _checkWall;
     [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private LayerMask _wallLayer;
 
 
     private CharacterController characterController;
     private Vector3 velocity;
     private float verticalRotation = 0f;
+
+    private RaycastHit leftWallhit;
+    private RaycastHit rightWallhit;
+    private bool isOnRightWall;
+    private bool isOnLeftWall;
+
+    private bool isWallRunning;
+    private bool isTouchingWall;
 
 
 
@@ -53,7 +66,7 @@ public class PlayerController : NetworkBehaviour
         if (isOwner)
         {
             foreach (var rend in renderers)
-            { 
+            {
                 rend.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
             }
         }
@@ -85,9 +98,10 @@ public class PlayerController : NetworkBehaviour
         HandleWeaponSwitching();
         HandleMovement();
         HandleRotation();
+        HandleRunningWall();
     }
 
-   
+
 
     private void HandleMovement()
     {
@@ -116,9 +130,14 @@ public class PlayerController : NetworkBehaviour
         }
 
 
+        if (!isWallRunning)
+        {
+            velocity.y += gravity * Time.deltaTime;
+            characterController.Move(velocity * Time.deltaTime);
+        }
+        
 
-        velocity.y += gravity * Time.deltaTime;
-        characterController.Move(velocity * Time.deltaTime);
+        
     }
 
     private void HandleRotation()
@@ -138,7 +157,6 @@ public class PlayerController : NetworkBehaviour
         return Physics.Raycast(_checkGround.position, Vector3.down, groundCheckDistance, _groundLayer);
     }
 
-
     private void HandleWeaponSwitching()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -153,6 +171,57 @@ public class PlayerController : NetworkBehaviour
         {
             _weaponManager.SwitchWeapon(3);
         }
+    }
+
+
+    private void HandleRunningWall()
+    {
+        isOnRightWall = Physics.Raycast(transform.position, _checkWall.right, out rightWallhit, wallCheckDistance, _wallLayer);
+        isOnLeftWall = Physics.Raycast(transform.position, -_checkWall.right, out leftWallhit, wallCheckDistance, _wallLayer);
+
+        isTouchingWall = isOnRightWall || isOnLeftWall;
+
+        //Tocando una pared
+        if (isTouchingWall && velocity.y > 0 && !isGrounded)
+        {
+            // Direccion del wall run
+            Vector3 wallNormal = Vector3.zero;
+
+            wallNormal = isOnRightWall ? rightWallhit.normal : leftWallhit.normal;
+
+            Vector3 wallRunDirection = Vector3.Cross(wallNormal, Vector3.up);
+
+            if (isOnLeftWall)
+                wallRunDirection = -wallRunDirection;
+
+            Debug.DrawRay(transform.position, wallRunDirection * 3f, Color.green);
+
+            // Aceleración / Mantener momentum
+            Vector3 wallRunVelocity = wallRunDirection.normalized * wallRunSpeed;
+
+            // se suma a la velocidad del jugador, asi se mantiene el momentum
+            float acceleration = 10f;
+            Vector3 horizontalVelocity = new Vector3(velocity.x, 0f, velocity.z);
+            horizontalVelocity = Vector3.Lerp(horizontalVelocity, wallRunVelocity, acceleration * Time.deltaTime);
+
+            velocity.x = horizontalVelocity.x;
+            velocity.z = horizontalVelocity.z;
+
+            // Gravedad reducida
+            velocity.y += wallRunGravity * Time.deltaTime;
+
+            //Reinicio de saltos
+            timesJump = 1;
+
+            isWallRunning = true;
+        }
+        else
+        {
+            isWallRunning = false;
+        }
+
+        
+
     }
 
 
