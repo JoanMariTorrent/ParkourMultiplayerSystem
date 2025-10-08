@@ -573,6 +573,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  _spawningState: {fileID: 1626096717}
 --- !u!1 &276601715
 GameObject:
   m_ObjectHideFlags: 0

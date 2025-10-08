@@ -4,7 +4,7 @@ using PurrNet.StateMachine;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawningGunsState : StateNode<List<PlayerHealth>> 
+public class SpawningGunsState : StateNode<List<PlayerHealth>>
 {
     private List<PlayerID> _players = new();
 
@@ -47,3 +47,4 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         }
     }
 }
+

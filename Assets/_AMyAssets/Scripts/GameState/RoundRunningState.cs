@@ -8,7 +8,10 @@ using UnityEngine;
 
 public class RoundRunningState : StateNode<List<PlayerHealth>>
 {
+
+    [SerializeField] private StateNode _spawningState;
     private List<PlayerID> _players = new();
+
 
 
     public override void Enter(List<PlayerHealth> data, bool asServer)
@@ -35,13 +38,14 @@ public class RoundRunningState : StateNode<List<PlayerHealth>>
     {
         _players.Remove(_deadPlayer);
 
-        if (_players.Count <= 1)
+        if (_players.Count == 1)
         {
             machine.Next(_players);
         }
-        else if (_players.Count == 0)
+        else if (_players.Count <= 0)
         {
             Debug.LogWarning("Han muerto todos los jugadores a la vez");
+            machine.SetState(_spawningState);
         }
     }
 }

@@ -20,8 +20,14 @@ public class RoundEndState : StateNode<List<PlayerID>>
         if (!asServer)
             return;
 
-        foreach(var winners in winner)
-            CheckForGameEnd(winners);
+        if (winner == null)
+        {
+            Debug.Log("winner null");
+            machine.Next();
+        }
+
+        foreach (var winners in winner)
+                CheckForGameEnd(winners);
     }
 
     private void CheckForGameEnd(PlayerID winners)

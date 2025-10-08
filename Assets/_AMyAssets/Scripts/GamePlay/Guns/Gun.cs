@@ -210,7 +210,7 @@ public class Gun : NetworkBehaviour
     private PlayerHealth FindPlayerByID(PlayerID id)
     {
         Debug.Log("FindPlayerByID");
-        foreach (var player in FindObjectsOfType<PlayerHealth>())
+        foreach (var player in FindObjectsByType<PlayerHealth>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
         {
             if (player.PlayerID == id)
                 return player;

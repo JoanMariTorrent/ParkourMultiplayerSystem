@@ -17,17 +17,17 @@ public class Platform : NetworkBehaviour
 
         Debug.Log("Has entrado en colision con una plataforma!");
         if (_player.isOwner)
-            RequestPowerMessageServerRPC(_player.PlayerID);
+            RequestPowerMessageServerRPC(_player.PlayerID, _player);
     }
 
 
 
 
 
-    [ServerRpc]
-    private void RequestPowerMessageServerRPC(PlayerID playerID)
+
+    private void RequestPowerMessageServerRPC(PlayerID playerID, PlayerHealth player)
     {
-        Debug.Log($"{playerID}, ¡Has recibido un poder!");
+        player.ChangeHealth(-101);
     }
 
 
