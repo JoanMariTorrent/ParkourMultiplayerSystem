@@ -74,7 +74,7 @@ public class Gun : NetworkBehaviour
 
 
     private bool _inspecting = false;
-    private float _inspectSpeed = 5f; // Ajusta la velocidad
+    private float _inspectSpeed = 5f;
     [SerializeField] private Vector3 _inspectPositionOffset = new Vector3();
     [SerializeField] private Vector3 _inspectRotationEuler = new Vector3();
 
@@ -83,8 +83,6 @@ public class Gun : NetworkBehaviour
     {
         _originalPosition = transform.localPosition;
         _originalRotation = transform.localRotation;
-        //enabled = isOwner;
-        
 
         if (!isOwner)
         {
@@ -305,6 +303,7 @@ public class Gun : NetworkBehaviour
     }
 
    
+   [ObserversRpc(runLocally:false)]
     private IEnumerator GrenadeCoroutine(Rigidbody rbGrenade)
     {
         WeaponManager wm = GetComponentInParent<WeaponManager>();
