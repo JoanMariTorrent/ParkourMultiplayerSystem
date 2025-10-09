@@ -171,7 +171,7 @@ public class Gun : NetworkBehaviour
                     Debug.LogError("rbGrenade is null!");
                     return;
                 }
-                StartCoroutine(GrenadeCoroutine(rbGrenade));
+                RpcThrowGrenade(_cameraTransform.forward, _grenadeForce);
 
             }
         }
@@ -302,22 +302,48 @@ public class Gun : NetworkBehaviour
         transform.localRotation = _originalRotation;
     }
 
-   
-    private IEnumerator GrenadeCoroutine(Rigidbody rbGrenade) //No se puede poner ObserverRpc en una coroutina y el cliente no lo ve
+    [ObserversRpc(runLocally:false)]
+    private void RpcThrowGrenade(Vector3 forward, float grenadeForce)
     {
-        WeaponManager wm = GetComponentInParent<WeaponManager>();
-        wm.UtilityThrowed();
-
         grenadeThrowed = true;
-        gameObject.transform.parent = null;
-        rbGrenade.isKinematic = false;
-        rbGrenade.AddForce(Vector3.up * 20);
-        rbGrenade.AddForce(_cameraTransform.forward * _grenadeForce);
+
+        // Desemparentar la granada
+        transform.parent = null;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            Debug.LogError("Rigidbody de la granada no encontrado!");
+            return;
+        }
+
+        // Aplicar fuerza
+        rb.isKinematic = false;
+        rb.AddForce(Vector3.up * 20);
+        rb.AddForce(forward * grenadeForce);
+
+        // Notificar al WeaponManager localmente
+        WeaponManager wm = GetComponentInParent<WeaponManager>();
+        wm?.UtilityThrowed();
+
+        // Inicia la coroutine local para explosión y destrucción
+        StartCoroutine(GrenadeCoroutine());
+    }
+
+    private IEnumerator GrenadeCoroutine()
+    {
         yield return new WaitForSeconds(0.8f);
 
-        rbGrenade.isKinematic = true;
+        // Activa física inactiva localmente
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+            rb.isKinematic = true;
+
         Debug.Log("BOOM!!!!!");
+
         yield return new WaitForSeconds(3);
+
+        // Destruye la granada localmente
         Destroy(gameObject);
     }
-}
+    }
