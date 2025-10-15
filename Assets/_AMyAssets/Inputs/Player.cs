@@ -35,11 +35,16 @@ public class Player : MonoBehaviour
         // Pilla el character input y lo actualiza
         var characterInput = new CharacterInput
         {
-            rotation = playerCamera.transform.rotation,
-            Move = input.Move.ReadValue<Vector2>()
+            Rotation = playerCamera.transform.rotation,
+            Move = input.Move.ReadValue<Vector2>(),
+            Jump = input.Jump.WasPressedThisFrame(),
+            Crouch = input.Crouch.WasPressedThisFrame()
+                ? CrouchInput.Toggle
+                : CrouchInput.None
         };
 
         playerCharacter.UpdateInput(characterInput);
+        playerCharacter.UpdateBody();
         
     }
 
