@@ -1,9 +1,6 @@
 using UnityEngine;
 using KinematicCharacterController;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using Fossil;
-using UnityEngine.TextCore.Text;
+using UnityEditor.Rendering;
 
 
 public struct CharacterInput
@@ -22,7 +19,12 @@ public enum CrouchInput
 
 public enum Stance
 {
-    Stand, Crouch, Slide
+    Stand, Crouch, Slide, Wall
+}
+
+public enum WallSide
+{
+    Left, Right, None
 }
 
 public struct CharacterState
@@ -55,6 +57,11 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     [SerializeField] private float jumpSustainGravity = 0.4f;
     [SerializeField] private float gravity = -90f;
     [Space]
+    [SerializeField] private float wallVelocity = 15f;
+    [SerializeField] private float wallGravity = -10f;
+    [SerializeField] private float wallCheckDistance = 1f;
+    [SerializeField] private LayerMask wallLayer;
+    [Space]
     [SerializeField] private float slideStartSpeed = 25f;
     [SerializeField] private float slideEndSpeed = 15f;
     [SerializeField] private float slideFriction = 0.5f;
@@ -64,12 +71,12 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     [SerializeField] private float standheight = 2f;
     [SerializeField] private float crouchHeight = 1f;
     [SerializeField] private float crouchHeightResponse = 15f;
-    [Range(0f, 1f)]
+    [Range(0f, 1.5f)]
     [SerializeField] private float standCameraTargetHeight = 0.9f;
     [Range(0f, 1f)]
     [SerializeField] private float crouchCameraTargetHeight = 0.7f;
 
-    private CharacterState _state;
+    public CharacterState _state;
     private CharacterState _lastState;
     private CharacterState _tempState;
 
@@ -91,6 +98,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
         _unCrouchOverlapResults = new Collider[8];
 
         motor.CharacterController = this;
+
+        Debug.Log(motor.CollidableLayers.value);
     }
 
     public void UpdateInput(CharacterInput input)
@@ -112,7 +121,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
         _requestedSustainedJump = input.JumpSustain;
 
         var wasRequestingCrouch = _requestedCrouch;
-        _requestedCrouch = input.Crouch switch
+
+            _requestedCrouch = input.Crouch switch
         {
             CrouchInput.Toggle => !_requestedCrouch,
             CrouchInput.None => _requestedCrouch,
@@ -213,7 +223,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
 
         // Solo colisiona con el suelo o paredes (opcional: filtra por layer)
         if (coll.gameObject.layer == LayerMask.NameToLayer("Ground") ||
-            coll.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+            coll.gameObject.layer == LayerMask.NameToLayer("Obstacle") ||
+            coll.gameObject.layer == LayerMask.NameToLayer("Wall"))
             return true;
 
         return false;
@@ -269,7 +280,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 var crouching = _state.Stance is Stance.Crouch;
                 var wasStanding = _lastState.Stance is Stance.Stand;
                 var wasInAir = !_lastState.Grounded;
-                if (moving && crouching && (wasStanding || wasInAir))
+                if (moving && crouching && (wasStanding || wasInAir) && _state.Stance is not Stance.Wall)
                 {
                     _state.Stance = Stance.Slide;
 
@@ -319,6 +330,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
                 _state.Acceleration = moveVelocity - currentVelocity;
                 currentVelocity = moveVelocity;
             }
+
+
             //Continue sliding
             else
             {
@@ -442,6 +455,27 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             if (_requestedSustainedJump && verticalSpeed > 0f)
                 effectiveGravity *= jumpSustainGravity;
             currentVelocity += motor.CharacterUp * effectiveGravity * deltaTime;
+
+
+            // wall run
+            var wall = GetWallSide;
+
+            if (wall != WallSide.None && _state.Stance is not Stance.Wall)
+            {
+                _state.Stance = Stance.Wall;
+                Debug.Log("Cambio de estado a pared");
+            }
+
+            if (_state.Stance is Stance.Wall)
+            {
+                _state.Stance = Stance.Wall;
+
+                float verticalVelocity = Vector3.Dot(currentVelocity, motor.CharacterUp);
+
+                // 1. Reducir gravedad
+                verticalVelocity += wallGravity * deltaTime;
+            }
+
         }
 
         if (_requestedJump)
@@ -495,5 +529,46 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             motor.BaseVelocity = Vector3.zero;
     }
 
+    public WallSide GetWallSide
+    {
+        get
+        {
+            if (IsOnLeftWall)
+                return WallSide.Left;
+            else if (IsOnRightWall)
+                return WallSide.Right;
+            else
+                return WallSide.None;
 
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + -motor.CharacterRight * wallCheckDistance);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + motor.CharacterRight * wallCheckDistance);
+    }
+
+    public bool IsOnLeftWall => Physics.Raycast(transform.position, -motor.CharacterRight, wallCheckDistance, wallLayer);
+    public bool IsOnRightWall => Physics.Raycast(transform.position, motor.CharacterRight, wallCheckDistance, wallLayer);
+
+    public bool GetNormal(out Vector3 normal)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -motor.CharacterRight, out hit, wallCheckDistance, wallLayer))
+        {
+            normal = hit.normal;
+            return true;
+        }
+        else if (Physics.Raycast(transform.position, motor.CharacterRight, out hit, wallCheckDistance, wallLayer))
+        {
+            normal = hit.normal;
+            return true;
+        }
+        normal = Vector3.zero;
+        return false;
+    }
 }
