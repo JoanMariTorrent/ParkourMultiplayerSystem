@@ -1,9 +1,7 @@
-using Fossil;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
+using PurrNet;
 
-public class CameraSpring : MonoBehaviour
+public class CameraSpring : NetworkBehaviour
 {
     [Min(0.01f)]
     [SerializeField] private float halfLife = 0.075f;

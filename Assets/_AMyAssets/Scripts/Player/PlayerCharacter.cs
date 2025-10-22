@@ -1,7 +1,9 @@
 using UnityEngine;
 using KinematicCharacterController;
-
-
+using PurrNet;
+using System.Collections.Generic;
+using Unity.Cinemachine;
+using UnityEngine.Rendering;
 public struct CharacterInput
 {
     public Quaternion Rotation;
@@ -9,6 +11,9 @@ public struct CharacterInput
     public bool Jump;
     public bool JumpSustain;
     public CrouchInput Crouch;
+    public bool Shoot;
+    public bool Aim;
+    public bool ChangeGun;
 }
 
 public enum CrouchInput
@@ -35,11 +40,15 @@ public struct CharacterState
 }
 
 
-public class PlayerCharacter : MonoBehaviour, ICharacterController
+public class PlayerCharacter : NetworkBehaviour, ICharacterController
 {
     [SerializeField] private KinematicCharacterMotor motor;
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private Transform root;
+    [Space]
+    [SerializeField] private WeaponManager weaponManager;
+    [SerializeField] private List<Renderer> renderers = new();
+    [SerializeField] private CinemachineCamera playerCamera;
     [Space]
     [SerializeField] private float walkSpeed = 20f;
     [SerializeField] private float crouchSpeed = 7f;
@@ -88,7 +97,26 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     private float _timeSinceUngrounded;
     private float _timeSinceJumpRequest;
     private bool _ungroundedDueToJump;
+    public bool _requestedShoot;
+    public bool _requestedAim;
     private Collider[] _unCrouchOverlapResults;
+
+
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+
+        enabled = isOwner;
+        playerCamera.gameObject.SetActive(isOwner);
+
+        if (isOwner)
+        {
+            foreach (var rend in renderers)
+            {
+                rend.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+            }
+        }
+    }
 
     public void Intialize()
     {
@@ -112,6 +140,10 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
         // Orienta el input hacia donde mira el jugador
         _requestedMovement = input.Rotation * _requestedMovement;
 
+        _requestedShoot = input.Shoot;
+
+        _requestedAim = input.Aim;
+
         var wasRequestedJump = _requestedJump;
         _requestedJump = _requestedJump || input.Jump;
         if (_requestedJump && !wasRequestedJump)
@@ -131,6 +163,7 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
             _requestedCrouchInAir = !_state.Grounded;
         else if (!_requestedCrouch && wasRequestingCrouch)
             _requestedCrouchInAir = false;
+        
     }
 
     public void UpdateBody(float deltaTime)

@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using PurrNet;
+using Unity.VisualScripting;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private PlayerCamera playerCamera;
@@ -24,7 +26,7 @@ public class Player : MonoBehaviour
     }
 
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         _inputActions.Dispose();
     }
@@ -40,17 +42,18 @@ public class Player : MonoBehaviour
         // Pilla el character input y lo actualiza
         var characterInput = new CharacterInput
         {
-            Rotation    = playerCamera.transform.rotation,
-            Move        = input.Move.ReadValue<Vector2>(),
-            Jump        = input.Jump.WasPressedThisFrame(),
-            JumpSustain = input.Jump.IsPressed(), 
-            Crouch      = input.Crouch.WasPressedThisFrame()
+            Rotation = playerCamera.transform.rotation,
+            Move = input.Move.ReadValue<Vector2>(),
+            Jump = input.Jump.WasPressedThisFrame(),
+            JumpSustain = input.Jump.IsPressed(),
+            Crouch = input.Crouch.WasPressedThisFrame()
                 ? CrouchInput.Toggle
-                : CrouchInput.None
+                : CrouchInput.None,
+            Shoot = input.Shoot.IsPressed(),
+            Aim = input.Aim.IsPressed(),
         };
 
         playerCharacter.UpdateInput(characterInput);
-        playerCharacter.UpdateBody(deltaTime);
 
 #if UNITY_EDITOR
         if (Keyboard.current.tKey.wasPressedThisFrame)
@@ -61,8 +64,7 @@ public class Player : MonoBehaviour
                 Teleport(hit.point);
             }
         }
-        #endif
-        
+#endif
     }
 
     private void LateUpdate()
@@ -71,6 +73,7 @@ public class Player : MonoBehaviour
         var cameraTarget = playerCharacter.GetCameraTarget();
         var state = playerCharacter.GetState();
 
+        playerCharacter.UpdateBody(deltaTime);
         playerCamera.UpdatePosition(cameraTarget);
         cameraSpring.UpdateSpring(deltaTime, cameraTarget.up);
         cameraLean.UpdateLean

@@ -16,6 +16,7 @@ public class WeaponManager : NetworkBehaviour
     public Gun _currentGun;
     [SerializeField] private SyncList<GameObject> _ownedWeapons = new();
     [SerializeField] private GameObject weaponInstance = null;
+    [SerializeField] private PlayerCharacter playerChar;
 
     private void Awake()
     {
@@ -166,7 +167,7 @@ public class WeaponManager : NetworkBehaviour
         _currentGun.GiveOwnership(owner.Value);
 
         // Setea la camara, la hitlayer y el recoil del arma en su script
-        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil);
+        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar);
 
         // Actualiza el slot con la instancia en la escena
         int index = _ownedWeapons.IndexOf(weaponPrefab);
@@ -209,7 +210,7 @@ public class WeaponManager : NetworkBehaviour
         weaponToSwitch.transform.localRotation = Quaternion.identity;
 
         // reconfigurar camara y recoil
-        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil);
+        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar);
 
 
         Debug.Log($"Cambio de arma a {_currentGun.name} en el slot {index}");

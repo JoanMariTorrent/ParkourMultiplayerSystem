@@ -1,7 +1,8 @@
 using Unity.Mathematics;
 using UnityEngine;
+using PurrNet;
 
-public class CameraLean : MonoBehaviour
+public class CameraLean : NetworkBehaviour
 {
     [Header("Timing")]
     [SerializeField] private float attackDamping = 0.5f;

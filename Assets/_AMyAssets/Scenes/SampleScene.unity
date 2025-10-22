@@ -285,7 +285,7 @@ Transform:
   m_GameObject: {fileID: 113923395}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.88721, y: 0.216, z: -7.44117}
+  m_LocalPosition: {x: -1.87, y: 0.216, z: -11.71}
   m_LocalScale: {x: 2.3712, y: 0.24465473, z: 2.3712}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1376,11 +1376,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: 0.1
+  far clip plane: 5000
+  field of view: 60.000004
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -1404,8 +1404,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510901691}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.18308713, y: -0.08394637, z: 0.015702346, w: 0.97938025}
-  m_LocalPosition: {x: 1.6470704, y: 6.721072, z: -15.689695}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2462,7 +2462,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _playerPrefab: {fileID: 4661134702774055568, guid: 0d0651e7366189649b1fdf7e3f4940a1, type: 3}
+  _playerPrefab: {fileID: 8706101652428413128, guid: ee8284241cff7b2408dd3eaf5b4027c0, type: 3}
   _spawnPoints:
   - {fileID: 5780014407099835076}
   - {fileID: 278023948605504118}
@@ -4078,11 +4078,11 @@ SceneRoots:
   m_Roots:
   - {fileID: 1906733320}
   - {fileID: 1700515021}
+  - {fileID: 209221665}
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 201362517}
   - {fileID: 2331428047142539963}
-  - {fileID: 209221665}
   - {fileID: 510901696}
   - {fileID: 1466666033}
   - {fileID: 1933624560}

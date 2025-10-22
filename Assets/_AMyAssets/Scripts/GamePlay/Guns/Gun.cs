@@ -35,6 +35,7 @@ public class Gun : NetworkBehaviour
     public bool grenadeThrowed = false;
 
     [Header("References")]
+    [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private LayerMask _hitLayer;
     [SerializeField] private ParticleSystem _muzzleFlash;
@@ -70,6 +71,8 @@ public class Gun : NetworkBehaviour
     private Coroutine _recoilCoroutine;
     private float _lastFireTime;
     private PlayerID _ownerID;
+
+    
 
 
 
@@ -108,11 +111,12 @@ public class Gun : NetworkBehaviour
     }
 
 
-    public void Setup(Transform cameraTransform, LayerMask hitLayer, RecoilCamera recoil)
+    public void Setup(Transform cameraTransform, LayerMask hitLayer, RecoilCamera recoil, PlayerCharacter playerChar)
     {
         _cameraTransform = cameraTransform;
         _hitLayer = hitLayer;
         recoilCamera = recoil;
+        playerCharacter = playerChar;
         if (isOwner)
             gameObject.layer = 9;
         else
@@ -121,8 +125,10 @@ public class Gun : NetworkBehaviour
 
 
 
-    private void HandleShooting()
+    public void HandleShooting()
     {
+        if (!isOwner) return;
+
         if (_knife)
         {
 
@@ -130,7 +136,7 @@ public class Gun : NetworkBehaviour
         else if (_normalGun)
         {
             // Si es automatica y no mantiene el click o no es automatica y no pulsa el click, se sale de la funcion
-            if (_automatic && !Input.GetKey(KeyCode.Mouse0) || !_automatic && !Input.GetKeyDown(KeyCode.Mouse0)) return;
+            if (_automatic && !playerCharacter._requestedShoot || !_automatic && !playerCharacter._requestedShoot) return;
 
             // si el ultimo disparo mas el cooldown de disparo sumado, es mas grande que el tiempo que llevas sin disparar antes de darle al click se sale de la funcion
             if (_lastFireTime + _fireRate > Time.unscaledTime) return;
@@ -142,7 +148,7 @@ public class Gun : NetworkBehaviour
 
         else if (_grenade)
         {
-            if (Input.GetKey(KeyCode.Mouse0) && !grenadeThrowed)
+            if (playerCharacter._requestedShoot && !grenadeThrowed)
             {
                 Debug.Log("Cargando granada");
                 _timeCharged += Time.deltaTime;
@@ -160,7 +166,7 @@ public class Gun : NetworkBehaviour
                 }
 
             }
-            if (Input.GetKeyUp(KeyCode.Mouse0) && grenadeCharged && !grenadeThrowed)
+            if (playerCharacter._requestedShoot && grenadeCharged && !grenadeThrowed)
             {
                 grenadeCharged = false;
                 Debug.Log("Throwing grenade");

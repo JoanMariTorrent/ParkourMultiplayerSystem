@@ -5,7 +5,7 @@ using UnityEngine;
 public class RecoilCamera : NetworkBehaviour
 {
     //scripts
-    [SerializeField] private PlayerController playerScript;
+    //[SerializeField] private PlayerController playerScript;
     [SerializeField] private Gun gunScript;
     [SerializeField] private WeaponManager weaponManager;
 
@@ -35,7 +35,7 @@ public class RecoilCamera : NetworkBehaviour
             return;
         }
 
-        playerScript = GetComponentInParent<PlayerController>();
+        //playerScript = GetComponentInParent<PlayerController>();
         StartPos = transform.localPosition;
     }
 
@@ -55,8 +55,8 @@ public class RecoilCamera : NetworkBehaviour
             return;
         }
 
-        if (playerScript != null)
-            isAiming = playerScript._isAiming;
+        //if (playerScript != null)
+        //    isAiming = playerScript._isAiming;
 
         if (gunScript == null)
             return; 

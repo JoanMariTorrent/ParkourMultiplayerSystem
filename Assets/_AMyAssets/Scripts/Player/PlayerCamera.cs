@@ -1,5 +1,6 @@
 using Steamworks;
 using UnityEngine;
+using PurrNet;
 
 
 public struct CameraInput
@@ -9,7 +10,7 @@ public struct CameraInput
 
 
 
-public class PlayerCamera : MonoBehaviour
+public class PlayerCamera : NetworkBehaviour
 {
     [SerializeField] private float sensitivity = 0.1f;
 
