@@ -20,7 +20,6 @@ public class Player : NetworkBehaviour
 
     void Start()
     {
-        if (!isOwner) return;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         _inputActions = new PlayerInputsAction();
