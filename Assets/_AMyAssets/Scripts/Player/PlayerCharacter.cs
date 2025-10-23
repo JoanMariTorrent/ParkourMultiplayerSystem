@@ -111,8 +111,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     protected override void OnSpawned()
     {
         base.OnSpawned();
-
-        enabled = isOwner;
         playerCamera.gameObject.SetActive(isOwner);
 
         if (isOwner)

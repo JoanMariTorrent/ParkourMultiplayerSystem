@@ -15,8 +15,6 @@ public class Player : NetworkBehaviour
     protected override void OnSpawned()
     {
         base.OnSpawned();
-
-        enabled = isOwner;
         playerCamera.gameObject.SetActive(isOwner);
     }
 
