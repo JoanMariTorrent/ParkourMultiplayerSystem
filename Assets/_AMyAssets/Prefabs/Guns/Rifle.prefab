@@ -214,18 +214,19 @@ MonoBehaviour:
   _maxTimeCharge: 5
   _grenadeForce: 0
   grenadeThrowed: 0
+  playerCharacter: {fileID: 0}
   _cameraTransform: {fileID: 0}
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 1783
+    m_Bits: 3831
   _muzzleFlash: {fileID: 7154568906003232138}
   _renderers:
   - {fileID: 5567006457493690018}
   _enviormentHit: {fileID: 2542180830717017700, guid: c23edada67e2ef946b2764574583bfaa, type: 3}
   _playerHitEffect: {fileID: 2446692518619174518, guid: bc337677c0f15bc45832afc868cb0229, type: 3}
   recoilCamera: {fileID: 0}
-  ownerGunTag: 0
-  otherPlayerGunTag: 0
+  ownerGunTag: 7
+  otherPlayerGunTag: 8
   recoilX: -8
   recoilY: 1
   recoilZ: 0.1

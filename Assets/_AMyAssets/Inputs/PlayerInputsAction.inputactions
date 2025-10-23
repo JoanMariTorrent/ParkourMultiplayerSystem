@@ -61,7 +61,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ChangeGun1",
+                    "name": "ChangeGun",
                     "type": "Button",
                     "id": "76650283-5940-46d6-8253-9b60c6a666eb",
                     "expectedControlType": "",
@@ -199,7 +199,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ChangeGun1",
+                    "action": "ChangeGun",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -210,7 +210,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ChangeGun1",
+                    "action": "ChangeGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ca5b56c1-3802-4b58-bf92-70e9f30148c3",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b4c32ae9-f246-4cea-8504-59a84eb8ea00",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeGun",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

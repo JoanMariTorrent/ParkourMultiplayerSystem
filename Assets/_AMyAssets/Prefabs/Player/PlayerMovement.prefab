@@ -224,7 +224,7 @@ MonoBehaviour:
   _playerCamera: {fileID: 7537716515501278389}
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2391
   recoil: {fileID: 7724687813390467918}
   _currentGun: {fileID: 0}
   _ownedWeapons:
@@ -335,20 +335,8 @@ MonoBehaviour:
     m_ActionId: adf51e59-c2b0-437d-961d-4b0a9b0e2bd5
     m_ActionName: 'GamePlay/Aim[/Mouse/rightButton]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2478937507195513506}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: dedd6194-565e-4d1d-a318-5ef8cfbaa54e
+      m_Calls: []
+    m_ActionId: 76650283-5940-46d6-8253-9b60c6a666eb
     m_ActionName: 'GamePlay/ChangeGun[/Keyboard/1,/Keyboard/2,/Keyboard/3,/Keyboard/4]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
@@ -953,10 +941,11 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  currentGunIndex: 0
   motor: {fileID: 7294490286232367340}
   cameraTarget: {fileID: 4677501032903263295}
   root: {fileID: 7656191514328498181}
-  weaponManager: {fileID: 0}
+  weaponManager: {fileID: 7369648407939384217}
   renderers:
   - {fileID: 6248071933208066411}
   - {fileID: 4870983629838366037}
@@ -989,6 +978,7 @@ MonoBehaviour:
   standCameraTargetHeight: 1
   crouchCameraTargetHeight: 0.7
   _requestedShoot: 0
+  _requestedShootThisFrame: 0
   _requestedAim: 0
 --- !u!1 &6966305801280259255
 GameObject:

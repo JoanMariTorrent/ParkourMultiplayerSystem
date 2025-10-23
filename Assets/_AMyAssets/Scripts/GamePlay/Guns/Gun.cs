@@ -3,6 +3,7 @@ using PurrNet;
 using UnityEngine;
 using System.Collections.Generic;
 using NUnit.Framework.Internal.Commands;
+using Unity.VisualScripting;
 
 public class Gun : NetworkBehaviour
 {
@@ -136,7 +137,7 @@ public class Gun : NetworkBehaviour
         else if (_normalGun)
         {
             // Si es automatica y no mantiene el click o no es automatica y no pulsa el click, se sale de la funcion
-            if (_automatic && !playerCharacter._requestedShoot || !_automatic && !playerCharacter._requestedShoot) return;
+            if (_automatic && !playerCharacter._requestedShoot || !_automatic && !playerCharacter._requestedShootThisFrame) return;
 
             // si el ultimo disparo mas el cooldown de disparo sumado, es mas grande que el tiempo que llevas sin disparar antes de darle al click se sale de la funcion
             if (_lastFireTime + _fireRate > Time.unscaledTime) return;
@@ -191,7 +192,7 @@ public class Gun : NetworkBehaviour
             recoilCamera.RecoilFire();
 
         //Lanza un raycast, si no le da a nada, return
-        if (!Physics.Raycast(origin, direction, out var hit, _range, _hitLayer, QueryTriggerInteraction.Ignore))
+        if (!Physics.Raycast(origin, direction, out var hit, _range, _hitLayer))
         {
             PlayShotEffectObserversRpc();
             return;

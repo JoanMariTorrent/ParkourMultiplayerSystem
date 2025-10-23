@@ -11,6 +11,15 @@ public class Player : NetworkBehaviour
     [SerializeField] private CameraSpring cameraSpring;
     [SerializeField] private CameraLean cameraLean;
     PlayerInputsAction _inputActions;
+
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+
+        enabled = isOwner;
+        playerCamera.gameObject.SetActive(isOwner);
+    }
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -39,6 +48,17 @@ public class Player : NetworkBehaviour
         var cameraInput = new CameraInput { Look = input.Look.ReadValue<Vector2>() };
         playerCamera.UpdateRotation(cameraInput);
 
+        //Detectar cambio de arma
+        int requestedGun = 0;
+        if (input.ChangeGun.triggered)
+        {
+            var controlName = input.ChangeGun.activeControl?.displayName; // 1, 2, 3...
+            if (int.TryParse(controlName, out int parsed)) 
+            {
+                requestedGun = parsed;
+            }
+        }
+
         // Pilla el character input y lo actualiza
         var characterInput = new CharacterInput
         {
@@ -50,7 +70,10 @@ public class Player : NetworkBehaviour
                 ? CrouchInput.Toggle
                 : CrouchInput.None,
             Shoot = input.Shoot.IsPressed(),
+            ShootThisFrame = input.Shoot.triggered,
             Aim = input.Aim.IsPressed(),
+            ChangeGun = requestedGun > 0,
+            RequestedGunIndex = requestedGun
         };
 
         playerCharacter.UpdateInput(characterInput);

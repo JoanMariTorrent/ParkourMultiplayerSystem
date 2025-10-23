@@ -12,8 +12,10 @@ public struct CharacterInput
     public bool JumpSustain;
     public CrouchInput Crouch;
     public bool Shoot;
+    public bool ShootThisFrame;
     public bool Aim;
     public bool ChangeGun;
+    public int RequestedGunIndex;
 }
 
 public enum CrouchInput
@@ -42,6 +44,8 @@ public struct CharacterState
 
 public class PlayerCharacter : NetworkBehaviour, ICharacterController
 {
+    public int currentGunIndex;
+    [Space]
     [SerializeField] private KinematicCharacterMotor motor;
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private Transform root;
@@ -98,10 +102,12 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     private float _timeSinceJumpRequest;
     private bool _ungroundedDueToJump;
     public bool _requestedShoot;
+    public bool _requestedShootThisFrame;
     public bool _requestedAim;
     private Collider[] _unCrouchOverlapResults;
 
 
+    
     protected override void OnSpawned()
     {
         base.OnSpawned();
@@ -141,6 +147,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _requestedMovement = input.Rotation * _requestedMovement;
 
         _requestedShoot = input.Shoot;
+        _requestedShootThisFrame = input.ShootThisFrame;
 
         _requestedAim = input.Aim;
 
@@ -163,6 +170,28 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             _requestedCrouchInAir = !_state.Grounded;
         else if (!_requestedCrouch && wasRequestingCrouch)
             _requestedCrouchInAir = false;
+
+
+        if (input.ChangeGun && input.RequestedGunIndex > 0)
+        {
+            currentGunIndex = input.RequestedGunIndex;
+            Debug.Log(currentGunIndex);
+            switch (currentGunIndex)
+            {
+                case 1:
+                    weaponManager.SwitchWeapon(0);
+                    break;
+                case 2:
+                    weaponManager.SwitchWeapon(2);
+                    break;
+                case 3:
+                    weaponManager.SwitchWeapon(4);
+                    break;
+                case 4:
+                    //weaponManager.SwitchWeapon(5);
+                    break;
+            }
+        }
         
     }
 
