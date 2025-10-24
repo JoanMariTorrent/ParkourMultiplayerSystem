@@ -16,16 +16,19 @@ public class Player : NetworkBehaviour
     {
         base.OnSpawned();
         playerCamera.gameObject.SetActive(isOwner);
+
+        if (isOwner)
+        {
+            _inputActions = new PlayerInputsAction();
+            _inputActions.Enable();
+        }
     }
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        _inputActions = new PlayerInputsAction();
-        _inputActions.Enable();
-
-
+        
         playerCharacter.Intialize();
         playerCamera.Intialize(playerCharacter.GetCameraTarget());
         cameraSpring.Initialize();
@@ -38,6 +41,39 @@ public class Player : NetworkBehaviour
         _inputActions.Dispose();
     }
     void Update()
+    {
+        if (isOwner)
+        {
+            HandleInputs();
+        }
+
+        playerCharacter.UpdateBody(Time.deltaTime);
+
+        
+    }
+
+    private void LateUpdate()
+    {
+        var deltaTime = Time.deltaTime;
+        var cameraTarget = playerCharacter.GetCameraTarget();
+        var state = playerCharacter.GetState();
+        if (isOwner)
+        {
+            playerCamera.UpdatePosition(cameraTarget);
+            cameraSpring.UpdateSpring(deltaTime, cameraTarget.up);
+            cameraLean.UpdateLean
+            (
+                deltaTime,
+                state.Stance is Stance.Slide,
+                state.Acceleration,
+                cameraTarget.up
+            );
+        }
+    }
+
+
+
+    private void HandleInputs()
     {
         var input = _inputActions.GamePlay;
         float deltaTime = Time.deltaTime;
@@ -88,23 +124,9 @@ public class Player : NetworkBehaviour
 #endif
     }
 
-    private void LateUpdate()
-    {
-        var deltaTime = Time.deltaTime;
-        var cameraTarget = playerCharacter.GetCameraTarget();
-        var state = playerCharacter.GetState();
 
-        playerCharacter.UpdateBody(deltaTime);
-        playerCamera.UpdatePosition(cameraTarget);
-        cameraSpring.UpdateSpring(deltaTime, cameraTarget.up);
-        cameraLean.UpdateLean
-        (
-            deltaTime,
-            state.Stance is Stance.Slide,
-            state.Acceleration,
-            cameraTarget.up
-        );
-    }
+
+
 
     public void Teleport(Vector3 position)
     {
