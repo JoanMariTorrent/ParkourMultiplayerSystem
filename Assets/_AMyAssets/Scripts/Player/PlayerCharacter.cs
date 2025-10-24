@@ -198,22 +198,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     }
 
-    void Update()
-    {
-        if (isOwner)
-        {
-            networkedPosition = transform.position;
-            networkedRotation = transform.rotation;
-        }
-        else
-        {
-            // Los demás solo ven el personaje
-            transform.position = networkedPosition;
-            transform.rotation = networkedRotation;
-        }
-
-    }
-
     public void UpdateBody(float deltaTime)
     {
         
