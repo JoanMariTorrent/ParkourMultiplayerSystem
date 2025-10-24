@@ -112,11 +112,11 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     private Stance lasKnownStance;
 
 
-    
+
     protected override void OnSpawned()
     {
         base.OnSpawned();
-        
+
 
         playerCamera.gameObject.SetActive(isOwner);
 
@@ -165,7 +165,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         var wasRequestingCrouch = _requestedCrouch;
 
-            _requestedCrouch = input.Crouch switch
+        _requestedCrouch = input.Crouch switch
         {
             CrouchInput.Toggle => !_requestedCrouch,
             CrouchInput.None => _requestedCrouch,
@@ -197,7 +197,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     break;
             }
         }
-        
+
     }
 
     public void UpdateBody(float deltaTime)
@@ -642,16 +642,30 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public void SyncStateToNetwork()
     {
         if (!isOwner) return;
-        lasKnownPosition = motor.TransientPosition;
-        lastKnownRotation = transform.rotation;
-        lasKnownStance = _state.Stance;
+
+        SendStateToServerRpc(
+            motor.TransientPosition,
+            transform.rotation,
+            _state.Stance
+        );
     }
 
-    public void ApplyNetworkState(float deltaTime)
+    [ServerRpc]
+    private void SendStateToServerRpc(Vector3 pos, Quaternion rot, Stance stance)
     {
-        if (isOwner) return;
-        transform.position = Vector3.Lerp(transform.position, lasKnownPosition, 10f * deltaTime);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lastKnownRotation, 10f * deltaTime);
-        _state.Stance = lasKnownStance;
+        // Reenvía a los observadores
+        BroadcastStateToObserversRpc(pos, rot, stance);
     }
+
+    [ObserversRpc]
+    private void BroadcastStateToObserversRpc(Vector3 pos, Quaternion rot, Stance stance)
+    {
+        if (isOwner) return; // el dueño ya tiene su estado
+
+        transform.position = pos;
+        transform.rotation = rot;
+        _state.Stance = stance;
+    }
+
+
 }

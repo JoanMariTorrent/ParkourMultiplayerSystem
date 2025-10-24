@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using PurrNet;
-using Unity.VisualScripting;
 
 public class Player : NetworkBehaviour
 {
@@ -48,10 +47,6 @@ public class Player : NetworkBehaviour
         {
             HandleInput();
             playerCharacter.SyncStateToNetwork();
-        }
-        else
-        {
-            playerCharacter.ApplyNetworkState(Time.deltaTime);
         }
 
         playerCharacter.UpdateBody(Time.deltaTime);        
