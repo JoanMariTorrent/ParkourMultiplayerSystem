@@ -120,6 +120,7 @@ GameObject:
   - component: {fileID: 2478937507195513506}
   - component: {fileID: 6831264823520976717}
   - component: {fileID: 4819392144990623382}
+  - component: {fileID: 8521716680079835546}
   m_Layer: 0
   m_Name: PlayerMovement
   m_TagString: Untagged
@@ -258,6 +259,33 @@ MonoBehaviour:
   m_DefaultActionMap: GamePlay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &8521716680079835546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422703322144405904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04eb3fb63c909814996ad3bfbb0618d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  _health:
+    _value: 100
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
+  _selfLayer: 7
+  _otherLayer: 8
 --- !u!1 &2205428724983109182
 GameObject:
   m_ObjectHideFlags: 0
