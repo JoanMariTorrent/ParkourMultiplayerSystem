@@ -39,6 +39,7 @@ public class Player : NetworkBehaviour
     }
     void Update()
     {
+        if (!isOwner) return;
         var input = _inputActions.GamePlay;
         float deltaTime = Time.deltaTime;
 

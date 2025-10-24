@@ -118,9 +118,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6848925973552930450}
   - component: {fileID: 2478937507195513506}
-  - component: {fileID: 8706101652428413128}
-  - component: {fileID: 7369648407939384217}
-  - component: {fileID: 5567855427655147285}
   - component: {fileID: 6831264823520976717}
   - component: {fileID: 4819392144990623382}
   m_Layer: 0
@@ -172,88 +169,6 @@ MonoBehaviour:
   playerCamera: {fileID: 5695272501892321558}
   cameraSpring: {fileID: 136880356664960335}
   cameraLean: {fileID: 2161837774718552632}
---- !u!114 &8706101652428413128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422703322144405904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04eb3fb63c909814996ad3bfbb0618d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  _health:
-    _value: 100
-    _ownerAuth: 0
-    _sendIntervalInSeconds: 0
-  _selfLayer: 7
-  _otherLayer: 8
---- !u!114 &7369648407939384217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422703322144405904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ea0c903913bf3c4a88cea70441be1df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  _handTransform: {fileID: 2691442501615126562}
-  _playerCamera: {fileID: 7537716515501278389}
-  _hitLayer:
-    serializedVersion: 2
-    m_Bits: 2391
-  recoil: {fileID: 7724687813390467918}
-  _currentGun: {fileID: 0}
-  _ownedWeapons:
-    _ownerAuth: 0
-    _sendIntervalInSeconds: 0
-    _list: []
-  weaponInstance: {fileID: 0}
-  playerChar: {fileID: 3562712120895467771}
---- !u!114 &5567855427655147285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422703322144405904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d589309a8b0b45f44a0ddd1e2e82017a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
 --- !u!114 &6831264823520976717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -683,8 +598,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6528901597071339321}
   - component: {fileID: 5695272501892321558}
-  - component: {fileID: 5447372216650589765}
-  - component: {fileID: 5527598396338256654}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -730,58 +643,6 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   sensitivity: 0.1
---- !u!114 &5447372216650589765
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5370246880778232590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d589309a8b0b45f44a0ddd1e2e82017a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
---- !u!114 &5527598396338256654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5370246880778232590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 817fe5016bd0a2a49a95b6eb338bb132, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  _syncPosition: 1
-  _syncRotation: 1
-  _syncScale: 1
-  _syncParent: 1
-  _interpolateSettings: 7
-  _minBufferSize: 1
-  _maxBufferSize: 2
-  _characterControllerPatch: 0
-  _ownerAuth: 1
-  _interpolationTiming: 0
 --- !u!1 &6304900435165451717
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,6 +744,8 @@ GameObject:
   m_Component:
   - component: {fileID: 443037349948462211}
   - component: {fileID: 5197222463118243013}
+  - component: {fileID: 5005781759595695107}
+  - component: {fileID: 8194280491391568733}
   - component: {fileID: 7294490286232367340}
   - component: {fileID: 3562712120895467771}
   - component: {fileID: 1845027176720695000}
@@ -934,6 +797,67 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &5005781759595695107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6762594701317173290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04eb3fb63c909814996ad3bfbb0618d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  _health:
+    _value: 100
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
+  _selfLayer: 7
+  _otherLayer: 8
+--- !u!114 &8194280491391568733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6762594701317173290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ea0c903913bf3c4a88cea70441be1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  _handTransform: {fileID: 2691442501615126562}
+  _playerCamera: {fileID: 7537716515501278389}
+  _hitLayer:
+    serializedVersion: 2
+    m_Bits: 2391
+  recoil: {fileID: 7724687813390467918}
+  _currentGun: {fileID: 0}
+  _ownedWeapons:
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
+    _list: []
+  weaponInstance: {fileID: 0}
+  playerChar: {fileID: 3562712120895467771}
 --- !u!114 &7294490286232367340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1001,7 +925,7 @@ MonoBehaviour:
   motor: {fileID: 7294490286232367340}
   cameraTarget: {fileID: 4677501032903263295}
   root: {fileID: 7656191514328498181}
-  weaponManager: {fileID: 7369648407939384217}
+  weaponManager: {fileID: 8194280491391568733}
   renderers:
   - {fileID: 6248071933208066411}
   - {fileID: 4870983629838366037}
@@ -1145,7 +1069,7 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   gunScript: {fileID: 0}
-  weaponManager: {fileID: 7369648407939384217}
+  weaponManager: {fileID: 8194280491391568733}
   isAiming: 0
   Amount: 0.002
   Frequency: 10

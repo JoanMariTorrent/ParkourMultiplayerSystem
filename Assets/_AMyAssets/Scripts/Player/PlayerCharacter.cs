@@ -112,7 +112,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     {
         base.OnSpawned();
         
-        enabled = isOwner;
+
         playerCamera.gameObject.SetActive(isOwner);
 
         if (isOwner)
