@@ -219,6 +219,8 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             b: rootTargetScale,
             t: 1f - Mathf.Exp(-crouchHeightResponse * deltaTime)
         );
+
+        Debug.Log(transform.position);
     }
 
 

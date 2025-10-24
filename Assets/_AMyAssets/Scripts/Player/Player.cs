@@ -57,18 +57,16 @@ public class Player : NetworkBehaviour
         var deltaTime = Time.deltaTime;
         var cameraTarget = playerCharacter.GetCameraTarget();
         var state = playerCharacter.GetState();
-        if (isOwner)
-        {
-            playerCamera.UpdatePosition(cameraTarget);
-            cameraSpring.UpdateSpring(deltaTime, cameraTarget.up);
-            cameraLean.UpdateLean
-            (
-                deltaTime,
-                state.Stance is Stance.Slide,
-                state.Acceleration,
-                cameraTarget.up
-            );
-        }
+        
+        playerCamera.UpdatePosition(cameraTarget);
+        cameraSpring.UpdateSpring(deltaTime, cameraTarget.up);
+        cameraLean.UpdateLean
+        (
+            deltaTime,
+            state.Stance is Stance.Slide,
+            state.Acceleration,
+            cameraTarget.up
+        );
     }
 
 
