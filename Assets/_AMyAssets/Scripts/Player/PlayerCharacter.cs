@@ -194,6 +194,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     }
 
+    [ObserversRpc]
     public void UpdateBody(float deltaTime)
     {
         var currentHeight = motor.Capsule.height;
@@ -220,7 +221,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             t: 1f - Mathf.Exp(-crouchHeightResponse * deltaTime)
         );
 
-        Debug.Log(transform.position);
     }
 
 
