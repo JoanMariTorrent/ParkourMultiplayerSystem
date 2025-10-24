@@ -106,11 +106,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedAim;
     private Collider[] _unCrouchOverlapResults;
 
-    // Pruebas networking
-    private Vector3 lasKnownPosition;
-    private Quaternion lastKnownRotation;
-    private Stance lasKnownStance;
-
 
 
     protected override void OnSpawned()
@@ -636,35 +631,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         }
         normal = Vector3.zero;
         return false;
-    }
-
-
-    public void SyncStateToNetwork()
-    {
-        if (!isOwner) return;
-
-        SendStateToServerRpc(
-            motor.TransientPosition,
-            transform.rotation,
-            _state.Stance
-        );
-    }
-
-    [ServerRpc]
-    private void SendStateToServerRpc(Vector3 pos, Quaternion rot, Stance stance)
-    {
-        // Reenvía a los observadores
-        BroadcastStateToObserversRpc(pos, rot, stance);
-    }
-
-    [ObserversRpc]
-    private void BroadcastStateToObserversRpc(Vector3 pos, Quaternion rot, Stance stance)
-    {
-        if (isOwner) return; // el dueño ya tiene su estado
-
-        transform.position = pos;
-        transform.rotation = rot;
-        _state.Stance = stance;
     }
 
 
