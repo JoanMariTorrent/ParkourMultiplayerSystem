@@ -4,6 +4,7 @@ using PurrNet;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine.Rendering;
+
 public struct CharacterInput
 {
     public Quaternion Rotation;
@@ -107,8 +108,13 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     private Collider[] _unCrouchOverlapResults;
 
     //Netcode
-    private Vector3 networkedPosition;
-    private Quaternion networkedRotation;
+    private float syncTimer;
+    private float syncRate = 0.05f;
+    
+    private Vector3 latestReceivedPosition;
+    private Quaternion latestReceivedRotation;
+    private bool hasReceivedRemote = false;
+    
 
 
 
@@ -125,6 +131,10 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             {
                 rend.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
             }
+        }
+        else if (!isOwner)
+        {
+            motor.enabled = false;
         }
     }
 
@@ -227,6 +237,48 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     }
 
+    void Update()
+    {
+        if (isOwner)
+        {
+            // Copiamos la posición y rotación reales del motor al transform,
+            // así el personaje se mueve también en el objeto de red
+            transform.position = motor.TransientPosition;
+            transform.rotation = motor.TransientRotation;
+
+            // Cada cierto tiempo, enviamos esa posición por la red
+            syncTimer += Time.deltaTime;
+            if (syncTimer >= syncRate)
+            {
+                syncTimer = 0f;
+                Debug.Log($"[Owner] Enviando posición {transform.position}");
+                RpcSyncTransform(transform.position, transform.rotation);
+            }
+        }
+        else
+        {
+            // Si no somos el dueño, actualizamos hacia la última posición recibida
+            if (hasReceivedRemote)
+            {
+                Debug.Log($"[Remote] Moviendo hacia {latestReceivedPosition}");
+                transform.position = Vector3.Lerp(transform.position, latestReceivedPosition, Time.deltaTime * 10f);
+                transform.rotation = Quaternion.Slerp(transform.rotation, latestReceivedRotation, Time.deltaTime * 10f);
+            }
+        }
+    }
+
+    
+    [ObserversRpc]
+    public void RpcSyncTransform(Vector3 pos, Quaternion rot)
+    {
+        Debug.Log($"[Remote] Recibida posición {pos}");
+        // Esto se ejecuta en los demás clientes (no en el dueño)
+        latestReceivedPosition = pos;
+        latestReceivedRotation = rot;
+        hasReceivedRemote = true;
+    }
+
+    
 
 
     public void AfterCharacterUpdate(float deltaTime)
