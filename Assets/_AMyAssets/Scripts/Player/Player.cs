@@ -10,18 +10,12 @@ public class Player : NetworkBehaviour
     [Space]
     [SerializeField] private CameraSpring cameraSpring;
     [SerializeField] private CameraLean cameraLean;
-    PlayerInputsAction _inputActions;
+    [SerializeField] PlayerInputsAction _inputActions;
 
     protected override void OnSpawned()
     {
         base.OnSpawned();
         playerCamera.gameObject.SetActive(isOwner);
-
-        if (isOwner)
-        {
-            _inputActions = new PlayerInputsAction();
-            _inputActions.Enable();
-        }
     }
 
     void Start()
@@ -33,6 +27,12 @@ public class Player : NetworkBehaviour
         playerCamera.Intialize(playerCharacter.GetCameraTarget());
         cameraSpring.Initialize();
         cameraLean.Initialize();
+        
+        if (isOwner)
+        {
+            _inputActions = new PlayerInputsAction();
+            _inputActions.Enable();
+        }
     }
 
 
@@ -46,10 +46,7 @@ public class Player : NetworkBehaviour
         {
             HandleInputs();
         }
-    }
-
-    private void LateUpdate()
-    {
+        
         var deltaTime = Time.deltaTime;
         var cameraTarget = playerCharacter.GetCameraTarget();
         var state = playerCharacter.GetState();
@@ -102,7 +99,8 @@ public class Player : NetworkBehaviour
             ShootThisFrame = input.Shoot.triggered,
             Aim = input.Aim.IsPressed(),
             ChangeGun = requestedGun > 0,
-            RequestedGunIndex = requestedGun
+            RequestedGunIndex = requestedGun,
+            Running = input.Running.IsPressed()
         };
 
         playerCharacter.UpdateInput(characterInput);

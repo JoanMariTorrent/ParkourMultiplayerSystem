@@ -154,6 +154,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Running"",
+                    ""type"": ""Button"",
+                    ""id"": ""d6223ac0-b684-4da4-8561-51d5b4357b56"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -321,6 +330,17 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""action"": ""ChangeGun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8510b506-ebc9-4500-94b1-177aa1e8e978"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Running"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -342,6 +362,7 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         m_GamePlay_Shoot = m_GamePlay.FindAction("Shoot", throwIfNotFound: true);
         m_GamePlay_Aim = m_GamePlay.FindAction("Aim", throwIfNotFound: true);
         m_GamePlay_ChangeGun = m_GamePlay.FindAction("ChangeGun", throwIfNotFound: true);
+        m_GamePlay_Running = m_GamePlay.FindAction("Running", throwIfNotFound: true);
     }
 
     ~@PlayerInputsAction()
@@ -429,6 +450,7 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Shoot;
     private readonly InputAction m_GamePlay_Aim;
     private readonly InputAction m_GamePlay_ChangeGun;
+    private readonly InputAction m_GamePlay_Running;
     /// <summary>
     /// Provides access to input actions defined in input action map "GamePlay".
     /// </summary>
@@ -468,6 +490,10 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "GamePlay/ChangeGun".
         /// </summary>
         public InputAction @ChangeGun => m_Wrapper.m_GamePlay_ChangeGun;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Running".
+        /// </summary>
+        public InputAction @Running => m_Wrapper.m_GamePlay_Running;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -515,6 +541,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @ChangeGun.started += instance.OnChangeGun;
             @ChangeGun.performed += instance.OnChangeGun;
             @ChangeGun.canceled += instance.OnChangeGun;
+            @Running.started += instance.OnRunning;
+            @Running.performed += instance.OnRunning;
+            @Running.canceled += instance.OnRunning;
         }
 
         /// <summary>
@@ -547,6 +576,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @ChangeGun.started -= instance.OnChangeGun;
             @ChangeGun.performed -= instance.OnChangeGun;
             @ChangeGun.canceled -= instance.OnChangeGun;
+            @Running.started -= instance.OnRunning;
+            @Running.performed -= instance.OnRunning;
+            @Running.canceled -= instance.OnRunning;
         }
 
         /// <summary>
@@ -649,5 +681,12 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnChangeGun(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Running" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRunning(InputAction.CallbackContext context);
     }
 }

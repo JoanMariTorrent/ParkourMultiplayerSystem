@@ -18,10 +18,11 @@ public class WeaponManager : NetworkBehaviour
     [SerializeField] private GameObject weaponInstance = null;
     [SerializeField] private PlayerCharacter playerChar;
 
-    private void Awake()
+    protected override void OnSpawned()
     {
         enabled = isOwner;
     }
+
     private void EquipWeapon(GameObject weaponPrefab, bool deleteWeapon, bool primaryWeapon)
     {
         if (deleteWeapon) // Si el arma hay que borrarla

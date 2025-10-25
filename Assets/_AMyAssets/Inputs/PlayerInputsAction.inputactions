@@ -68,6 +68,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Running",
+                    "type": "Button",
+                    "id": "d6223ac0-b684-4da4-8561-51d5b4357b56",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -233,6 +242,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "ChangeGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8510b506-ebc9-4500-94b1-177aa1e8e978",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Running",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

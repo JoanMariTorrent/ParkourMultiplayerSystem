@@ -1910,6 +1910,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerMovement
       objectReference: {fileID: 0}
+    - target: {fileID: 2737120007739337874, guid: ee8284241cff7b2408dd3eaf5b4027c0, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6831264823520976717, guid: ee8284241cff7b2408dd3eaf5b4027c0, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6848925973552930450, guid: ee8284241cff7b2408dd3eaf5b4027c0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 79

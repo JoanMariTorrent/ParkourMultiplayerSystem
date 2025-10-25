@@ -11,6 +11,7 @@ public struct CharacterInput
     public Vector2 Move;
     public bool Jump;
     public bool JumpSustain;
+    public bool Running;
     public CrouchInput Crouch;
     public bool Shoot;
     public bool ShootThisFrame;
@@ -55,7 +56,8 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [SerializeField] private List<Renderer> renderers = new();
     [SerializeField] private CinemachineCamera playerCamera;
     [Space]
-    [SerializeField] private float walkSpeed = 20f;
+    [SerializeField] private float walkSpeed = 12f;
+    [SerializeField] private float runSpeed = 20f;
     [SerializeField] private float crouchSpeed = 7f;
     [SerializeField] private float walkResponse = 20f;
     [SerializeField] private float crouchResponse = 20f;
@@ -105,6 +107,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedShoot;
     public bool _requestedShootThisFrame;
     public bool _requestedAim;
+    public bool _requestedRun;
     private Collider[] _unCrouchOverlapResults;
 
     //Netcode
@@ -163,6 +166,8 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _requestedShootThisFrame = input.ShootThisFrame;
 
         _requestedAim = input.Aim;
+
+        _requestedRun = input.Running;
 
         var wasRequestedJump = _requestedJump;
         _requestedJump = _requestedJump || input.Jump;
@@ -239,6 +244,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     void Update()
     {
+        Debug.Log(_state.Stance);
         if (isOwner)
         {
             // Copiamos la posición y rotación reales del motor al transform,
@@ -251,7 +257,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             if (syncTimer >= syncRate)
             {
                 syncTimer = 0f;
-                Debug.Log($"[Owner] Enviando posición {transform.position}");
                 RpcSyncTransform(transform.position, transform.rotation);
             }
         }
@@ -260,7 +265,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             // Si no somos el dueño, actualizamos hacia la última posición recibida
             if (hasReceivedRemote)
             {
-                Debug.Log($"[Remote] Moviendo hacia {latestReceivedPosition}");
                 transform.position = Vector3.Lerp(transform.position, latestReceivedPosition, Time.deltaTime * 10f);
                 transform.rotation = Quaternion.Slerp(transform.rotation, latestReceivedRotation, Time.deltaTime * 10f);
             }
@@ -271,7 +275,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [ObserversRpc]
     public void RpcSyncTransform(Vector3 pos, Quaternion rot)
     {
-        Debug.Log($"[Remote] Recibida posición {pos}");
         // Esto se ejecuta en los demás clientes (no en el dueño)
         latestReceivedPosition = pos;
         latestReceivedRotation = rot;
@@ -286,6 +289,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         //UnCrouch
         if (!_requestedCrouch && _state.Stance is not Stance.Stand)
         {
+            _state.Stance = Stance.Stand;
             motor.SetCapsuleDimensions
             (
                 radius: motor.Capsule.radius,
@@ -341,7 +345,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         // Solo colisiona con el suelo o paredes (opcional: filtra por layer)
         if (coll.gameObject.layer == LayerMask.NameToLayer("Ground") ||
-            coll.gameObject.layer == LayerMask.NameToLayer("Obstacle") ||
             coll.gameObject.layer == LayerMask.NameToLayer("Wall"))
             return true;
 
@@ -428,10 +431,14 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             //Move
             if (_state.Stance is Stance.Stand or Stance.Crouch)
             {
-                // Calculate the speed and responsiveneess of movment based on the character's stance
-                var speed = _state.Stance is Stance.Stand
-                    ? walkSpeed
-                    : crouchSpeed;
+                // Calculate the speed and responsiveneess of movement based on the character's stance
+                var speed = 0f;
+
+                if (_state.Stance is Stance.Stand) 
+                    speed = _requestedRun ? runSpeed : walkSpeed;
+                else if (_state.Stance is Stance.Crouch)
+                    speed = crouchSpeed;
+
                 var response = _state.Stance is Stance.Stand
                     ? walkResponse
                     : crouchResponse;
@@ -689,6 +696,4 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         normal = Vector3.zero;
         return false;
     }
-
-
 }
