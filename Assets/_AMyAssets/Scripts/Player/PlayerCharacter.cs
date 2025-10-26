@@ -21,6 +21,11 @@ public struct CharacterInput
     public bool Interact;
 }
 
+public enum LastGunEquiped
+{
+    None, Primary, Secondary, Utility
+}
+
 public enum CrouchInput
 {
     None, Toggle
@@ -95,6 +100,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public CharacterState _state;
     private CharacterState _lastState;
     private CharacterState _tempState;
+    public LastGunEquiped _lastGunEquiped;
 
     private Quaternion _requestedRotation;
     private Vector3 _requestedMovement;
@@ -111,6 +117,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedRun;
     public bool _requestedInteract;
     private Collider[] _unCrouchOverlapResults;
+
+    public bool primaryIndex = false;
+    private bool secondaryIndex = false;
     
 
     //Netcode
@@ -202,10 +211,39 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             switch (currentGunIndex)
             {
                 case 1:
-                    weaponManager.SwitchWeapon(0);
+                    if (weaponManager._ownedWeapons[0] != null && weaponManager._ownedWeapons[1] != null)
+                    {
+                        if (_lastGunEquiped == LastGunEquiped.Primary)
+                        {
+                            _lastGunEquiped = LastGunEquiped.Primary;
+                            primaryIndex = !primaryIndex;
+                        }
+                        int gunToSwitchIndex = primaryIndex ? 0 : 1;
+                        weaponManager.SwitchWeapon(gunToSwitchIndex);
+                    }
+                    else
+                    {
+                        weaponManager.SwitchWeapon(0);
+                        _lastGunEquiped = LastGunEquiped.Primary;
+                    }
                     break;
+                    
                 case 2:
-                    weaponManager.SwitchWeapon(2);
+                    if (weaponManager._ownedWeapons[2] != null && weaponManager._ownedWeapons[3] != null)
+                    {
+                        if (_lastGunEquiped == LastGunEquiped.Secondary)
+                        {
+                            _lastGunEquiped = LastGunEquiped.Secondary;
+                            secondaryIndex = !secondaryIndex;
+                        }
+                        int gunToSwitchIndex = secondaryIndex ? 0 : 1;
+                        weaponManager.SwitchWeapon(gunToSwitchIndex);
+                    }
+                    else
+                    {
+                        weaponManager.SwitchWeapon(2);
+                        _lastGunEquiped = LastGunEquiped.Secondary;
+                    }
                     break;
                 case 3:
                     weaponManager.SwitchWeapon(4);

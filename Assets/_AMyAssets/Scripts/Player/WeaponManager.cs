@@ -14,7 +14,7 @@ public class WeaponManager : NetworkBehaviour
     [SerializeField] private RecoilCamera recoil;
 
     public Gun _currentGun;
-    [SerializeField] private SyncList<GameObject> _ownedWeapons = new();
+    public SyncList<GameObject> _ownedWeapons = new();
     [SerializeField] private GameObject weaponInstance = null;
     [SerializeField] private PlayerCharacter playerChar;
 
@@ -28,9 +28,17 @@ public class WeaponManager : NetworkBehaviour
         if (deleteWeapon) // Si el arma hay que borrarla
         {
             // Busca el indice del arma que hay que borrar y lo elimina
-            int currentIndex = _ownedWeapons.IndexOf(_currentGun.gameObject);
-            Destroy(_currentGun.gameObject);
+            Gun gunScript = weaponPrefab.GetComponent<Gun>();
+            int currentIndex = IndexHasWeaponOfType(gunScript.weaponType);
+            
+            
 
+            if (currentIndex >= 0 && _ownedWeapons[currentIndex] != null) // Si encuentro un arma del mismo tipo, la destruye
+            {
+                Destroy(_ownedWeapons[currentIndex]);
+                _ownedWeapons[currentIndex] = null;
+            }
+            
             // Instancia la nueva arma
             InstantiateGun(weaponPrefab);
 
@@ -38,10 +46,11 @@ public class WeaponManager : NetworkBehaviour
             {
                 _ownedWeapons[currentIndex] = weaponInstance;
             }
+            
             else // Si el indice "no existe" 
             {
                 int indexWeapon = GetWeaponIndex(primaryWeapon);
-                _ownedWeapons[indexWeapon] = weaponPrefab;
+                _ownedWeapons[indexWeapon] = weaponInstance;
             }
         }
 
@@ -157,6 +166,21 @@ public class WeaponManager : NetworkBehaviour
                 return true;
         }
         return false;
+    }
+
+    private int IndexHasWeaponOfType(WeaponID id)
+    {
+        for (int i = 0; i < _ownedWeapons.Count; i++)
+        {
+            var weapon = _ownedWeapons[i];
+            if(weapon == null) continue;
+
+            Gun g = weapon.GetComponent<Gun>();
+            if(g != null && g.weaponType == id)
+                return i;
+        }
+        
+        return -1;
     }
 
 
