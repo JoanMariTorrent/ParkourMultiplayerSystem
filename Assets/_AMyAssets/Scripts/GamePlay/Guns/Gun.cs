@@ -2,11 +2,22 @@ using System.Collections;
 using PurrNet;
 using UnityEngine;
 using System.Collections.Generic;
-using NUnit.Framework.Internal.Commands;
-using Unity.VisualScripting;
+
+public enum WeaponID
+{
+    None,
+    Pistol,
+    Rifle,
+    Grenade,
+}
 
 public class Gun : NetworkBehaviour
 {
+    [Header("Weapon Info")]
+    public WeaponID weaponType;
+    public string displayName;
+    
+    
     [Header("GunType")]
     [SerializeField] private bool _normalGun;
     [SerializeField] private bool _knife;
@@ -82,6 +93,8 @@ public class Gun : NetworkBehaviour
     [SerializeField] private Vector3 _inspectPositionOffset = new Vector3();
     [SerializeField] private Vector3 _inspectRotationEuler = new Vector3();
 
+    public bool equipedGun = false;
+
 
     private void Start()
     {
@@ -107,6 +120,7 @@ public class Gun : NetworkBehaviour
     public void Update()
     {
         if (!isOwner) return;
+        if (!equipedGun) return;
 
         HandleShooting();
     }
@@ -114,6 +128,7 @@ public class Gun : NetworkBehaviour
 
     public void Setup(Transform cameraTransform, LayerMask hitLayer, RecoilCamera recoil, PlayerCharacter playerChar)
     {
+        equipedGun = true;
         _cameraTransform = cameraTransform;
         _hitLayer = hitLayer;
         recoilCamera = recoil;

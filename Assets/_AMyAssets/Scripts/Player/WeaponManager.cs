@@ -36,7 +36,7 @@ public class WeaponManager : NetworkBehaviour
 
             if (currentIndex >= 0) // Si el indice "existe" se guarda la nueva arma en el array de armas obtenidas
             {
-                _ownedWeapons[currentIndex] = weaponPrefab;
+                _ownedWeapons[currentIndex] = weaponInstance;
             }
             else // Si el indice "no existe" 
             {
@@ -82,6 +82,9 @@ public class WeaponManager : NetworkBehaviour
         // Se generan los todos los espacios del array
         EnsureWeaponSlots();
 
+        Gun gunScript = weaponPrefab.GetComponent<Gun>();
+        WeaponID newWeaponID = gunScript.weaponType;
+
         // Dos bools para ver si es arma principal o secundaria la que se intenta agregar
         bool havePrimary = _ownedWeapons[0] || _ownedWeapons[1];
         bool haveSecondary = _ownedWeapons[2] || _ownedWeapons[3];
@@ -96,13 +99,14 @@ public class WeaponManager : NetworkBehaviour
 
             if (_ownedWeapons[0] == null || _ownedWeapons[1] == null) // tiene un hueco libre en la arma principal
             {
-                if (_ownedWeapons.Contains(weaponPrefab)) // si la arma que esta pillando ya la tiene
+                if (HasWeaponOfType(newWeaponID)) // si la arma que esta pillando ya la tiene
                 {
+                    Debug.Log("BORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRR");
                     EquipWeapon(weaponPrefab, true, true);
 
                 }
 
-                else if (!_ownedWeapons.Contains(weaponPrefab)) // si el arma que esta pillando no la tiene en general
+                else if (!HasWeaponOfType(newWeaponID)) // si el arma que esta pillando no la tiene en general
                 {
                     EquipWeapon(weaponPrefab, false, true);
                 }
@@ -118,13 +122,13 @@ public class WeaponManager : NetworkBehaviour
 
             if (_ownedWeapons[2] == null || _ownedWeapons[3] == null) // tiene un hueco libre en la arma secundaria
             {
-                if (_ownedWeapons.Contains(weaponPrefab)) // si la arma que esta pillando ya la tiene
+                if (HasWeaponOfType(newWeaponID)) // si la arma que esta pillando ya la tiene
                 {
                     EquipWeapon(weaponPrefab, true, false);
 
                 }
 
-                else if (!_ownedWeapons.Contains(weaponPrefab)) // si el arma que esta pillando no la tiene en general
+                else if (!HasWeaponOfType(newWeaponID)) // si el arma que esta pillando no la tiene en general
                 {
                     EquipWeapon(weaponPrefab, true, false);
                 }
@@ -141,6 +145,18 @@ public class WeaponManager : NetworkBehaviour
             EquipWeapon(weaponPrefab, false, primary);
         }
 
+    }
+
+    private bool HasWeaponOfType(WeaponID id)
+    {
+        foreach (var weapon in _ownedWeapons)
+        {
+            if(weapon == null) continue;
+            Gun g = weapon.GetComponent<Gun>();
+            if (g != null && g.weaponType == id)
+                return true;
+        }
+        return false;
     }
 
 

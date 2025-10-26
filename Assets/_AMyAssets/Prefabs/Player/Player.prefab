@@ -393,7 +393,6 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  playerScript: {fileID: 8343583322894433328}
   gunScript: {fileID: 0}
   weaponManager: {fileID: 26286676025106530}
   isAiming: 0
@@ -716,9 +715,12 @@ MonoBehaviour:
   sprintSpeed: 12
   jumpForce: 2
   gravity: -17.81
-  wallForwadForce: 5
   groundCheckDistance: 0.2
   wallCheckDistance: 1.47
+  wallRunSpeed: 6
+  wallRunGravity: -2
+  wallInitialImpulse: 5
+  wallStickForce: 2
   lookSensitivity: 2
   maxLookAngle: 80
   timesJump: 2
@@ -798,6 +800,7 @@ MonoBehaviour:
     _sendIntervalInSeconds: 0
     _list: []
   weaponInstance: {fileID: 0}
+  playerChar: {fileID: 0}
 --- !u!143 &4313916287634534192
 CharacterController:
   m_ObjectHideFlags: 0

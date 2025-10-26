@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using PurrNet;
 using PurrNet.StateMachine;
 using UnityEngine;
@@ -8,6 +9,8 @@ public class WeaponsDataManager : NetworkBehaviour
     public GameObject[] _primaryWeaponData;
     public GameObject[] _secondaryWeaponData;
     public GameObject[] _utilityData;
+
+    public GameObject[] _allGuns;
 
     private void Awake()
     {
@@ -42,6 +45,11 @@ public class WeaponsDataManager : NetworkBehaviour
             {
                 int index = Random.Range(0, _utilityData.Length);
                 weapons[i] = _utilityData[index];
+            }
+            else if (Type == 4)
+            {
+                int index = Random.Range(0, _allGuns.Length);
+                weapons[i] = _allGuns[index];
             }
         }
 

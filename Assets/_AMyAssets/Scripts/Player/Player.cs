@@ -100,7 +100,8 @@ public class Player : NetworkBehaviour
             Aim = input.Aim.IsPressed(),
             ChangeGun = requestedGun > 0,
             RequestedGunIndex = requestedGun,
-            Running = input.Running.IsPressed()
+            Running = input.Running.IsPressed(),
+            Interact = input.Interact.WasPressedThisFrame(),
         };
 
         playerCharacter.UpdateInput(characterInput);

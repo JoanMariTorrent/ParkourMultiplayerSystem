@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5567006457493690018}
   - component: {fileID: 6682465857729182774}
   - component: {fileID: 891544104720275139}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Rifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -132,6 +132,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  weaponType: 2
+  displayName: 
   _normalGun: 1
   _knife: 0
   _grenade: 0
@@ -218,7 +220,7 @@ MonoBehaviour:
   _cameraTransform: {fileID: 0}
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 3831
+    m_Bits: 2391
   _muzzleFlash: {fileID: 7154568906003232138}
   _renderers:
   - {fileID: 5567006457493690018}
@@ -239,6 +241,7 @@ MonoBehaviour:
   scopeMesh: {fileID: 0}
   _inspectPositionOffset: {x: 0, y: 0, z: 0}
   _inspectRotationEuler: {x: 0, y: 0, z: 0}
+  equipedGun: 0
 --- !u!1001 &8282958882506920587
 PrefabInstance:
   m_ObjectHideFlags: 0

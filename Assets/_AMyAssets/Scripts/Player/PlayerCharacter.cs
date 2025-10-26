@@ -18,6 +18,7 @@ public struct CharacterInput
     public bool Aim;
     public bool ChangeGun;
     public int RequestedGunIndex;
+    public bool Interact;
 }
 
 public enum CrouchInput
@@ -108,7 +109,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedShootThisFrame;
     public bool _requestedAim;
     public bool _requestedRun;
+    public bool _requestedInteract;
     private Collider[] _unCrouchOverlapResults;
+    
 
     //Netcode
     private float syncTimer;
@@ -168,6 +171,8 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _requestedAim = input.Aim;
 
         _requestedRun = input.Running;
+
+        _requestedInteract = input.Interact;
 
         var wasRequestedJump = _requestedJump;
         _requestedJump = _requestedJump || input.Jump;

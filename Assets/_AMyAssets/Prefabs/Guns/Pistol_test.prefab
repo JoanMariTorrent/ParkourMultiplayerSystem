@@ -196,6 +196,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  weaponType: 1
+  displayName: 
   _normalGun: 1
   _knife: 0
   _grenade: 0
@@ -278,6 +280,7 @@ MonoBehaviour:
   _maxTimeCharge: 0
   _grenadeForce: 0
   grenadeThrowed: 0
+  playerCharacter: {fileID: 0}
   _cameraTransform: {fileID: 0}
   _hitLayer:
     serializedVersion: 2
@@ -302,6 +305,7 @@ MonoBehaviour:
   scopeMesh: {fileID: 8873447187783223356}
   _inspectPositionOffset: {x: 0.021, y: 0.082, z: 0.04}
   _inspectRotationEuler: {x: -5.529, y: -52.521, z: -1.666}
+  equipedGun: 0
 --- !u!1001 &685793078464698810
 PrefabInstance:
   m_ObjectHideFlags: 0
