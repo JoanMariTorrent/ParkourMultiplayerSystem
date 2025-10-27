@@ -102,6 +102,9 @@ public class Player : NetworkBehaviour
             RequestedGunIndex = requestedGun,
             Running = input.Running.IsPressed(),
             Interact = input.Interact.WasPressedThisFrame(),
+            Reload = input.Reload.WasPressedThisFrame(),
+            DropGun = input.DropGun.WasPressedThisFrame(),
+
         };
 
         playerCharacter.UpdateInput(characterInput);

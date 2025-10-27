@@ -172,6 +172,24 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""fc022751-829d-43e7-90cf-d6c259a1bc01"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DropGun"",
+                    ""type"": ""Button"",
+                    ""id"": ""39280814-0b39-4fd0-81f0-f388048a2655"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -361,6 +379,28 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""93a14395-6c7c-473f-a24e-1ba88bdec340"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""112552e8-72fe-496e-9a70-a496868b14de"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DropGun"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -384,6 +424,8 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         m_GamePlay_ChangeGun = m_GamePlay.FindAction("ChangeGun", throwIfNotFound: true);
         m_GamePlay_Running = m_GamePlay.FindAction("Running", throwIfNotFound: true);
         m_GamePlay_Interact = m_GamePlay.FindAction("Interact", throwIfNotFound: true);
+        m_GamePlay_Reload = m_GamePlay.FindAction("Reload", throwIfNotFound: true);
+        m_GamePlay_DropGun = m_GamePlay.FindAction("DropGun", throwIfNotFound: true);
     }
 
     ~@PlayerInputsAction()
@@ -473,6 +515,8 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_ChangeGun;
     private readonly InputAction m_GamePlay_Running;
     private readonly InputAction m_GamePlay_Interact;
+    private readonly InputAction m_GamePlay_Reload;
+    private readonly InputAction m_GamePlay_DropGun;
     /// <summary>
     /// Provides access to input actions defined in input action map "GamePlay".
     /// </summary>
@@ -520,6 +564,14 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "GamePlay/Interact".
         /// </summary>
         public InputAction @Interact => m_Wrapper.m_GamePlay_Interact;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Reload".
+        /// </summary>
+        public InputAction @Reload => m_Wrapper.m_GamePlay_Reload;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/DropGun".
+        /// </summary>
+        public InputAction @DropGun => m_Wrapper.m_GamePlay_DropGun;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -573,6 +625,12 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
+            @DropGun.started += instance.OnDropGun;
+            @DropGun.performed += instance.OnDropGun;
+            @DropGun.canceled += instance.OnDropGun;
         }
 
         /// <summary>
@@ -611,6 +669,12 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
+            @DropGun.started -= instance.OnDropGun;
+            @DropGun.performed -= instance.OnDropGun;
+            @DropGun.canceled -= instance.OnDropGun;
         }
 
         /// <summary>
@@ -727,5 +791,19 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInteract(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Reload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnReload(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DropGun" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDropGun(InputAction.CallbackContext context);
     }
 }

@@ -19,6 +19,9 @@ public struct CharacterInput
     public bool ChangeGun;
     public int RequestedGunIndex;
     public bool Interact;
+    public bool Reload;
+
+    public bool DropGun;
 }
 
 public enum LastGunEquiped
@@ -116,6 +119,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedAim;
     public bool _requestedRun;
     public bool _requestedInteract;
+    public bool _requestedReload;
     private Collider[] _unCrouchOverlapResults;
 
     public bool primaryIndex = false;
@@ -183,6 +187,8 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         _requestedInteract = input.Interact;
 
+        _requestedReload = input.Reload;
+
         var wasRequestedJump = _requestedJump;
         _requestedJump = _requestedJump || input.Jump;
         if (_requestedJump && !wasRequestedJump)
@@ -218,7 +224,12 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                             _lastGunEquiped = LastGunEquiped.Primary;
                             primaryIndex = !primaryIndex;
                         }
+                        else
+                        {
+                            _lastGunEquiped = LastGunEquiped.Primary;
+                        }
                         int gunToSwitchIndex = primaryIndex ? 0 : 1;
+                        Debug.LogWarning(gunToSwitchIndex);
                         weaponManager.SwitchWeapon(gunToSwitchIndex);
                     }
                     else
@@ -226,8 +237,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         weaponManager.SwitchWeapon(0);
                         _lastGunEquiped = LastGunEquiped.Primary;
                     }
+                    Debug.LogWarning($" Arma Principal: {_lastGunEquiped}");
                     break;
-                    
+
                 case 2:
                     if (weaponManager._ownedWeapons[2] != null && weaponManager._ownedWeapons[3] != null)
                     {
@@ -235,6 +247,10 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         {
                             _lastGunEquiped = LastGunEquiped.Secondary;
                             secondaryIndex = !secondaryIndex;
+                        }
+                        else
+                        {
+                            _lastGunEquiped = LastGunEquiped.Secondary;
                         }
                         int gunToSwitchIndex = secondaryIndex ? 0 : 1;
                         weaponManager.SwitchWeapon(gunToSwitchIndex);
@@ -244,6 +260,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         weaponManager.SwitchWeapon(2);
                         _lastGunEquiped = LastGunEquiped.Secondary;
                     }
+                    Debug.LogWarning($" Arma Secundaria: {_lastGunEquiped}");
                     break;
                 case 3:
                     weaponManager.SwitchWeapon(4);
@@ -252,6 +269,11 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     //weaponManager.SwitchWeapon(5);
                     break;
             }
+        }
+
+        if (_requestedReload && weaponManager != null)
+        {
+            weaponManager._currentGun.Reload();
         }
 
     }

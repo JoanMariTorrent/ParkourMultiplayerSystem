@@ -198,11 +198,14 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   weaponType: 1
   displayName: 
+  childMeshes: []
   _normalGun: 1
   _knife: 0
   _grenade: 0
   _automatic: 0
   _modificable: 1
+  ammo: 17
+  timeToReload: 3
   _range: 20
   _gunDamage: 10
   _fireRate: 0.27
@@ -280,6 +283,7 @@ MonoBehaviour:
   _maxTimeCharge: 0
   _grenadeForce: 0
   grenadeThrowed: 0
+  rb: {fileID: 0}
   playerCharacter: {fileID: 0}
   _cameraTransform: {fileID: 0}
   _hitLayer:

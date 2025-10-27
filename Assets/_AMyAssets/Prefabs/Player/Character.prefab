@@ -431,11 +431,13 @@ MonoBehaviour:
   crouchHeightResponse: 15
   standCameraTargetHeight: 1
   crouchCameraTargetHeight: 0.7
+  _lastGunEquiped: 0
   _requestedShoot: 0
   _requestedShootThisFrame: 0
   _requestedAim: 0
   _requestedRun: 0
   _requestedInteract: 0
+  primaryIndex: 0
 --- !u!114 &3728205283233136871
 MonoBehaviour:
   m_ObjectHideFlags: 0

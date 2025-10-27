@@ -2,12 +2,15 @@ using System.Collections;
 using PurrNet;
 using UnityEngine;
 using System.Collections.Generic;
+using Steamworks;
+using System.Security;
+using UnityEngine.Rendering;
 
 public enum WeaponID
 {
     None,
     Pistol,
-    Rifle,
+    RifleMalPorro,
     Grenade,
 }
 
@@ -16,16 +19,21 @@ public class Gun : NetworkBehaviour
     [Header("Weapon Info")]
     public WeaponID weaponType;
     public string displayName;
-    
-    
+    [Space]
+    [Header("Child meshes")]
+    [SerializeField] private GameObject[] childMeshes;
+
     [Header("GunType")]
     [SerializeField] private bool _normalGun;
     [SerializeField] private bool _knife;
     [SerializeField] private bool _grenade;
     [SerializeField] private bool _automatic;
     [SerializeField] private bool _modificable;
-    
+
     [Header("Stats")]
+    [SerializeField] private int ammo;
+    private int maxAmmo;
+    [SerializeField] private float timeToReload = 3f;
     [SerializeField] private float _range = 20f;
     [SerializeField] private int _gunDamage = 10;
     [SerializeField] private float _fireRate = 0.5f;
@@ -47,6 +55,7 @@ public class Gun : NetworkBehaviour
     public bool grenadeThrowed = false;
 
     [Header("References")]
+    [SerializeField] private Rigidbody rb;
     [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private LayerMask _hitLayer;
@@ -84,6 +93,8 @@ public class Gun : NetworkBehaviour
     private float _lastFireTime;
     private PlayerID _ownerID;
 
+    private bool reloading;
+
     
 
 
@@ -100,6 +111,10 @@ public class Gun : NetworkBehaviour
     {
         _originalPosition = transform.localPosition;
         _originalRotation = transform.localRotation;
+        if (rb == null) rb = GetComponent<Rigidbody>();
+
+        rb.isKinematic = true;
+        rb.useGravity = false;
 
         if (!isOwner)
         {
@@ -110,6 +125,7 @@ public class Gun : NetworkBehaviour
         {
             enabled = true;
             gameObject.layer = ownerGunTag;
+            maxAmmo = ammo;
         }
         
     }
@@ -122,6 +138,8 @@ public class Gun : NetworkBehaviour
         if (!isOwner) return;
         if (!equipedGun) return;
 
+
+
         HandleShooting();
     }
 
@@ -133,10 +151,32 @@ public class Gun : NetworkBehaviour
         _hitLayer = hitLayer;
         recoilCamera = recoil;
         playerCharacter = playerChar;
+        reloading = false;
         if (isOwner)
+        {
             gameObject.layer = 9;
+            if (childMeshes != null)
+            {
+                foreach (var i in childMeshes)
+                {
+                    i.layer = 9;
+                }
+            }
+            
+        }
+
         else
+        {
             gameObject.layer = 10;
+            if (childMeshes != null)
+            {
+                foreach (var i in childMeshes)
+                {
+                    i.layer = 10;
+                }
+            }
+            
+        }
     }
 
 
@@ -144,6 +184,7 @@ public class Gun : NetworkBehaviour
     public void HandleShooting()
     {
         if (!isOwner) return;
+        if (reloading) return;
 
         if (_knife)
         {
@@ -156,6 +197,14 @@ public class Gun : NetworkBehaviour
 
             // si el ultimo disparo mas el cooldown de disparo sumado, es mas grande que el tiempo que llevas sin disparar antes de darle al click se sale de la funcion
             if (_lastFireTime + _fireRate > Time.unscaledTime) return;
+
+            if(ammo <= 0)
+            {
+                Reload();
+                return;
+            }
+
+            ammo--;
 
             _lastFireTime = Time.unscaledTime;
 
@@ -368,4 +417,29 @@ public class Gun : NetworkBehaviour
         // Destruye la granada localmente
         Destroy(gameObject);
     }
+
+    [ObserversRpc(runLocally: false)]
+    public void Reload()
+    {
+        if (ammo < maxAmmo)
+        {
+            reloading = true;
+            StartCoroutine(CoroutineReload());
+        }
     }
+
+    private IEnumerator CoroutineReload()
+    {
+        yield return new WaitForSeconds(timeToReload);
+        ReloadFinished();
+    }
+
+    [ObserversRpc(runLocally: false)]
+    public void ReloadFinished()
+    {
+        ammo = maxAmmo;
+        reloading = false;
+    }
+
+    
+}

@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 5567006457493690018}
   - component: {fileID: 6682465857729182774}
   - component: {fileID: 891544104720275139}
+  - component: {fileID: 6277897153711423526}
   m_Layer: 10
-  m_Name: Rifle
+  m_Name: RifleTabaco
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -134,11 +135,20 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   weaponType: 2
   displayName: 
+  childMeshes:
+  - {fileID: 9093773589616848858}
+  - {fileID: 1389950568450815574}
+  - {fileID: 877280577884044701}
+  - {fileID: 943727138873357543}
+  - {fileID: 2476536834781984976}
+  - {fileID: 4816463109332044606}
   _normalGun: 1
   _knife: 0
   _grenade: 0
   _automatic: 1
   _modificable: 0
+  ammo: 35
+  timeToReload: 1
   _range: 40
   _gunDamage: 8
   _fireRate: 0.2
@@ -216,6 +226,7 @@ MonoBehaviour:
   _maxTimeCharge: 5
   _grenadeForce: 0
   grenadeThrowed: 0
+  rb: {fileID: 0}
   playerCharacter: {fileID: 0}
   _cameraTransform: {fileID: 0}
   _hitLayer:
@@ -242,6 +253,33 @@ MonoBehaviour:
   _inspectPositionOffset: {x: 0, y: 0, z: 0}
   _inspectRotationEuler: {x: 0, y: 0, z: 0}
   equipedGun: 0
+--- !u!54 &6277897153711423526
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383448258628988601}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &8282958882506920587
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -331,9 +369,39 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+--- !u!1 &877280577884044701 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9141816029861474070, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+  m_PrefabInstance: {fileID: 8282958882506920587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &943727138873357543 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9217234437682292332, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+  m_PrefabInstance: {fileID: 8282958882506920587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1389950568450815574 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -2181743766629440291, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+  m_PrefabInstance: {fileID: 8282958882506920587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2476536834781984976 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -3410185793394415013, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+  m_PrefabInstance: {fileID: 8282958882506920587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4816463109332044606 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -5754060345647867467, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+  m_PrefabInstance: {fileID: 8282958882506920587}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8464588387490248032 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+  m_PrefabInstance: {fileID: 8282958882506920587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &9093773589616848858 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
   m_PrefabInstance: {fileID: 8282958882506920587}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8878853583527599028
