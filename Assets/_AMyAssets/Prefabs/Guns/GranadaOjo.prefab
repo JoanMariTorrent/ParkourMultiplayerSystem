@@ -110,13 +110,17 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  weaponType: 3
+  weaponID: 3
+  weaponType: 0
   displayName: 
+  childMeshes: []
   _normalGun: 0
   _knife: 0
   _grenade: 1
   _automatic: 0
   _modificable: 0
+  ammo: 0
+  timeToReload: 3
   _range: 20
   _gunDamage: 10
   _fireRate: 0.5
@@ -138,8 +142,9 @@ MonoBehaviour:
   _timeCharged: 0
   _timeToCharge: 0.3
   _maxTimeCharge: 5
-  _grenadeForce: 950
+  _grenadeForce: 100
   grenadeThrowed: 0
+  rb: {fileID: 0}
   playerCharacter: {fileID: 0}
   _cameraTransform: {fileID: 0}
   _hitLayer:

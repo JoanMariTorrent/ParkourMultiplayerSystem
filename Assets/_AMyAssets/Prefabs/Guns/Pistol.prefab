@@ -131,7 +131,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  weaponType: 0
+  weaponID: 0
+  weaponType: 2
   displayName: 
   childMeshes: []
   _normalGun: 1

@@ -4,6 +4,8 @@ using PurrNet;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine.Rendering;
+using Interfaces;
+using UnityEditor;
 
 public struct CharacterInput
 {
@@ -57,8 +59,11 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 {
     public int currentGunIndex;
     [Space]
+    [SerializeField] private LayerMask interactLayerMask;
+    [Space]
     [SerializeField] private KinematicCharacterMotor motor;
     [SerializeField] private Transform cameraTarget;
+    [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform root;
     [Space]
     [SerializeField] private WeaponManager weaponManager;
@@ -121,21 +126,22 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedInteract;
     public bool _requestedReload;
     public bool _requestedDropGun;
-    
+    public int gunToSwitchIndex;
+
     private Collider[] _unCrouchOverlapResults;
 
     public bool primaryIndex = false;
     private bool secondaryIndex = false;
-    
+
 
     //Netcode
     private float syncTimer;
     private float syncRate = 0.05f;
-    
+
     private Vector3 latestReceivedPosition;
     private Quaternion latestReceivedRotation;
     private bool hasReceivedRemote = false;
-    
+
 
 
 
@@ -187,11 +193,25 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         _requestedRun = input.Running;
 
-        _requestedInteract = input.Interact;
-
         _requestedReload = input.Reload;
 
         _requestedDropGun = input.DropGun;
+        _requestedInteract = input.Interact;
+
+        if (_requestedInteract)
+        {
+            Physics.Raycast(cameraTransform.transform.position, cameraTransform.forward, out var hit, 10f, interactLayerMask);
+            Debug.DrawLine(cameraTransform.transform.position, hit.point, Color.red, 0.1f);
+            if (hit.transform != null)
+            {
+                Debug.LogWarning(hit.transform.name);
+                if (hit.collider.TryGetComponent(out ITakeGun takeGun))
+                {
+                    takeGun.TakeGun();
+                }
+            }
+            
+        }
 
         var wasRequestedJump = _requestedJump;
         _requestedJump = _requestedJump || input.Jump;
@@ -212,7 +232,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             _requestedCrouchInAir = !_state.Grounded;
         else if (!_requestedCrouch && wasRequestingCrouch)
             _requestedCrouchInAir = false;
-        
+
         if (_requestedReload && weaponManager != null)
         {
             weaponManager._currentGun.Reload();
@@ -247,11 +267,11 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     {
                         _lastGunEquiped = LastGunEquiped.Primary;
                     }
-                    int gunToSwitchIndex = primaryIndex ? 0 : 1;
+                    gunToSwitchIndex = primaryIndex ? 0 : 1;
                     Debug.LogWarning(gunToSwitchIndex);
                     weaponManager.SwitchWeapon(gunToSwitchIndex);
                 }
-                else if(weaponManager._ownedWeapons[0] != null && weaponManager._ownedWeapons[1] == null)
+                else if (weaponManager._ownedWeapons[0] != null && weaponManager._ownedWeapons[1] == null)
                 {
                     weaponManager.SwitchWeapon(0);
                     _lastGunEquiped = LastGunEquiped.Primary;
@@ -279,10 +299,10 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     {
                         _lastGunEquiped = LastGunEquiped.Secondary;
                     }
-                    int gunToSwitchIndex = secondaryIndex ? 0 : 1;
+                    gunToSwitchIndex = secondaryIndex ? 2 : 3;
                     weaponManager.SwitchWeapon(gunToSwitchIndex);
                 }
-                else if(weaponManager._ownedWeapons[2] != null && weaponManager._ownedWeapons[3] == null)
+                else if (weaponManager._ownedWeapons[2] != null && weaponManager._ownedWeapons[3] == null)
                 {
                     weaponManager.SwitchWeapon(2);
                     _lastGunEquiped = LastGunEquiped.Secondary;
@@ -309,7 +329,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateBody(float deltaTime)
     {
-        
+
         var currentHeight = motor.Capsule.height;
         var normalizeHeight = currentHeight / standheight;
 
@@ -365,7 +385,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         }
     }
 
-    
+
     [ObserversRpc]
     public void RpcSyncTransform(Vector3 pos, Quaternion rot)
     {
@@ -375,7 +395,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         hasReceivedRemote = true;
     }
 
-    
+
 
 
     public void AfterCharacterUpdate(float deltaTime)
@@ -528,7 +548,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 // Calculate the speed and responsiveneess of movement based on the character's stance
                 var speed = 0f;
 
-                if (_state.Stance is Stance.Stand) 
+                if (_state.Stance is Stance.Stand)
                     speed = _requestedRun ? runSpeed : walkSpeed;
                 else if (_state.Stance is Stance.Crouch)
                     speed = crouchSpeed;
@@ -789,5 +809,14 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         }
         normal = Vector3.zero;
         return false;
+    }
+
+
+}
+ namespace Interfaces
+{
+    public interface ITakeGun
+    {
+        void TakeGun();
     }
 }

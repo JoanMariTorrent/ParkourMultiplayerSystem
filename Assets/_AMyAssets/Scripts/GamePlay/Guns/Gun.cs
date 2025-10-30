@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Steamworks;
 using System.Security;
 using UnityEngine.Rendering;
+using Interfaces;
 
 public enum WeaponID
 {
@@ -14,10 +15,18 @@ public enum WeaponID
     Grenade,
 }
 
-public class Gun : NetworkBehaviour
+public enum WeaponType
+{
+    None,
+    Primary,
+    Secundary
+}
+
+public class Gun : NetworkBehaviour, ITakeGun
 {
     [Header("Weapon Info")]
-    public WeaponID weaponType;
+    public WeaponID weaponID;
+    public WeaponType weaponType;
     public string displayName;
     [Space]
     [Header("Child meshes")]
@@ -37,7 +46,7 @@ public class Gun : NetworkBehaviour
     [SerializeField] private float _range = 20f;
     [SerializeField] private int _gunDamage = 10;
     [SerializeField] private float _fireRate = 0.5f;
-    
+
 
     [Header("Recoil")]
     [SerializeField] private float _recoilStrenght = 1f;
@@ -95,7 +104,9 @@ public class Gun : NetworkBehaviour
 
     private bool reloading;
 
-    
+    private WeaponManager weaponManager;
+
+
 
 
 
@@ -127,7 +138,7 @@ public class Gun : NetworkBehaviour
             gameObject.layer = ownerGunTag;
             maxAmmo = ammo;
         }
-        
+
     }
 
 
@@ -144,7 +155,7 @@ public class Gun : NetworkBehaviour
     }
 
 
-    public void Setup(Transform cameraTransform, LayerMask hitLayer, RecoilCamera recoil, PlayerCharacter playerChar)
+    public void Setup(Transform cameraTransform, LayerMask hitLayer, RecoilCamera recoil, PlayerCharacter playerChar, WeaponManager wm)
     {
         equipedGun = true;
         _cameraTransform = cameraTransform;
@@ -152,6 +163,10 @@ public class Gun : NetworkBehaviour
         recoilCamera = recoil;
         playerCharacter = playerChar;
         reloading = false;
+        weaponManager = wm;
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
         if (isOwner)
         {
             gameObject.layer = 9;
@@ -162,7 +177,7 @@ public class Gun : NetworkBehaviour
                     i.layer = 9;
                 }
             }
-            
+
         }
 
         else
@@ -175,7 +190,7 @@ public class Gun : NetworkBehaviour
                     i.layer = 10;
                 }
             }
-            
+
         }
     }
 
@@ -186,8 +201,11 @@ public class Gun : NetworkBehaviour
         recoilCamera = null;
         playerCharacter = null;
         reloading = false;
-        gameObject.layer = 0;
+        gameObject.layer = 12;
         gameObject.transform.SetParent(null);
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = true;
     }
 
 
@@ -209,7 +227,7 @@ public class Gun : NetworkBehaviour
             // si el ultimo disparo mas el cooldown de disparo sumado, es mas grande que el tiempo que llevas sin disparar antes de darle al click se sale de la funcion
             if (_lastFireTime + _fireRate > Time.unscaledTime) return;
 
-            if(ammo <= 0)
+            if (ammo <= 0)
             {
                 Reload();
                 return;
@@ -296,9 +314,9 @@ public class Gun : NetworkBehaviour
 
     [ServerRpc]
     private void ApplyDamageServerRpc(PlayerHealth victim, int gunDamage)
-    { 
+    {
         Debug.Log("ApplyDamageServerRpc");
-        victim.ChangeHealth(-gunDamage); 
+        victim.ChangeHealth(-gunDamage);
         if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
         {
             scoreManager.AddDamageServerRpc(victim.PlayerID, gunDamage);
@@ -339,9 +357,9 @@ public class Gun : NetworkBehaviour
         }
     }
 
-    
 
-    [ObserversRpc(runLocally:false)]
+
+    [ObserversRpc(runLocally: false)]
     private void PlayShotEffectObserversRpc()
     {
         if (_muzzleFlash)
@@ -349,12 +367,12 @@ public class Gun : NetworkBehaviour
         if (_recoilCoroutine != null)
             StopCoroutine(_recoilCoroutine);
 
-        if (!gameObject.activeInHierarchy) 
+        if (!gameObject.activeInHierarchy)
             return;
 
         if (gameObject.layer == otherPlayerGunTag)
             return;
-        
+
         _recoilCoroutine = StartCoroutine(PlayRecoil());
     }
 
@@ -384,7 +402,7 @@ public class Gun : NetworkBehaviour
         transform.localRotation = _originalRotation;
     }
 
-    [ObserversRpc(runLocally:false)]
+    [ObserversRpc(runLocally: false)]
     private void RpcThrowGrenade(Vector3 forward, float grenadeForce)
     {
         grenadeThrowed = true;
@@ -450,6 +468,24 @@ public class Gun : NetworkBehaviour
     {
         ammo = maxAmmo;
         reloading = false;
+    }
+
+    public void TakeGun()
+    {
+        if (weaponManager == null)
+        {
+            Debug.LogAssertionFormat("Trying to take some gun, but the weaponManager is null!");
+            return;
+        }
+
+        if (weaponType == WeaponType.Primary)
+        {
+            weaponManager.NewWeapon(gameObject, true, false, true);
+        }
+        else if (weaponType == WeaponType.Secundary)
+        {
+            weaponManager.NewWeapon(gameObject, false, false, true);
+        }
     }
 
 

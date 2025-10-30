@@ -133,7 +133,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  weaponType: 2
+  weaponID: 0
+  weaponType: 1
   displayName: 
   childMeshes:
   - {fileID: 9093773589616848858}

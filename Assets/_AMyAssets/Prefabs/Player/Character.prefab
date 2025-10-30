@@ -395,8 +395,12 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   currentGunIndex: 0
+  interactLayerMask:
+    serializedVersion: 2
+    m_Bits: 4096
   motor: {fileID: 3728205283233136871}
   cameraTarget: {fileID: 2346163092454338177}
+  cameraTransform: {fileID: 2809929627101837603}
   root: {fileID: 8111423876399214325}
   weaponManager: {fileID: 1656825130629811245}
   renderers:
@@ -437,6 +441,9 @@ MonoBehaviour:
   _requestedAim: 0
   _requestedRun: 0
   _requestedInteract: 0
+  _requestedReload: 0
+  _requestedDropGun: 0
+  gunToSwitchIndex: 0
   primaryIndex: 0
 --- !u!114 &3728205283233136871
 MonoBehaviour:
@@ -544,6 +551,7 @@ MonoBehaviour:
     m_Bits: 2391
   recoil: {fileID: 8482129210503842699}
   _currentGun: {fileID: 0}
+  lastGun: 0
   _ownedWeapons:
     _ownerAuth: 0
     _sendIntervalInSeconds: 0
@@ -611,6 +619,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: d37f5b1e-0bbc-42f2-a021-88fa5a713971
     m_ActionName: 'GamePlay/Interact[/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fc022751-829d-43e7-90cf-d6c259a1bc01
+    m_ActionName: 'GamePlay/Reload[/Keyboard/r]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 39280814-0b39-4fd0-81f0-f388048a2655
+    m_ActionName: 'GamePlay/DropGun[/Keyboard/t]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: GamePlay
