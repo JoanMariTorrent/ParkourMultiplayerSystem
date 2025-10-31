@@ -10,6 +10,7 @@ public class Canvas : NetworkBehaviour
     [SerializeField] private NetworkManager _NetworkManager;
     [SerializeField] private List<View> _allViews = new();
     [SerializeField] private View _defaulView;
+    
 
     private void Awake()
     {

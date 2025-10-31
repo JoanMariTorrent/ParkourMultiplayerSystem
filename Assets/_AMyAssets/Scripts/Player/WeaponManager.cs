@@ -140,22 +140,25 @@ public class WeaponManager : NetworkBehaviour
         {
             if (_ownedWeapons[0] != null && _ownedWeapons[1] != null) // Si tiene 2 principales
             {
-                if(groundGun) EquipWeapon(weaponPrefab, true, true, true);
+                if (groundGun) EquipWeapon(weaponPrefab, true, true, true);
                 else EquipWeapon(weaponPrefab, true, true, false); // como tiene 2 armas ya, tendra que destruirla 100%
+                Debug.LogWarning("Borrar armas, tienes 2");
             }
 
             else if (_ownedWeapons[0] == null || _ownedWeapons[1] == null) // tiene un hueco libre en la arma principal
             {
                 if (HasWeaponOfType(newWeaponID)) // si la arma que esta pillando ya la tiene
                 {
-                    if(groundGun) EquipWeapon(weaponPrefab, true, true, true);
+                    if (groundGun) EquipWeapon(weaponPrefab, true, true, true);
                     else EquipWeapon(weaponPrefab, true, true, false);
+                     Debug.LogWarning("Borrar arma porque ya la tienes");
                 }
 
-                else if (!HasWeaponOfType(newWeaponID)) // si el arma que esta pillando no la tiene en general
+                else  // si el arma que esta pillando no la tiene en general
                 {
-                    if(groundGun) EquipWeapon(weaponPrefab, false, true, true);
+                    if (groundGun) EquipWeapon(weaponPrefab, false, true, true);
                     else EquipWeapon(weaponPrefab, false, true, false);
+                     Debug.LogWarning("Añadiendo arma nueva");
                 }
             }
         }
@@ -176,7 +179,7 @@ public class WeaponManager : NetworkBehaviour
                     else EquipWeapon(weaponPrefab, true, false, false);
                 }
 
-                else if (!HasWeaponOfType(newWeaponID)) // si el arma que esta pillando no la tiene en general
+                else // si el arma que esta pillando no la tiene en general
                 {
                     if(groundGun) EquipWeapon(weaponPrefab, false, false, true);
                     else EquipWeapon(weaponPrefab, false, false, false);

@@ -149,10 +149,11 @@ MonoBehaviour:
   _automatic: 1
   _modificable: 0
   ammo: 35
+  reloadsAmmo: 70
   timeToReload: 1
   _range: 40
   _gunDamage: 8
-  _fireRate: 0.2
+  _fireRate: 0.17
   _recoilStrenght: 0.2
   _recoilDuration: 0.2
   _recoilCurve:
@@ -228,6 +229,7 @@ MonoBehaviour:
   _grenadeForce: 0
   grenadeThrowed: 0
   rb: {fileID: 0}
+  gameMainView: {fileID: 0}
   playerCharacter: {fileID: 0}
   _cameraTransform: {fileID: 0}
   _hitLayer:

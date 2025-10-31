@@ -6,11 +6,13 @@ using Steamworks;
 using System.Security;
 using UnityEngine.Rendering;
 using Interfaces;
+using UnityEditor.Callbacks;
 
 public enum WeaponID
 {
     None,
     Pistol,
+    Rifle,
     RifleMalPorro,
     Grenade,
 }
@@ -41,7 +43,8 @@ public class Gun : NetworkBehaviour, ITakeGun
 
     [Header("Stats")]
     [SerializeField] private int ammo;
-    private int maxAmmo;
+    [SerializeField] private int maxAmmo;
+    [SerializeField] private int reloadsAmmo;
     [SerializeField] private float timeToReload = 3f;
     [SerializeField] private float _range = 20f;
     [SerializeField] private int _gunDamage = 10;
@@ -65,6 +68,7 @@ public class Gun : NetworkBehaviour, ITakeGun
 
     [Header("References")]
     public Rigidbody rb;
+    [SerializeField] private GameMainView gameMainView;
     [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private LayerMask _hitLayer;
@@ -139,6 +143,8 @@ public class Gun : NetworkBehaviour, ITakeGun
             maxAmmo = ammo;
         }
 
+        if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
+
     }
 
 
@@ -164,6 +170,9 @@ public class Gun : NetworkBehaviour, ITakeGun
         playerCharacter = playerChar;
         reloading = false;
         weaponManager = wm;
+
+        if (isOwner) gameMainView = InstanceHandler.GetInstance<GameMainView>();
+        if (gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
 
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
@@ -234,6 +243,7 @@ public class Gun : NetworkBehaviour, ITakeGun
             }
 
             ammo--;
+            if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
 
             _lastFireTime = Time.unscaledTime;
 
@@ -450,6 +460,8 @@ public class Gun : NetworkBehaviour, ITakeGun
     [ObserversRpc(runLocally: false)]
     public void Reload()
     {
+        if (reloadsAmmo <= 0)
+            return;
         if (ammo < maxAmmo)
         {
             reloading = true;
@@ -466,8 +478,26 @@ public class Gun : NetworkBehaviour, ITakeGun
     [ObserversRpc(runLocally: false)]
     public void ReloadFinished()
     {
-        ammo = maxAmmo;
+        if ((ammo + reloadsAmmo) < maxAmmo)
+        {
+            ammo = reloadsAmmo + ammo;
+            reloadsAmmo = 0;
+        }
+        else if ((ammo + reloadsAmmo) >= maxAmmo)
+        {
+            if (ammo == 0)
+            {
+                reloadsAmmo -= maxAmmo;
+                Debug.LogWarning("asdasd");
+            }
+            else if (ammo > 0)
+            {
+                reloadsAmmo -= (maxAmmo - ammo);
+            }
+            ammo = maxAmmo;
+        }
         reloading = false;
+        if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
     }
 
     public void TakeGun()
