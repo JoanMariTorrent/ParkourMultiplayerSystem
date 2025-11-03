@@ -17,10 +17,16 @@ public class PlayerCamera : NetworkBehaviour
     private Vector3 _eulerAngles;
 
 
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+        
+        enabled = isOwner;
+    }
+
     public void Intialize(Transform target)
     {
         transform.position = target.position;
-
         transform.eulerAngles = _eulerAngles = target.eulerAngles;
     }
 

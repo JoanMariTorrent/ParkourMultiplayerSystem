@@ -12,6 +12,14 @@ public class CameraSpring : NetworkBehaviour
     [SerializeField] private float linearDisplacement = 0.05f;
     private Vector3 _springPosition;
     private Vector3 _springVelocity;
+
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+
+        enabled = isOwner;
+    }
+    
     public void Initialize()
     {
         _springPosition = transform.position;

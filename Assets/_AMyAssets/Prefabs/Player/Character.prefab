@@ -447,6 +447,7 @@ MonoBehaviour:
   _requestedDropGun: 0
   gunToSwitchIndex: 0
   primaryIndex: 0
+  GodMode: 0
 --- !u!114 &3728205283233136871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -525,6 +526,7 @@ MonoBehaviour:
     _sendIntervalInSeconds: 0
   _selfLayer: 7
   _otherLayer: 8
+  playerCharacter: {fileID: 8159890137296869839}
 --- !u!114 &1656825130629811245
 MonoBehaviour:
   m_ObjectHideFlags: 0

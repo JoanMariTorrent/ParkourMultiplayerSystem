@@ -19,6 +19,13 @@ public class CameraLean : NetworkBehaviour
     private float _smoothStrenght;
     private float _strenghtVel;
 
+    protected override void OnSpawned()
+    {
+        base.OnSpawned();
+        
+        enabled = isOwner;
+    }
+
     public void Initialize()
     {
         _smoothStrenght = walkStrenght;
