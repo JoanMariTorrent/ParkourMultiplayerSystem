@@ -97,6 +97,7 @@ public class GunPlatform : NetworkBehaviour
         if (playercoll == null)
         {
             Debug.LogAssertionFormat("AAAAAAAAAAAAJBSDIBASIDAHJISDBIBASDIBAHJSDBHIASDBI");
+            return;
         }
         
         playerInCollision = true;
