@@ -94,7 +94,10 @@ public class GunPlatform : NetworkBehaviour
         if (!isServer) return;
         
         var playercoll = other.GetComponent<PlayerCharacter>();
-        if (playercoll == null) return;
+        if (playercoll == null)
+        {
+            Debug.LogAssertionFormat("AAAAAAAAAAAAJBSDIBASIDAHJISDBIBASDIBAHJSDBHIASDBI");
+        }
         
         playerInCollision = true;
         player = playercoll;
