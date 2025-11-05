@@ -220,7 +220,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     takeGun.TakeGun();
                 }
             }
-            
+
         }
 
         var wasRequestedJump = _requestedJump;
@@ -260,7 +260,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             ChangeGun(currentGunIndex);
         }
     }
+    
 
+    [ObserversRpc(runLocally: false)]
     public void ChangeGun(int currentGunIndex)
     {
         switch (currentGunIndex)

@@ -509,6 +509,7 @@ public class Gun : NetworkBehaviour, ITakeGun
         if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
     }
 
+    [ObserversRpc(runLocally: false)]
     public void TakeGun()
     {
         if (weaponManager == null)
