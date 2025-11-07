@@ -2347,12 +2347,12 @@ RectTransform:
   m_LocalScale: {x: 0.2, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2047785357}
+  m_Father: {fileID: 1535335536}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 1080}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 960, y: -540.5}
+  m_SizeDelta: {x: 2594.9, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1503109576
 MonoBehaviour:
@@ -2495,6 +2495,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1535335536}
   - component: {fileID: 1535335538}
+  - component: {fileID: 1535335540}
   - component: {fileID: 1535335539}
   m_Layer: 5
   m_Name: SlotMachinePanel
@@ -2517,6 +2518,7 @@ RectTransform:
   m_Children:
   - {fileID: 2047785357}
   - {fileID: 405379699}
+  - {fileID: 1503109575}
   m_Father: {fileID: 1466666033}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2543,7 +2545,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1535335535}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99111a17a959e0244b21925eba0b10ed, type: 3}
   m_Name: 
@@ -2560,6 +2562,53 @@ MonoBehaviour:
   slotSpacing: 850.5
   topLimit: -270
   bottomLimit: -810
+--- !u!114 &1535335540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1535335535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a8d8e7afe8d6048a232fb4b9b7bcee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weapons:
+  - {fileID: 11400000, guid: d51b72bfb57cea343906c734750492b9, type: 2}
+  - {fileID: 11400000, guid: daa99adb72bf97a43a90b95a167883a1, type: 2}
+  slotPrefab: {fileID: 8963473387292698987, guid: 22833ccd6cfcbec4dac91d186c50e47a, type: 3}
+  itemsContainer: {fileID: 2047785357}
+  maskArea: {fileID: 405379699}
+  totalSlots: 75
+  slotSpacing: 125
+  spawnHeight: 300
+  spinDuration: 5
+  spinCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  randomType: 3
 --- !u!1 &1583819960
 GameObject:
   m_ObjectHideFlags: 0
@@ -2947,6 +2996,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  primaryWeapons: []
+  secondaryWeapons: []
   _primaryWeaponData:
   - {fileID: 1383448258628988601, guid: 47e46472208dc3e4ba0a1f9b94a96aaf, type: 3}
   - {fileID: 8234145463055040370, guid: 9786e1a0450ef5d4da7d1fdd4e0fd5a8, type: 3}
@@ -3998,7 +4049,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2047785357}
-  - component: {fileID: 2047785358}
   m_Layer: 5
   m_Name: ItemsContainer
   m_TagString: Untagged
@@ -4017,8 +4067,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1503109575}
+  m_Children: []
   m_Father: {fileID: 1535335536}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4026,32 +4075,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2047785358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047785356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: -650
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!1001 &84064261827147580
 PrefabInstance:
   m_ObjectHideFlags: 0

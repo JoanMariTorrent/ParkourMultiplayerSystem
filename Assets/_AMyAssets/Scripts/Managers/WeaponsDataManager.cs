@@ -1,11 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
 using PurrNet;
-using PurrNet.StateMachine;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class WeaponsDataManager : NetworkBehaviour
 {
+    public List<WeaponScripteableObject> primaryWeapons;
+    public List<WeaponScripteableObject> secondaryWeapons;
+
     public GameObject[] _primaryWeaponData;
     public GameObject[] _secondaryWeaponData;
     public GameObject[] _utilityData;

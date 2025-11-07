@@ -20,6 +20,7 @@ public class GameEndState : StateNode
         }
 
         var winner = scoreManager.GetWinner();
+        
         if (winner == default)
         {
             Debug.LogError("GameEndState failed to get winner!");
