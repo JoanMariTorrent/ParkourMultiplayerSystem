@@ -16,10 +16,6 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
     public override void Enter(List<PlayerHealth> data, bool asServer)
     {
-        base.Enter(data, asServer);
-
-        if (!asServer)
-            return;
         if (data.Count <= 0)
             return;
 
@@ -32,10 +28,17 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
 
             Debug.Log($"<color=purple>Enviando SlotMachine a jugador {getPlayer.owner.Value}</color>");
-            InstanceHandler.TryGetInstance(out GunSpawnerNetwork gunSpawnerNetwork);
-            gunSpawnerNetwork.RpcShowSlotMachine(getPlayer.owner.Value, getPlayer);
+            RpcShowSlotMachine(getPlayer.owner.Value, getPlayer);
         }
         machine.Next(data);
+    }
+
+
+    [TargetRpc(requireServer: true, runLocally: true)]
+    public void RpcShowSlotMachine(PlayerID target, Player player)
+    {
+        Debug.Log($"<color=green>📺 Mostrando SlotMachine en cliente {target}</color>");
+        Debug.Log($"<color=red> playerName: {player.gameObject.name} </color>");
     }
 
 
