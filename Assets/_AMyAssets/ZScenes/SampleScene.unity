@@ -2130,6 +2130,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  ground: {fileID: 201362513}
 --- !u!4 &842282251
 Transform:
   m_ObjectHideFlags: 0
