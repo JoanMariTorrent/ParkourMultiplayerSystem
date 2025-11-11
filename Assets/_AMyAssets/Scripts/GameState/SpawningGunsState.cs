@@ -29,7 +29,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             var getPlayer = player.GetComponent<Player>();
             if (getPlayer == null)
                 continue;
-                
+
 
             Debug.Log($"<color=purple>Enviando SlotMachine a jugador {getPlayer.owner.Value}</color>");
             InstanceHandler.TryGetInstance(out GunSpawnerNetwork gunSpawnerNetwork);
@@ -38,7 +38,6 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         machine.Next(data);
     }
 
-    
 
 
     private IEnumerator GetGuns(Player player)
@@ -81,7 +80,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             slotMachine.gameObject.SetActive(false);
             player.GetComponent<Player>().canMove = true;
         }
-        
+
     }
 }
 
