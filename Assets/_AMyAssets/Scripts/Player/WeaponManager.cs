@@ -1,9 +1,6 @@
 ﻿using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
-using Unity.Mathematics;
-using System;
-using System.Collections;
 
 
 public class WeaponManager : NetworkBehaviour
@@ -488,10 +485,10 @@ public class WeaponManager : NetworkBehaviour
 
     }
 
-    
+
     public void ShowSlotMachineEffect(string playerName)
     {
-        Debug.Log($"📺 Mostrando SlotMachine para {playerName}");
+        Destroy(_playerCamera.gameObject);
     }
 
 
