@@ -35,17 +35,17 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
             Debug.Log($"<color=purple>Enviando SlotMachine a jugador {getPlayer.owner.Value}</color>");
             RpcShowSlotMachine(getPlayer.owner.Value, getPlayer);
+            getPlayer.DeleteGround();
         }
         machine.Next(data);
     }
 
 
-
+    [TargetRpc]
     public void RpcShowSlotMachine(PlayerID target, Player player)
     {
         Debug.Log($"<color=green>📺 Mostrando SlotMachine en cliente {target}</color>");
         Debug.Log($"<color=red> playerName: {player.gameObject.name} </color>");
-        Destroy(ground.gameObject);
     }
 
 

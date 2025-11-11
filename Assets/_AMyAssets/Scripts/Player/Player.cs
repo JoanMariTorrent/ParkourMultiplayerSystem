@@ -105,14 +105,14 @@ public class Player : NetworkBehaviour
         var cameraInput = new CameraInput { Look = input.Look.ReadValue<Vector2>() };
         playerCamera.UpdateRotation(cameraInput);
 
-        
+
 
         //Detectar cambio de arma
         int requestedGun = 0;
         if (input.ChangeGun.triggered)
         {
             var controlName = input.ChangeGun.activeControl?.displayName; // 1, 2, 3...
-            if (int.TryParse(controlName, out int parsed)) 
+            if (int.TryParse(controlName, out int parsed))
             {
                 requestedGun = parsed;
             }
@@ -152,6 +152,12 @@ public class Player : NetworkBehaviour
             }
         }
 #endif
+    }
+
+
+    public void DeleteGround()
+    {
+        Debug.Log("<color=blue> Player test </color>");
     }
 
 
