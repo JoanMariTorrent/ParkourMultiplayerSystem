@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using PurrNet;
 
 public enum randomType
 {
@@ -11,7 +11,7 @@ public enum randomType
     Utility,
     All
 }
-public class SlotMachine : MonoBehaviour
+public class SlotMachine : View
 {
     [Space]
     [Header("Content")]
@@ -46,6 +46,18 @@ public class SlotMachine : MonoBehaviour
     private List<RectTransform> slotList = new List<RectTransform>();
     private bool isSpinning = false;
     public WeaponScripteableObject finalWeapon;
+
+
+    private void Awake()
+    {
+        InstanceHandler.RegisterInstance(this);
+    }
+
+    private void OnDestroy()
+    {
+        InstanceHandler.UnregisterInstance<SlotMachine>();
+    }
+
 
     private void Update()
     {
@@ -172,6 +184,17 @@ public class SlotMachine : MonoBehaviour
         spinDuration = spinDuration / 5;
     }
     
+
+    public override void OnHide()
+    {
+
+    }
+
+    public override void OnShow()
+    {
+
+    }
+
 
 
 

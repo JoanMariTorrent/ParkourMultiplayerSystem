@@ -173,8 +173,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         initGravity = gravity;
         initAirAcceleration = airAcceleration;
-
-        Debug.Log("<color=yellow>PlayerID: </color>" + owner.Value);
     }
 
     public void Intialize()
@@ -184,8 +182,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _unCrouchOverlapResults = new Collider[8];
 
         motor.CharacterController = this;
-
-        Debug.Log(motor.CollidableLayers.value);
     }
 
     public void UpdateInput(CharacterInput input)
@@ -372,7 +368,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     void Update()
     {
-        Debug.Log(_state.Stance);
         if (isOwner)
         {
             // Copiamos la posición y rotación reales del motor al transform,

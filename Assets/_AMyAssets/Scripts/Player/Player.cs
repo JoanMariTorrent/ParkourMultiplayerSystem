@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using PurrNet;
+using Steamworks;
 using Unity.VisualScripting;
 
 public class Player : NetworkBehaviour
@@ -11,12 +12,34 @@ public class Player : NetworkBehaviour
     [SerializeField] private CameraSpring cameraSpring;
     [SerializeField] private CameraLean cameraLean;
     [SerializeField] private PlayerInputsAction _inputActions;
+    [SerializeField] private string playerName;
     public bool canMove;
 
     protected override void OnSpawned()
     {
         base.OnSpawned();
         playerCamera.gameObject.SetActive(isOwner);
+
+        if (isOwner)
+        {
+            string steamName = SteamFriends.GetPersonaName();
+            CmdPlayerName(steamName);
+        }
+    }
+
+    [ServerRpc]
+    private void CmdPlayerName(string newPlayerName)
+    {
+        playerName = newPlayerName;
+        gameObject.name = $"Player: {playerName}";
+        RpcSetPlayerName(newPlayerName);
+    }
+
+    [ObserversRpc]
+    private void RpcSetPlayerName(string newPlayerName)
+    {
+        playerName = newPlayerName;
+        gameObject.name = $"Player: {playerName}";
     }
 
     void Start()
