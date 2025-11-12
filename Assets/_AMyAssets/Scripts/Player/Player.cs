@@ -41,6 +41,7 @@ public class Player : NetworkBehaviour
             canvas = canvasObject.GetComponent<Canvas>();
             canvas.gameObject.SetActive(isOwner);
             canvas.enabled = isOwner;
+            canvas.gameObject.name = $"Canvas of: {playerName}";
 
 
             Canvas[] allCanvas = FindObjectsOfType<Canvas>();
