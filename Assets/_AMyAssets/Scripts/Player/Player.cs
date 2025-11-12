@@ -41,17 +41,21 @@ public class Player : NetworkBehaviour
             canvas = canvasObject.GetComponent<Canvas>();
             canvas.gameObject.SetActive(isOwner);
             canvas.enabled = isOwner;
+
+
+            Canvas[] allCanvas = FindObjectsOfType<Canvas>();
+            foreach (var canva in allCanvas)
+            {
+                if (canva != canvas)
+                {
+                    canva.enabled = false;
+                    canva.gameObject.SetActive(false);
+                }
+            }
+        
         }
 
-        Canvas[] allCanvas = FindObjectsOfType<Canvas>();
-        foreach (var canva in allCanvas)
-        {
-            if (canva != canvas)
-            {
-                canva.enabled = false;
-                canva.gameObject.SetActive(false);
-            }
-        }
+        
         
         
         canvasSpawned = true;
