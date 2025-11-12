@@ -73,13 +73,10 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
                 weaponManager.NewWeapon(weapon[0], true, false, false);
 
                 // esperar un frame para asegurar que todo se inicializó
-                yield return null;
+                yield return new WaitForSeconds(2);
 
                 player.canMove = true;
                 Debug.Log($"canMove activated for {player.name}");
-
-                // opcional: repartir ejecución en varios frames
-                yield return null;
             }
         }
     }
