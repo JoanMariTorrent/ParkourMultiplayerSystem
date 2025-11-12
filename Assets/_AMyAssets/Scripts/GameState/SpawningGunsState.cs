@@ -36,6 +36,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
                 var weapon = _weaponDataManager.GetRandomWeapons(1, 1);
                 weaponManager.NewWeapon(weapon[0], true, false, false);
+                player.GetComponent<Player>().canMove = true;
             }
         }
 
