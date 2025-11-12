@@ -26,7 +26,17 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
 
         // Pruebas
-        StartCoroutine(GiveGunsCoroutine(data));
+        if (InstanceHandler.TryGetInstance(out WeaponsDataManager _weaponDataManager))
+        {
+            foreach (var player in data)
+            {
+                var weaponManager = player.GetComponent<WeaponManager>();
+                if (!weaponManager) continue;
+
+                var weapon = _weaponDataManager.GetRandomWeapons(1, 1);
+                weaponManager.NewWeapon(weapon[0], true, false, false);
+            }
+        }
 
 
 
@@ -53,32 +63,6 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     {
         Debug.Log($"<color=green>📺 Mostrando SlotMachine en cliente {target}</color>");
         Debug.Log($"<color=red> playerName: {player.gameObject.name} </color>");
-    }
-
-
-
-    // Sisteam provisional
-    private IEnumerator GiveGunsCoroutine(List<PlayerHealth> data)
-    {
-        if (InstanceHandler.TryGetInstance(out WeaponsDataManager _weaponDataManager))
-        {
-            foreach (var playerHealth in data)
-            {
-                var player = playerHealth.GetComponent<Player>();
-                var weaponManager = playerHealth.GetComponent<WeaponManager>();
-
-                if (!player || !weaponManager) continue;
-
-                var weapon = _weaponDataManager.GetRandomWeapons(1, 1);
-                weaponManager.NewWeapon(weapon[0], true, false, false);
-
-                // esperar un frame para asegurar que todo se inicializó
-                yield return new WaitForSeconds(2);
-
-                player.canMove = true;
-                Debug.Log($"canMove activated for {player.name}");
-            }
-        }
     }
 
 

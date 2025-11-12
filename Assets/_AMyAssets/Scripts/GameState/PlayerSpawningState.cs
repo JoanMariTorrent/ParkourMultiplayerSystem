@@ -41,7 +41,7 @@ public class PlayerSpawningState : StateNode
 
             _spawnedPlayers.Add(_newPlayer);
             _currentSpawnIndex++;
-            _newPlayer.GetComponent<Player>().canMove = false;
+            //_newPlayer.GetComponent<Player>().canMove = false;
 
             if (_currentSpawnIndex >= _spawnPoints.Count)
                 _currentSpawnIndex = 0;
