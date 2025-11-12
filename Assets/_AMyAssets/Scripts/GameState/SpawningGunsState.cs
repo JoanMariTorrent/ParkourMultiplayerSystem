@@ -30,7 +30,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         {
             foreach (var player in data)
             {
-                Debug.Log("asdjbasdbaskdbahjsdjbhasdbhadhasd");
+                Debug.Log(player);
                 var weaponManager = player.GetComponent<WeaponManager>();
                 if (!weaponManager) continue;
 
