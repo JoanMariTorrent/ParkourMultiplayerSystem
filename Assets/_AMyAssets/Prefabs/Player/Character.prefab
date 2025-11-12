@@ -379,7 +379,7 @@ MonoBehaviour:
   playerName: 
   canvasPrefab: {fileID: 6743392383370926023, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
   canvas: {fileID: 0}
-  canMove: 0
+  canMove: 1
 --- !u!114 &8159890137296869839
 MonoBehaviour:
   m_ObjectHideFlags: 0
