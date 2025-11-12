@@ -52,7 +52,19 @@ public class Player : NetworkBehaviour
                     canva.gameObject.SetActive(false);
                 }
             }
-        
+
+        }
+        else if (!isOwner)
+        {
+            Canvas[] allCanvas = FindObjectsOfType<Canvas>();
+            foreach (var canva in allCanvas)
+            {
+                if (canva != canvas)
+                {
+                    canva.enabled = false;
+                    canva.gameObject.SetActive(false);
+                }
+            }
         }
 
         
