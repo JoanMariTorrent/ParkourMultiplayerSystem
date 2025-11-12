@@ -8,6 +8,7 @@ public class Player : NetworkBehaviour
 {
     [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private PlayerCamera playerCamera;
+    [SerializeField] private PlayerHealth playerHealth;
     [Space]
     [SerializeField] private CameraSpring cameraSpring;
     [SerializeField] private CameraLean cameraLean;
@@ -120,9 +121,6 @@ public class Player : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.H))
         {
-            var playerHealth = GetComponent<PlayerHealth>();
-            if (playerHealth == null)
-                Debug.LogAssertionFormat("playerHealth es null!");
             playerHealth.ChangeHealth(-10);
             Debug.Log($"Nueva vida del jugador: {playerHealth.health}");
         }
