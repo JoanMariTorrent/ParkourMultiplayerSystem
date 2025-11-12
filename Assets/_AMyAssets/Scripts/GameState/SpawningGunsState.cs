@@ -31,12 +31,29 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             foreach (var player in data)
             {
                 Debug.Log(player);
+                var normalPlayer = player.GetComponent<Player>();
                 var weaponManager = player.GetComponent<WeaponManager>();
-                if (!weaponManager) continue;
+
+
+                if (!player)
+                {
+                    Debug.LogWarning("Player script missing on: " + player.name);
+                    continue;
+                }
+    
+                if (!weaponManager)
+                {
+                    Debug.LogWarning("WeaponManager missing on: " + player.name);
+                    continue;
+                }
+    
 
                 var weapon = _weaponDataManager.GetRandomWeapons(1, 1);
                 weaponManager.NewWeapon(weapon[0], true, false, false);
-                player.GetComponent<Player>().canMove = true;
+
+
+                normalPlayer.canMove = true;
+                Debug.Log($"canMove activated for {player.name}");
             }
         }
 
