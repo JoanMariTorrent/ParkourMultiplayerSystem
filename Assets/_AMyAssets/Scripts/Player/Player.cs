@@ -39,12 +39,17 @@ public class Player : NetworkBehaviour
         {
             var canvasObject = Instantiate(canvasPrefab);
             canvas = canvasObject.GetComponent<Canvas>();
+            canvas.gameObject.SetActive(isOwner);
+            canvas.enabled = isOwner;
+        }
+
+        Canvas[] allCanvas = FindObjectsOfType<Canvas>();
+        foreach (var canva in allCanvas)
+        {
+            if (canva != canvas)
+                canva.enabled = false;
         }
         
-        
-
-        canvas.gameObject.SetActive(isOwner);
-        canvas.enabled = isOwner;
         
         canvasSpawned = true;
     }
