@@ -2,6 +2,7 @@ using PurrNet;
 using PurrNet.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpawningGunsState : StateNode<List<PlayerHealth>>
@@ -69,44 +70,47 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
     private IEnumerator GetGuns(Player player)
     {
-        if (InstanceHandler.TryGetInstance(out SlotMachine slotMachine))
+        var normalPlayer = player.GetComponent<Player>();
+        if (normalPlayer == null) yield break;
+        var slotMachine = normalPlayer.canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
+        if (slotMachine == null) yield break;
+
+
+        var weaponManager = player.GetComponent<WeaponManager>();
+        if (weaponManager == null)
         {
-            var weaponManager = player.GetComponent<WeaponManager>();
-            if (weaponManager == null)
-            {
-                Debug.LogAssertionFormat("weaponManager is null!");
-                yield return null;
-            }
-
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-
-
-            slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
-            slotMachine.gameObject.SetActive(true);
-
-            yield return slotMachine.Spin();
-            Debug.Log("<color=green>✅ Spin completado correctamente</color>");
-            yield return new WaitForSeconds(1f);
-            slotMachine.GetComponent<CanvasGroup>().alpha = 0f;
-
-            if (slotMachine.finalWeapon.weaponType == WeaponScripteableType.Primary)
-                weaponManager.NewWeapon(slotMachine.finalWeapon.gunPrefab.gameObject, true, false, false);
-
-            else if (slotMachine.finalWeapon.weaponType == WeaponScripteableType.Secondary)
-                weaponManager.NewWeapon(slotMachine.finalWeapon.gunPrefab, false, false, false);
-
-            else if (slotMachine.finalWeapon.weaponType == WeaponScripteableType.Utility)
-                weaponManager.NewWeapon(slotMachine.finalWeapon.gunPrefab, false, true, false);
-
-
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-
-            weaponManager.SwitchWeapon(0);
-            slotMachine.gameObject.SetActive(false);
-            player.GetComponent<Player>().canMove = true;
+            Debug.LogAssertionFormat("weaponManager is null!");
+            yield return null;
         }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+
+        slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
+        slotMachine.gameObject.SetActive(true);
+
+        yield return slotMachine.Spin();
+        Debug.Log("<color=green>✅ Spin completado correctamente</color>");
+        yield return new WaitForSeconds(1f);
+        slotMachine.GetComponent<CanvasGroup>().alpha = 0f;
+
+        if (slotMachine.finalWeapon.weaponType == WeaponScripteableType.Primary)
+            weaponManager.NewWeapon(slotMachine.finalWeapon.gunPrefab.gameObject, true, false, false);
+
+        else if (slotMachine.finalWeapon.weaponType == WeaponScripteableType.Secondary)
+            weaponManager.NewWeapon(slotMachine.finalWeapon.gunPrefab, false, false, false);
+
+        else if (slotMachine.finalWeapon.weaponType == WeaponScripteableType.Utility)
+            weaponManager.NewWeapon(slotMachine.finalWeapon.gunPrefab, false, true, false);
+
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        weaponManager.SwitchWeapon(0);
+        slotMachine.gameObject.SetActive(false);
+        player.GetComponent<Player>().canMove = true;
 
     }
 }
