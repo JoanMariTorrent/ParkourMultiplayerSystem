@@ -35,10 +35,12 @@ public class Player : NetworkBehaviour
     public void SpawnCanvas()
     {
         if (canvasSpawned) return;
+        if (isOwner)
+        {
+            var canvasObject = Instantiate(canvasPrefab);
+            canvas = canvasObject.GetComponent<Canvas>();
+        }
         
-        
-        var canvasObject = Instantiate(canvasPrefab);
-        canvas = canvasObject.GetComponent<Canvas>();
 
         canvas.gameObject.SetActive(isOwner);
         canvas.enabled = isOwner;
