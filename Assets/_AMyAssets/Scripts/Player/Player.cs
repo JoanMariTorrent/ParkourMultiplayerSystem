@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using PurrNet;
 using Steamworks;
 using Unity.Mathematics;
+using System.Linq;
 
 public class Player : NetworkBehaviour
 {
@@ -212,6 +213,27 @@ public class Player : NetworkBehaviour
     {
         playerCharacter.SetPosition(position);
     }
+
+
+
+    public void Spin()
+    {
+        var slotMachine = canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
+        if (slotMachine == null) return;
+
+        var weaponManager = GetComponent<WeaponManager>();
+        if (weaponManager == null)
+        {
+            Debug.LogAssertionFormat("weaponManager is null!");
+            return;
+        }
+
+        slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
+        slotMachine.gameObject.SetActive(true);
+        
+
+    }
+
 
 
 }

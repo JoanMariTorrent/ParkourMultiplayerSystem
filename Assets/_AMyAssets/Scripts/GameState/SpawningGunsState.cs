@@ -11,6 +11,7 @@ using UnityEngine;
 // que hacer, es que el servidor active una funcion en cada jugar, y esa funcion sea el spin
 public class SpawningGunsState : StateNode<List<PlayerHealth>>
 {
+    [SerializeField] private List<Player> normalPlayers = new();
     [SerializeField] private int playerCount;
     [SerializeField] private int playerEndedSpinCount;
 
@@ -38,9 +39,12 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             var getPlayer = player.GetComponent<Player>();
             if (getPlayer == null)
                 continue;
+            normalPlayers.Add(getPlayer);
             playerCount++;
 
-            RpcShowSlotMachine(getPlayer.owner.Value, getPlayer, data);
+            //getPlayer.Spin();
+
+            //RpcShowSlotMachine(getPlayer.owner.Value, getPlayer, data);
             //StartCoroutine(GetGuns(getPlayer, data));
         }
 
@@ -54,7 +58,6 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     {
         Debug.Log($"<color=green>📺 Mostrando SlotMachine en cliente {target}</color>");
         Debug.Log($"<color=red> playerName: {player.gameObject.name} </color>");
-        StartCoroutine(GetGuns(player, data));
     }
 
     private void TryGoNextState(List<PlayerHealth> data)

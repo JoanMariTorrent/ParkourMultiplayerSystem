@@ -773,6 +773,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
+  normalPlayers: []
   playerCount: 0
   playerEndedSpinCount: 0
   PlayersSlotMachines: []
