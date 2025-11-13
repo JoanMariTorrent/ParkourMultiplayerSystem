@@ -48,6 +48,12 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             //StartCoroutine(GetGuns(getPlayer, data));
         }
 
+        foreach (var player in normalPlayers)
+        {
+            Debug.Log(player);
+            player.Spin();
+        }
+
         TryGoNextState(data);
 
     }
