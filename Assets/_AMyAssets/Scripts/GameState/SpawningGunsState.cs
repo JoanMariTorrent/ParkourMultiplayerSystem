@@ -3,12 +3,15 @@ using PurrNet.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpawningGunsState : StateNode<List<PlayerHealth>>
 {
     [SerializeField] private int playerCount;
     [SerializeField] private int playerEndedSpinCount;
+
+    [SerializeField] private List<SlotMachine> PlayersSlotMachines = new();
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
@@ -71,6 +74,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         var slotMachine = player.canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
         Debug.Log($"<color=yellow> slot machine: {slotMachine} of player: {player} </color>");
         if (slotMachine == null) yield break;
+        PlayersSlotMachines.Add(slotMachine);
 
 
         var weaponManager = player.GetComponent<WeaponManager>();
