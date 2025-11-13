@@ -75,14 +75,11 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         {
             Debug.Log("<color=red> No se ha encontrado el player</color>");
         }
-        else if (player != null)
-        {
-            Debug.Log(player);
-        }
 
         if (player.canvas == null)
         {
             Debug.Log("<color=red> No se ha encontrado el canvas</color>");
+            player.SpawnCanvas();
             yield return  null;
         }
 
