@@ -71,6 +71,22 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     private IEnumerator GetGuns(Player player, List<PlayerHealth> data)
     {
         yield return null;
+        if (player == null)
+        {
+            Debug.Log("<color=red> No se ha encontrado el player</color>");
+        }
+
+        if (player.canvas == null)
+        {
+            Debug.Log("<color=red> No se ha encontrado el canvas</color>");
+        }
+
+        if (player.canvas._allViews == null)
+        {
+            Debug.Log("<color=red> No se ha encontrado _allViews en el canvas</color>");
+        }
+
+
         var slotMachine = player.canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
         Debug.Log($"<color=yellow> slot machine: {slotMachine} of player: {player} </color>");
         if (slotMachine == null) yield break;
