@@ -3,9 +3,12 @@ using PurrNet.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
+
+// La spin se activa desde el script del Player, ya que el canvas se spawnea solo si isOwner es true,
+// es decir, que se instancia en local, y este script solo lo ejecuta el servidor, asi que lo que hay
+// que hacer, es que el servidor active una funcion en cada jugar, y esa funcion sea el spin
 public class SpawningGunsState : StateNode<List<PlayerHealth>>
 {
     [SerializeField] private int playerCount;
@@ -37,30 +40,31 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
                 continue;
             playerCount++;
 
-            //RpcShowSlotMachine(getPlayer.owner.Value, getPlayer);
-            StartCoroutine(GetGuns(getPlayer, data));
+            RpcShowSlotMachine(getPlayer.owner.Value, getPlayer, data);
+            //StartCoroutine(GetGuns(getPlayer, data));
         }
 
         TryGoNextState(data);
-        
+
     }
 
 
     [TargetRpc]
-    public void RpcShowSlotMachine(PlayerID target, Player player)
+    public void RpcShowSlotMachine(PlayerID target, Player player, List<PlayerHealth> data)
     {
         Debug.Log($"<color=green>📺 Mostrando SlotMachine en cliente {target}</color>");
         Debug.Log($"<color=red> playerName: {player.gameObject.name} </color>");
+        StartCoroutine(GetGuns(player, data));
     }
 
     private void TryGoNextState(List<PlayerHealth> data)
     {
-        if(playerEndedSpinCount == playerCount)
+        if (playerEndedSpinCount == playerCount)
         {
             Debug.Log($"<color=purple> All players have finished their spin!</color>");
             machine.Next(data);
         }
-        else if(playerEndedSpinCount != playerCount)
+        else if (playerEndedSpinCount != playerCount)
         {
             Debug.Log("<color=orange> Wait for other playes to finish his spins!</color>");
         }
@@ -83,7 +87,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             yield return new WaitForSeconds(0.2f);
             Debug.Log(player);
             player.canvas = player.GetComponentInChildren<Canvas>();
-            yield return  null;
+            yield return null;
         }
 
         if (player.canvas._allViews == null)

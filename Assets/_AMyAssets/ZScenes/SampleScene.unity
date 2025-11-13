@@ -775,6 +775,7 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   playerCount: 0
   playerEndedSpinCount: 0
+  PlayersSlotMachines: []
 --- !u!4 &842282251
 Transform:
   m_ObjectHideFlags: 0
