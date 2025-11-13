@@ -86,6 +86,8 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             Debug.Log("<color=red> No se ha encontrado _allViews en el canvas</color>");
         }
 
+        Debug.Log("asdasdasd");
+
 
         var slotMachine = player.canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
         Debug.Log($"<color=yellow> slot machine: {slotMachine} of player: {player} </color>");
