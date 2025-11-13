@@ -4,6 +4,7 @@ using PurrNet;
 using Steamworks;
 using Unity.Mathematics;
 using System.Linq;
+using System.Collections;
 
 public class Player : NetworkBehaviour
 {
@@ -216,36 +217,30 @@ public class Player : NetworkBehaviour
         playerCharacter.SetPosition(position);
     }
 
-    [TargetRpc]
+
+
+    [ObserversRpc]
     public void TargetStartSpin(PlayerID target)
     {
+        if (target != owner.Value) return;
         Spin();
     }
 
 
-
-
     private void Spin()
     {
-        if (canvas == null)
-        {
-            SpawnCanvas();
-        }
+
         slotMachine = canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
         if (slotMachine == null) return;
 
         var weaponManager = GetComponent<WeaponManager>();
-        if (weaponManager == null)
-        {
-            Debug.LogAssertionFormat("weaponManager is null!");
-            return;
-        }
+        if (weaponManager == null) return;
 
         slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
         slotMachine.gameObject.SetActive(true);
-        
-
     }
+
+
 
 
 

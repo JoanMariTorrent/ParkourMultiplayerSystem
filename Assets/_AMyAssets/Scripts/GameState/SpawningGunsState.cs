@@ -51,7 +51,6 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         foreach (var player in normalPlayers)
         {
             Debug.Log(player);
-            Debug.Log(player.owner.Value);
             player.TargetStartSpin(player.owner.Value);
         }
 
