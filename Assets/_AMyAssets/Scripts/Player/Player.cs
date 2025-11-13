@@ -215,9 +215,16 @@ public class Player : NetworkBehaviour
         playerCharacter.SetPosition(position);
     }
 
+    [TargetRpc]
+    public void TargetStartSpin(PlayerID target)
+    {
+        Spin();
+    }
 
 
-    public void Spin()
+
+
+    private void Spin()
     {
         if (canvas == null)
         {
