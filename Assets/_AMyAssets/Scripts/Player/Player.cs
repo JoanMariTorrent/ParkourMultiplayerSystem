@@ -214,19 +214,18 @@ public class Player : NetworkBehaviour
         {
             slotMachine = canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
         }
-    
+
         if (slotMachine == null)
         {
             Debug.LogError($"SlotMachine no encontrada en Player {gameObject.name}");
             return;
         }
-    
+
         isSpinning = true;
         slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
         slotMachine.gameObject.SetActive(true);
         slotMachine.startSpin();
     }
-
 
 
 }
