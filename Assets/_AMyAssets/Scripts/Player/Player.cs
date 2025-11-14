@@ -229,8 +229,7 @@ public class Player : NetworkBehaviour
     }
 
     // En Player.cs
-    [TargetRpc(requireServer: false)]
-    public void RpcShowSlotMachine(PlayerID player)
+    public void RpcShowSlotMachine()
     {
         isSpinning = true;
         slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
