@@ -28,7 +28,10 @@ public class PruebasRPC : NetworkBehaviour
         //ObserversColor(color);
         Debug.Log($"<color=green> ID del sender: {info.sender} </color>");
     
-        TargetColor(info.sender, color);
+        foreach(var player in players)
+        {
+            TargetColor(player.owner.Value, color);
+        }
     }
 
     [ObserversRpc]

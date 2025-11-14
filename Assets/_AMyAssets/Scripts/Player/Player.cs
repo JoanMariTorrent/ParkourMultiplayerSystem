@@ -34,11 +34,13 @@ public class Player : NetworkBehaviour
 
         if (isOwner)
         {
-            pruebasRPC = FindFirstObjectByType<PruebasRPC>();
-            pruebasRPC.players.Add(this);
+            
             //string steamName = SteamFriends.GetPersonaName();
             //CmdPlayerName(steamName);
         }
+
+        pruebasRPC = FindFirstObjectByType<PruebasRPC>();
+        pruebasRPC.players.Add(this);
     }
 
     [ServerRpc]

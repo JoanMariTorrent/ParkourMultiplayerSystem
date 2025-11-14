@@ -3,6 +3,7 @@ using PurrNet.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -47,24 +48,26 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             //StartCoroutine(GetGuns(getPlayer, data));
         }
 
-        foreach (var player in normalPlayers)
-        {
-            var playerIndex = normalPlayers.IndexOf(player);
-            var playerID = _players[playerIndex];
-            Debug.Log($"Player id = {playerID}");
-            player.TargetStartSpin(playerID);
-            RpcShowSlotMachine(playerID, player);
-            
-        }
+        ServerShowSlot();
+        
 
         TryGoNextState(data);
 
     }
 
+    [ServerRpc]
+    private void ServerShowSlot()
+    {
+        foreach (var player in normalPlayers)
+        {
+            RpcShowSlotMachine(player.owner.Value, player);
+        }
+    }
+
     
 
 
-    [TargetRpc(requireServer:false)]
+    [TargetRpc]
     public void RpcShowSlotMachine(PlayerID target, Player player)
     {
         Debug.Log($"<color=green>📺 Mostrando SlotMachine en cliente {target}</color>");
