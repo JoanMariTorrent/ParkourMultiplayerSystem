@@ -206,36 +206,27 @@ public class Player : NetworkBehaviour
     }
 
 
-
-    [TargetRpc(requireServer:false)]
+    // En Player.cs
+    [TargetRpc(requireServer: false)]
     public void TargetStartSpin(PlayerID target)
     {
-        if (isServer) return;
-        Spin();
-    }
-
-
-    private void Spin()
-    {
-
-        slotMachine = canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
-        if (slotMachine == null) return;
-
-        var weaponManager = GetComponent<WeaponManager>();
-        if (weaponManager == null) return;
-
-        slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
-        slotMachine.gameObject.SetActive(true);
-    }
-
-    // En Player.cs
-    public void RpcShowSlotMachine()
-    {
+        if (slotMachine == null)
+        {
+            slotMachine = canvas._allViews.OfType<SlotMachine>().FirstOrDefault();
+        }
+    
+        if (slotMachine == null)
+        {
+            Debug.LogError($"SlotMachine no encontrada en Player {gameObject.name}");
+            return;
+        }
+    
         isSpinning = true;
         slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
         slotMachine.gameObject.SetActive(true);
         slotMachine.startSpin();
     }
+
 
 
 }

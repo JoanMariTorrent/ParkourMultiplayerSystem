@@ -37,15 +37,6 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
         foreach (var player in data)
         {
-            var normalPlayer = player.GetComponent<Player>();
-            if(player.isOwner)
-            {
-                normalPlayer.RpcShowSlotMachine();
-            }
-
-
-
-
             var getPlayer = player.GetComponent<Player>();
             if (getPlayer == null)
                 continue;
@@ -70,7 +61,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     {
         foreach (var player in normalPlayers)
         {
-            player.RpcShowSlotMachine();
+            player.TargetStartSpin(player.owner.Value);
         }
     }
 
