@@ -13,7 +13,7 @@ public class Canvas : NetworkBehaviour
 
     void OnEnable()
     {
-        enabled = isOwner;
+        //gameObject.SetActive(isOwner);
     }
 
 

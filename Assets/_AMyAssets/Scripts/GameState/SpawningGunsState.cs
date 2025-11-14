@@ -60,7 +60,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     {
         foreach (var player in normalPlayers)
         {
-            player.RpcShowSlotMachine(player.owner.Value);
+            player.RpcShowSlotMachine();
         }
     }
 
