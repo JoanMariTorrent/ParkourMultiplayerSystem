@@ -33,6 +33,7 @@ public class Player : NetworkBehaviour
     {
         base.OnSpawned();
         playerCamera.gameObject.SetActive(isOwner);
+        canvas.gameObject.SetActive(isOwner);
 
         if (isOwner)
         {

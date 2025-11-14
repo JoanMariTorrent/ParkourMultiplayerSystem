@@ -11,11 +11,6 @@ public class Canvas : NetworkBehaviour
     public GameObject slotMachine;
     public GameMainView gameMainView;
 
-    void OnEnable()
-    {
-        //gameObject.SetActive(isOwner);
-    }
-
 
     private void Awake()
     {
