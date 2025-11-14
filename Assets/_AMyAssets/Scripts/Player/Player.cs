@@ -19,6 +19,7 @@ public class Player : NetworkBehaviour
     public SlotMachine slotMachine;
     public bool canMove;
     public bool prueba = false;
+    [SerializeField] private PruebasRPC pruebasRPC;
 
     void Awake()
     {
@@ -33,6 +34,8 @@ public class Player : NetworkBehaviour
 
         if (isOwner)
         {
+            pruebasRPC = FindFirstObjectByType<PruebasRPC>();
+            pruebasRPC.players.Add(this);
             //string steamName = SteamFriends.GetPersonaName();
             //CmdPlayerName(steamName);
         }

@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 
 public class PruebasRPC : NetworkBehaviour
 {
+    public List<Player> players = new();
+
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Alpha1))
@@ -18,7 +21,24 @@ public class PruebasRPC : NetworkBehaviour
     }
 
 
-    private void ChangeColor(Color color)
+    [ServerRpc]
+    private void ChangeColor(Color color, RPCInfo info = default)
+    {
+        Debug.Log("ServerInput");
+        //ObserversColor(color);
+        Debug.Log($"<color=green> ID del sender: {info.sender} </color>");
+    
+        TargetColor(info.sender, color);
+    }
+
+    [ObserversRpc]
+    private void ObserversColor(Color color)
+    {
+        GetComponent<Renderer>().sharedMaterial.color = color;
+    }
+
+    [TargetRpc]
+    private void TargetColor(PlayerID target, Color color)
     {
         GetComponent<Renderer>().sharedMaterial.color = color;
     }
