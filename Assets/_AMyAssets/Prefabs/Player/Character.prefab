@@ -737,6 +737,7 @@ Transform:
   - {fileID: 2346163092454338177}
   - {fileID: 2809929627101837603}
   - {fileID: 6480273171793854776}
+  - {fileID: 5627527806359956910}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &3086454144717506805
@@ -790,9 +791,12 @@ MonoBehaviour:
   cameraLean: {fileID: 8021116977053843990}
   playerName: 
   canvasPrefab: {fileID: 6743392383370926023, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+  isSpinning: 0
   canvas: {fileID: 2242396938773713767}
   slotMachine: {fileID: 6552135580018957082}
   canMove: 1
+  prueba: 0
+  pruebasRPC: {fileID: 0}
 --- !u!114 &8159890137296869839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1342,7 +1346,7 @@ RectTransform:
   - {fileID: 1177743478862704758}
   - {fileID: 3377880163873139523}
   - {fileID: 5117174773604604440}
-  m_Father: {fileID: 2809929627101837603}
+  m_Father: {fileID: 1224085259338201639}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3524,7 +3528,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9128166495796167421}
-  - {fileID: 5627527806359956910}
   m_Father: {fileID: 1224085259338201639}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6742959374811469856

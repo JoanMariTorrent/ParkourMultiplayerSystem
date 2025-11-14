@@ -10,7 +10,12 @@ public class Canvas : NetworkBehaviour
     [SerializeField] private View _defaulView;
     public GameObject slotMachine;
     public GameMainView gameMainView;
-    
+
+    void OnEnable()
+    {
+        enabled = isOwner;
+    }
+
 
     private void Awake()
     {
