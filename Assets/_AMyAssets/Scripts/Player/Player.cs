@@ -227,5 +227,14 @@ public class Player : NetworkBehaviour
         slotMachine.gameObject.SetActive(true);
     }
 
+    // En Player.cs
+    [TargetRpc]
+    public void RpcShowSlotMachine(PlayerID target, RPCInfo info = default)
+    {
+        slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
+        slotMachine.gameObject.SetActive(true);
+        slotMachine.startSpin();
+    }
+
 
 }
