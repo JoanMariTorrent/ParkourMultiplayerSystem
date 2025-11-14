@@ -37,7 +37,11 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
         foreach (var player in data)
         {
-            player.GetComponent<Player>().RpcShowSlotMachine();
+            var normalPlayer = player.GetComponent<Player>();
+            if(player.isOwner)
+            {
+                normalPlayer.RpcShowSlotMachine();
+            }
 
 
 
