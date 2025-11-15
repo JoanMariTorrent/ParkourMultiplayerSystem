@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using PurrNet;
 using Steamworks;
 using System.Linq;
+using System.Collections.Generic;
 
 public class Player : NetworkBehaviour
 {
@@ -208,7 +209,7 @@ public class Player : NetworkBehaviour
 
     // En Player.cs
     [TargetRpc(requireServer: false)]
-    public void TargetStartSpin(PlayerID target)
+    public void TargetStartSpin(PlayerID target, WeaponScripteableObject selectedWeapon, List<WeaponScripteableObject> filteredWeapons)
     {
         if (slotMachine == null)
         {
@@ -224,7 +225,7 @@ public class Player : NetworkBehaviour
         isSpinning = true;
         slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
         slotMachine.gameObject.SetActive(true);
-        //slotMachine.startSpin();
+        slotMachine.startSpin(selectedWeapon, filteredWeapons);
     }
 
 

@@ -3,8 +3,15 @@ using PurrNet.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+
+public enum randomType
+{
+    Primary,
+    Secondary,
+    Utility,
+    All
+}
 
 
 // La spin se activa desde el script del Player, ya que el canvas se spawnea solo si isOwner es true,
@@ -19,15 +26,15 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     [SerializeField] private List<WeaponScripteableObject> weapons;
     [SerializeField] private List<WeaponScripteableObject> filteredWeapons = new List<WeaponScripteableObject>();
     [SerializeField] private WeaponScripteableObject selectedWeapon;
+    [SerializeField] private randomType randomType;
+    private List<PlayerID> _players = new();
+    
+
 
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
     }
-
-    private List<PlayerID> _players = new();
-    [SerializeField] private randomType randomType;
-
 
     public override void Enter(List<PlayerHealth> data, bool asServer)
     {
@@ -49,6 +56,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             _players.Add(player.owner.Value);
             playerCount++;
         }
+        filteredWeapons = filteredWeaponsList();
         selectedWeapon = ChooseWeaponByChance(filteredWeapons);
 
         ServerShowSlot();
@@ -61,7 +69,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     {
         foreach (var player in normalPlayers)
         {
-            player.TargetStartSpin(player.owner.Value);
+            player.TargetStartSpin(player.owner.Value, selectedWeapon, filteredWeapons);
         }
     }
 

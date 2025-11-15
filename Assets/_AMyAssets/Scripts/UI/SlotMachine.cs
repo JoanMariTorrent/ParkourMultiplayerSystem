@@ -4,13 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using PurrNet;
 
-public enum randomType
-{
-    Primary,
-    Secondary,
-    Utility,
-    All
-}
 public class SlotMachine : View
 {
     [Space]
@@ -22,13 +15,10 @@ public class SlotMachine : View
     [Space]
     [Header("Layout")]
     [Tooltip("Slots total que generara, cuantos mas haya, mas rapido girara ya que el Slot final (resultado) siempre esta por el final.")]
-
     [SerializeField] private int totalSlots = 50;
     [Tooltip("Espacio que hay entre slot y slot.")]
-
     [SerializeField] private float slotSpacing = 250f;
     [Tooltip("Altura en la que empiezan a spanwear los slots.")]
-
     [SerializeField] private float spawnHeight = 300f;
 
     [Space]
@@ -38,8 +28,6 @@ public class SlotMachine : View
     [Tooltip("Tipo de curva que seguira el spin.")]
     [SerializeField] private AnimationCurve spinCurve;
     [Tooltip("Decide de que tipo se hara el random.")]
-
-    [SerializeField] private randomType randomType;
     private List<RectTransform> slotList = new List<RectTransform>();
     private bool isSpinning = false;
     public WeaponScripteableObject finalWeapon;
