@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine.Rendering;
 using Interfaces;
-using UnityEditor;
 
 public struct CharacterInput
 {
@@ -60,6 +59,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public int currentGunIndex;
     [Space]
     [SerializeField] private LayerMask interactLayerMask;
+    [Range(0f, 10f)][SerializeField] private float interactDistance;
     [Space]
     [SerializeField] private KinematicCharacterMotor motor;
     [SerializeField] private Transform cameraTarget;
@@ -208,7 +208,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         if (_requestedInteract)
         {
-            Physics.Raycast(cameraTransform.transform.position, cameraTransform.forward, out var hit, 10f, interactLayerMask);
+            Physics.Raycast(cameraTransform.transform.position, cameraTransform.forward, out var hit, interactDistance, interactLayerMask);
             Debug.DrawLine(cameraTransform.transform.position, hit.point, Color.red, 0.1f);
             if (hit.transform != null)
             {

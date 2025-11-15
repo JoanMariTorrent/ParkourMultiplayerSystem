@@ -823,6 +823,7 @@ MonoBehaviour:
   interactLayerMask:
     serializedVersion: 2
     m_Bits: 4096
+  interactDistance: 3.03
   motor: {fileID: 3728205283233136871}
   cameraTarget: {fileID: 2346163092454338177}
   cameraTransform: {fileID: 2809929627101837603}
@@ -2528,8 +2529,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6634796238611695022}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.09042624, y: 0.1574893, z: -0.014379152, w: -0.9832668}
+  m_LocalPosition: {x: -3.0054836, y: 2.0099998, z: -5.6350393}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
