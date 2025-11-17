@@ -334,7 +334,6 @@ public class WeaponManager : NetworkBehaviour
         SwitchWeapon(indexWeapon);
     }
 
-    [ObserversRpc(requireServer: false)]
     public void SwitchWeapon(int index) // FALTA ARREGLAR QUE AL CAMBIAR EL ARMA, SE OCULTE LA ANTERIOR Y SE ACTIVE LA NUEVA
     {
         if (index < 0 || index >= _ownedWeapons.Count)
