@@ -1,7 +1,6 @@
 ﻿using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
-using System.Collections.Generic;
 
 
 public class WeaponManager : NetworkBehaviour
@@ -13,7 +12,7 @@ public class WeaponManager : NetworkBehaviour
 
     public Gun _currentGun;
     [SerializeField] private LastGunEquiped lastGun;
-    public List<GameObject> _ownedWeapons = new();
+    public SyncList<GameObject> _ownedWeapons = new();
     [SerializeField] private GameObject weaponInstance = null;
     [SerializeField] private PlayerCharacter playerChar;
     [SerializeField] private Player player;
@@ -334,9 +333,9 @@ public class WeaponManager : NetworkBehaviour
         SwitchWeapon(indexWeapon);
     }
 
+    [ObserversRpc(requireServer: false)]
     public void SwitchWeapon(int index) // FALTA ARREGLAR QUE AL CAMBIAR EL ARMA, SE OCULTE LA ANTERIOR Y SE ACTIVE LA NUEVA
     {
-        if(!isOwner) return;
         if (index < 0 || index >= _ownedWeapons.Count)
             return;
 
@@ -415,6 +414,7 @@ public class WeaponManager : NetworkBehaviour
         DoDropGunLogic();
     }
 
+    [ObserversRpc(runLocally: false)]
     private void DoDropGunLogic()
     {
         if (_currentGun == null)
