@@ -259,7 +259,7 @@ public class WeaponManager : NetworkBehaviour
         weaponInstance = Instantiate(weaponPrefab, _handTransform);
         weaponInstance.transform.localPosition = Vector3.zero;
         weaponInstance.transform.localRotation = Quaternion.identity;
-        weaponInstance.SetActive(true); // 🔥 asegúrate de que esté activa
+        weaponInstance.SetActive(true);
 
         // Obtener script
         _currentGun = weaponInstance.GetComponent<Gun>();
@@ -333,7 +333,7 @@ public class WeaponManager : NetworkBehaviour
         SwitchWeapon(indexWeapon);
     }
 
-    [ObserversRpc]
+    [ObserversRpc(requireServer: false)]
     public void SwitchWeapon(int index) // FALTA ARREGLAR QUE AL CAMBIAR EL ARMA, SE OCULTE LA ANTERIOR Y SE ACTIVE LA NUEVA
     {
         if (index < 0 || index >= _ownedWeapons.Count)
@@ -368,6 +368,7 @@ public class WeaponManager : NetworkBehaviour
 
 
         // Setea la posicion y rotacion de la nueva arma
+        weaponToSwitch.transform.SetParent(_handTransform);
         weaponToSwitch.transform.localPosition = Vector3.zero;
         weaponToSwitch.transform.localRotation = Quaternion.identity;
 
