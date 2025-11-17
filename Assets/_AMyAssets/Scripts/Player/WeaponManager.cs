@@ -336,6 +336,7 @@ public class WeaponManager : NetworkBehaviour
 
     public void SwitchWeapon(int index) // FALTA ARREGLAR QUE AL CAMBIAR EL ARMA, SE OCULTE LA ANTERIOR Y SE ACTIVE LA NUEVA
     {
+        if(!isOwner) return;
         if (index < 0 || index >= _ownedWeapons.Count)
             return;
 
@@ -414,7 +415,6 @@ public class WeaponManager : NetworkBehaviour
         DoDropGunLogic();
     }
 
-    [ObserversRpc(runLocally: false)]
     private void DoDropGunLogic()
     {
         if (_currentGun == null)
