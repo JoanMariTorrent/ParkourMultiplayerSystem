@@ -247,6 +247,18 @@ public class Player : NetworkBehaviour
             Debug.Log("<color=red> Slot machine is running!");
             yield return null;
         }
+
+        slotMachine.GetComponent<CanvasGroup>().alpha = 0f;
+        slotMachine.gameObject.SetActive(false);
+
+        NotifySpinFinished_ServerRPC(owner.Value, idWeapon);
+    }
+
+
+    [ServerRpc]
+    public void NotifySpinFinished_ServerRPC(PlayerID playerID, int idWeapon)
+    {
+        var selectedWeapon = weaponDataBase.GetWeaponByID(idWeapon);
         var weaponManager = GetComponent<WeaponManager>();
         if(selectedWeapon.weaponType == WeaponScripteableType.Primary)
             weaponManager.NewWeapon(selectedWeapon.gunPrefab, true, false, false);
@@ -254,17 +266,7 @@ public class Player : NetworkBehaviour
             weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, false, false);
         else if (selectedWeapon.weaponType == WeaponScripteableType.Utility)
             weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, true, false);
-
-        slotMachine.GetComponent<CanvasGroup>().alpha = 0f;
-        slotMachine.gameObject.SetActive(false);
-
-        NotifySpinFinished_ServerRPC(owner.Value);
-    }
-
-
-    [ServerRpc]
-    public void NotifySpinFinished_ServerRPC(PlayerID playerID)
-    {
+        
         if(InstanceHandler.TryGetInstance(out SpawningGunsState spawningGunsState))
         {
             spawningGunsState.OnPlayerFinishedSpin(playerID);
