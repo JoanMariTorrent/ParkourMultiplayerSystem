@@ -26,7 +26,6 @@ public class PlayerHealth : NetworkBehaviour
         if (isOwner)
         {
             _health.onChanged += OnHealthChanged;
-            if(!InstanceHandler.TryGetInstance(out GameMainView gameMainView)) return;
             canvas.gameMainView.UpdateHealth(_health.value);
             
         }
