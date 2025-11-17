@@ -7,6 +7,7 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private SyncVar<int> _health = new(100);
     [SerializeField] private int _selfLayer, _otherLayer;
     [SerializeField] private PlayerCharacter playerCharacter;
+    [SerializeField] private Canvas canvas;
 
     public Action<PlayerID> OnDeath_Server;
     public PlayerID PlayerID => owner.Value;
@@ -26,7 +27,7 @@ public class PlayerHealth : NetworkBehaviour
         {
             _health.onChanged += OnHealthChanged;
             if(!InstanceHandler.TryGetInstance(out GameMainView gameMainView)) return;
-            gameMainView.UpdateHealth(_health.value);
+            canvas.gameMainView.UpdateHealth(_health.value);
             
         }
     }
@@ -41,12 +42,7 @@ public class PlayerHealth : NetworkBehaviour
 
     private void OnHealthChanged(int _newHealth)
     {
-        if(!InstanceHandler.TryGetInstance(out GameMainView gameMainView))
-        {
-            Debug.LogAssertion("No se ha encontrado gameMainView!");
-            return;
-        }
-        gameMainView.UpdateHealth(_newHealth);
+        canvas.gameMainView.UpdateHealth(_newHealth);
     }
 
     private void SetLayerRecursive(GameObject _obj, int _layer)
