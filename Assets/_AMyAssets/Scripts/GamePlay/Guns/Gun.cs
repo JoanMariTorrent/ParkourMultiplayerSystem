@@ -105,8 +105,8 @@ public class Gun : NetworkBehaviour, ITakeGun
     [Header("Inspect")]
     [SerializeField] private bool scopeEquiped;
     [SerializeField] private MeshRenderer scopeMesh;
-    private Vector3 _originalPosition;
-    private Quaternion _originalRotation;
+    private Vector3 _originalPosition = new Vector3(0, 0, 0);
+    private Quaternion _originalRotation = new Quaternion(0,0,0,0);
 
     private Coroutine _recoilCoroutine;
     private float _lastFireTime;
@@ -130,8 +130,6 @@ public class Gun : NetworkBehaviour, ITakeGun
 
     private void Start()
     {
-        _originalPosition = transform.localPosition;
-        _originalRotation = transform.localRotation;
         if (rb == null) rb = GetComponent<Rigidbody>();
 
         rb.isKinematic = true;
