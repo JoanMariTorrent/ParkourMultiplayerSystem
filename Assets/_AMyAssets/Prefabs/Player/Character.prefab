@@ -983,9 +983,9 @@ MonoBehaviour:
   _currentGun: {fileID: 0}
   lastGun: 0
   _ownedWeapons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
+    _list: []
   weaponInstance: {fileID: 0}
   playerChar: {fileID: 8159890137296869839}
   player: {fileID: 0}

@@ -34,8 +34,8 @@ public class WeaponsDataManager : NetworkBehaviour
         {
             if (Type == 1)
             {
-                int index = Random.Range(0, _primaryWeaponData.Length);
-                weapons[i] = _primaryWeaponData[index];
+                int index = Random.Range(0, primaryWeapons.Count);
+                weapons[i] = primaryWeapons[index].gunPrefab;
             }
             else if (Type == 2)
             {
