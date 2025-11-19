@@ -255,6 +255,9 @@ public class WeaponManager : NetworkBehaviour
         if (_currentGun != null)
             _currentGun.gameObject.SetActive(false);
 
+
+        if(_handTransform == null) { Debug.Log("HAND TRANSFORM ES NUUUUUUUUUUUUUUUUUUUULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"); }
+
         // Instanciar el arma
         weaponInstance = Instantiate(weaponPrefab, _handTransform);
         weaponInstance.transform.localPosition = Vector3.zero;
