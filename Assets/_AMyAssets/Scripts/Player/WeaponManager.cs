@@ -260,9 +260,10 @@ public class WeaponManager : NetworkBehaviour
 
         // Instanciar el arma
         weaponInstance = Instantiate(weaponPrefab, _handTransform);
+        weaponInstance.SetActive(true);
         weaponInstance.transform.localPosition = Vector3.zero;
         weaponInstance.transform.localRotation = Quaternion.identity;
-        weaponInstance.SetActive(true);
+        Debug.Log($"<color=white> Posicion de la nueva arma: {weaponInstance.transform.localPosition} </color>");
 
         // Obtener script
         _currentGun = weaponInstance.GetComponent<Gun>();
