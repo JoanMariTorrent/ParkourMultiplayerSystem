@@ -177,6 +177,9 @@ public class Gun : NetworkBehaviour, ITakeGun
         reloading = false;
         weaponManager = wm;
 
+        transform.localPosition = _originalPosition;
+        transform.localRotation = _originalRotation;
+
         if (isOwner && player == null)
         {
             Debug.LogAssertionFormat("player es null en setup!");
