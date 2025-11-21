@@ -17,6 +17,12 @@ public class WeaponManager : NetworkBehaviour
     [SerializeField] private PlayerCharacter playerChar;
     [SerializeField] private Player player;
 
+
+    private void OnWeaponListChanged(SyncListChange<GameObject> change)
+    {
+        Debug.Log($"Inventario actualizado: {change.index} - {change.value}");
+    }
+
     void Start()
     {
         if (isOwner)
@@ -29,6 +35,11 @@ public class WeaponManager : NetworkBehaviour
     protected override void OnSpawned()
     {
         enabled = isOwner;
+
+        if (isOwner)
+        {
+            _ownedWeapons.onChanged += OnWeaponListChanged;
+        }
     }
 
     void Update()
