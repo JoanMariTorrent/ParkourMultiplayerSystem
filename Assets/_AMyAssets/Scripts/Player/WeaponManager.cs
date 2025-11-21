@@ -20,16 +20,21 @@ public class WeaponManager : NetworkBehaviour
 
     void Awake()
     {
-        if(!_ownedWeapons.ownerAuth && isOwner)
-        {
-            _ownedWeapons = new SyncList<GameObject>(true);
-        }
+        
     }
 
 
 
     protected override void OnSpawned()
     {
+        if(isOwner)
+        {
+            if(!_ownedWeapons.ownerAuth)
+            {
+                _ownedWeapons = new SyncList<GameObject>(true);
+            }
+
+        }
         GetPlayerScript();
     }
 
