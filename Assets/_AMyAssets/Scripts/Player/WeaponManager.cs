@@ -12,7 +12,7 @@ public class WeaponManager : NetworkBehaviour
 
     public Gun _currentGun;
     [SerializeField] private LastGunEquiped lastGun;
-    public SyncList<GameObject> _ownedWeapons = new SyncList<GameObject>(ownerAuth: true);
+    public SyncList<GameObject> _ownedWeapons = new SyncList<GameObject>(true);
     [SerializeField] private GameObject weaponInstance = null;
     [SerializeField] private PlayerCharacter playerChar;
     [SerializeField] private Player player;
@@ -22,10 +22,6 @@ public class WeaponManager : NetworkBehaviour
         if (isOwner)
         {
             GetPlayerScript();
-            if(!_ownedWeapons.ownerAuth)
-            {
-                _ownedWeapons = new SyncList<GameObject>(ownerAuth: true);
-            }
         }
     }
 
