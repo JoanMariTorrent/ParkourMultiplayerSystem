@@ -59,7 +59,8 @@ public class GunPlatform : NetworkBehaviour
 
         
     }
-    [ServerRpc(requireOwnership: false)]
+    
+    //[ServerRpc(requireOwnership: false)]
     private void SpawnGun()
     {
         typeGun = 1; //Random.Range(1, 3);
@@ -108,7 +109,7 @@ public class GunPlatform : NetworkBehaviour
         player = null;
     }
 
-    [ServerRpc(requireOwnership:false)]
+    //[ServerRpc(requireOwnership:false)]
     private void RestartAll()
     {
         Destroy(spawnedGun);
@@ -120,7 +121,7 @@ public class GunPlatform : NetworkBehaviour
         RestartAll_ClientRpc(); // mandar actualización a clientes
     }
 
-    [ObserversRpc]
+    //[ObserversRpc]
     private void RestartAll_ClientRpc()
     {
         // ocultar en los clientes
