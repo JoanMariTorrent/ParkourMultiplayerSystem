@@ -734,11 +734,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1224085259338201639}
   - component: {fileID: 3086454144717506805}
+  - component: {fileID: 1656825130629811245}
   - component: {fileID: 7636289352493295535}
   - component: {fileID: 8159890137296869839}
   - component: {fileID: 3728205283233136871}
   - component: {fileID: 6592323882771729509}
-  - component: {fileID: 1656825130629811245}
   - component: {fileID: 2662652551195715526}
   - component: {fileID: 1291896412816306905}
   - component: {fileID: 6714405065655426304}
@@ -794,6 +794,46 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &1656825130629811245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161192856471410433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ea0c903913bf3c4a88cea70441be1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  _handTransform: {fileID: 8132308467278853882}
+  _playerCamera: {fileID: 7793214397378440027}
+  _hitLayer:
+    serializedVersion: 2
+    m_Bits: 2391
+  recoil: {fileID: 8482129210503842699}
+  _currentGun: {fileID: 0}
+  lastGun: 0
+  _ownedWeapons:
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
+    _list: []
+  mySync:
+    _ownerAuth: 1
+    _sendIntervalInSeconds: 0
+    _list: []
+  weaponInstance: {fileID: 0}
+  playerChar: {fileID: 8159890137296869839}
+  player: {fileID: 0}
 --- !u!114 &7636289352493295535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -984,42 +1024,6 @@ MonoBehaviour:
   _otherLayer: 8
   playerCharacter: {fileID: 8159890137296869839}
   canvas: {fileID: 2242396938773713767}
---- !u!114 &1656825130629811245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1161192856471410433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ea0c903913bf3c4a88cea70441be1df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isSetup: 0
-  _prefabId: -2147483648
-  _componentIndex: -2147483648
-  _shouldBePooled: 0
-  _parent: {fileID: 0}
-  _invertedPathToNearestParent: 
-  _directChildren: []
-  _networkRules: {fileID: 0}
-  _visitiblityRules: {fileID: 0}
-  _handTransform: {fileID: 8132308467278853882}
-  _playerCamera: {fileID: 7793214397378440027}
-  _hitLayer:
-    serializedVersion: 2
-    m_Bits: 2391
-  recoil: {fileID: 8482129210503842699}
-  _currentGun: {fileID: 0}
-  lastGun: 0
-  _ownedWeapons:
-    _ownerAuth: 1
-    _sendIntervalInSeconds: 0
-    _list: []
-  weaponInstance: {fileID: 0}
-  playerChar: {fileID: 8159890137296869839}
-  player: {fileID: 0}
 --- !u!114 &2662652551195715526
 MonoBehaviour:
   m_ObjectHideFlags: 0

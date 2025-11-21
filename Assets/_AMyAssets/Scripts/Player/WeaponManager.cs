@@ -12,23 +12,25 @@ public class WeaponManager : NetworkBehaviour
 
     public Gun _currentGun;
     [SerializeField] private LastGunEquiped lastGun;
-    public SyncList<GameObject> _ownedWeapons = new(true);
+    public SyncList <GameObject> _ownedWeapons = new(ownerAuth: true);
+    public SyncList <GameObject> mySync = new(ownerAuth: true);
     [SerializeField] private GameObject weaponInstance = null;
     [SerializeField] private PlayerCharacter playerChar;
     [SerializeField] private Player player;
 
-    void Start()
+    void Awake()
     {
-        if (isOwner)
+        if(!_ownedWeapons.ownerAuth)
         {
-            GetPlayerScript();
+            _ownedWeapons = new SyncList<GameObject>(true);
         }
     }
 
 
+
     protected override void OnSpawned()
     {
-        enabled = isOwner;
+        GetPlayerScript();
     }
 
     void Update()
@@ -513,12 +515,5 @@ public class WeaponManager : NetworkBehaviour
     {
         player = GetComponent<Player>();
     }
-
-
-
-
-
-
-
 
 }
