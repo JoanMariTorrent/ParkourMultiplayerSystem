@@ -190,6 +190,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeHand"",
+                    ""type"": ""Button"",
+                    ""id"": ""92c7bb10-6a2a-45a2-b775-56a8776e1326"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -412,6 +421,17 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""action"": ""DropGun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dab08ff6-fc11-484d-90f9-cc59e8f02f5d"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -437,6 +457,7 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         m_GamePlay_Interact = m_GamePlay.FindAction("Interact", throwIfNotFound: true);
         m_GamePlay_Reload = m_GamePlay.FindAction("Reload", throwIfNotFound: true);
         m_GamePlay_DropGun = m_GamePlay.FindAction("DropGun", throwIfNotFound: true);
+        m_GamePlay_ChangeHand = m_GamePlay.FindAction("ChangeHand", throwIfNotFound: true);
     }
 
     ~@PlayerInputsAction()
@@ -528,6 +549,7 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Interact;
     private readonly InputAction m_GamePlay_Reload;
     private readonly InputAction m_GamePlay_DropGun;
+    private readonly InputAction m_GamePlay_ChangeHand;
     /// <summary>
     /// Provides access to input actions defined in input action map "GamePlay".
     /// </summary>
@@ -583,6 +605,10 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "GamePlay/DropGun".
         /// </summary>
         public InputAction @DropGun => m_Wrapper.m_GamePlay_DropGun;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/ChangeHand".
+        /// </summary>
+        public InputAction @ChangeHand => m_Wrapper.m_GamePlay_ChangeHand;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -642,6 +668,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @DropGun.started += instance.OnDropGun;
             @DropGun.performed += instance.OnDropGun;
             @DropGun.canceled += instance.OnDropGun;
+            @ChangeHand.started += instance.OnChangeHand;
+            @ChangeHand.performed += instance.OnChangeHand;
+            @ChangeHand.canceled += instance.OnChangeHand;
         }
 
         /// <summary>
@@ -686,6 +715,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @DropGun.started -= instance.OnDropGun;
             @DropGun.performed -= instance.OnDropGun;
             @DropGun.canceled -= instance.OnDropGun;
+            @ChangeHand.started -= instance.OnChangeHand;
+            @ChangeHand.performed -= instance.OnChangeHand;
+            @ChangeHand.canceled -= instance.OnChangeHand;
         }
 
         /// <summary>
@@ -816,5 +848,12 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDropGun(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ChangeHand" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnChangeHand(InputAction.CallbackContext context);
     }
 }
