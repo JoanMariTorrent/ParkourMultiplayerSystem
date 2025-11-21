@@ -20,7 +20,7 @@ public class WeaponManager : NetworkBehaviour
 
     void Awake()
     {
-        if(!_ownedWeapons.ownerAuth)
+        if(!_ownedWeapons.ownerAuth && isOwner)
         {
             _ownedWeapons = new SyncList<GameObject>(true);
         }
