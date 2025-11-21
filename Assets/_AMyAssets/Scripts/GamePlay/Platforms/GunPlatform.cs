@@ -49,7 +49,7 @@ public class GunPlatform : NetworkBehaviour
                 RestartAll();
             }
         }
-        
+
         if (!gunSpawned)
         {
             timer += Time.deltaTime;
@@ -62,7 +62,6 @@ public class GunPlatform : NetworkBehaviour
         
     }
 
-    [ServerRpc]
     private void SpawnGun()
     {
         typeGun = 1; //Random.Range(1, 3);
