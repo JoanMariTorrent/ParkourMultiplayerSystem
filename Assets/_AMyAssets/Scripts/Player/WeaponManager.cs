@@ -137,15 +137,10 @@ public class WeaponManager : NetworkBehaviour
         InstantiateGun(utilityPrefab);
     }
 
-    [ServerRpc]
-    public void NewWeaponFromServer(GameObject weaponPrefab, bool primary, bool utility, bool groundGun)
-    {
-        NewWeapon(weaponPrefab, primary, utility, groundGun);
-    }
-
 
     public void NewWeapon(GameObject weaponPrefab, bool primary, bool utility, bool groundGun)
     {
+        if(!_ownedWeapons.ownerAuth) _ownedWeapons = new(true);
         // Se generan los todos los espacios del array
         EnsureWeaponSlots();
 
