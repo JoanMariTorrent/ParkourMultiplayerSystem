@@ -254,11 +254,11 @@ public class Player : NetworkBehaviour
         var selectedWeapon = weaponDataBase.GetWeaponByID(idWeapon);
         var weaponManager = GetComponent<WeaponManager>();
         if(selectedWeapon.weaponType == WeaponScripteableType.Primary)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, true, false, false);
+            weaponManager.NewWeaponFromServer(selectedWeapon.gunPrefab, true, false, false);
         else if (selectedWeapon.weaponType == WeaponScripteableType.Secondary)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, false, false);
+            weaponManager.NewWeaponFromServer(selectedWeapon.gunPrefab, false, false, false);
         else if (selectedWeapon.weaponType == WeaponScripteableType.Utility)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, true, false);
+            weaponManager.NewWeaponFromServer(selectedWeapon.gunPrefab, false, true, false);
         
         if(InstanceHandler.TryGetInstance(out SpawningGunsState spawningGunsState))
         {
