@@ -1149,7 +1149,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 1
+  _minPlayers: 2
 --- !u!4 &1626096718
 Transform:
   m_ObjectHideFlags: 0
@@ -1257,8 +1257,10 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  primaryWeapons: []
-  secondaryWeapons: []
+  primaryWeapons:
+  - {fileID: 11400000, guid: d51b72bfb57cea343906c734750492b9, type: 2}
+  secondaryWeapons:
+  - {fileID: 11400000, guid: daa99adb72bf97a43a90b95a167883a1, type: 2}
   _primaryWeaponData:
   - {fileID: 1383448258628988601, guid: 47e46472208dc3e4ba0a1f9b94a96aaf, type: 3}
   _secondaryWeaponData:
