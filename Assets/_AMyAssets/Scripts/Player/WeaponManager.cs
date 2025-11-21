@@ -1,7 +1,6 @@
 ﻿using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
-using System.Collections.Generic;
 
 
 public class WeaponManager : NetworkBehaviour
@@ -13,7 +12,7 @@ public class WeaponManager : NetworkBehaviour
 
     public Gun _currentGun;
     [SerializeField] private LastGunEquiped lastGun;
-    public List <GameObject> _ownedWeapons = new();
+    public SyncList <GameObject> _ownedWeapons;
     public SyncList <GameObject> mySync = new(ownerAuth: true);
     [SerializeField] private GameObject weaponInstance = null;
     [SerializeField] private PlayerCharacter playerChar;
@@ -21,6 +20,7 @@ public class WeaponManager : NetworkBehaviour
 
     void Start()
     {
+        if(isOwner) _ownedWeapons = new(ownerAuth: true);
     }
 
 
