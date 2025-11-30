@@ -363,7 +363,7 @@ MonoBehaviour:
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 1
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 2
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -914,25 +914,39 @@ MonoBehaviour:
   airAcceleration: 70
   jumps: 0
   jumpSpeed: 20
-  coyoteTime: 0.2
+  coyoteTime: 0.1
   jumpSustainGravity: 0.6
   gravity: -60
-  wallVelocity: 15
-  wallGravity: -10
-  wallCheckDistance: 1.5
+  wallRunSpeed: 25
+  wallGravity: -5
+  wallCheckDistance: 1
   wallLayer:
     serializedVersion: 2
     m_Bits: 2048
-  slideStartSpeed: 0
-  slideEndSpeed: 17
+  wallJumpOutForce: 15
+  wallJumpUpForce: 12
+  wallEnterMinHeight: 0.5
+  wallJumpPostTime: 0.5
+  wallMomentumDecay: 0.4
+  wallRunAcceleration: 7
+  climbSpeed: 15
+  maxClimbDuration: 0.8
+  climbJumpBackForce: 10
+  climbJumpUpForce: 15
+  maxClimbAngle: 30
+  slideStartSpeed: 25
+  slideEndSpeed: 15
   slideFriction: 0.65
   slideSteerAcceleration: 5
   slideGravity: -70
+  slideCooldown: 1
   standheight: 2
   crouchHeight: 1
   crouchHeightResponse: 15
   standCameraTargetHeight: 1
   crouchCameraTargetHeight: 0.7
+  wallRunTiltAngle: 15
+  tiltSpeed: 10
   _lastGunEquiped: 0
   _requestedShoot: 0
   _requestedShootThisFrame: 0
@@ -1024,6 +1038,7 @@ MonoBehaviour:
   _otherLayer: 8
   playerCharacter: {fileID: 8159890137296869839}
   canvas: {fileID: 2242396938773713767}
+  deathVFX: {fileID: 5094046088325549080, guid: 5193592141f1fad4eba8dbe541335509, type: 3}
 --- !u!114 &2662652551195715526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1046,6 +1061,7 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   isGodMode: 0
+  playerCamera: {fileID: 7793214397378440027}
 --- !u!114 &1291896412816306905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1115,6 +1131,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 39280814-0b39-4fd0-81f0-f388048a2655
     m_ActionName: 'GamePlay/DropGun[/Keyboard/t]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 92c7bb10-6a2a-45a2-b775-56a8776e1326
+    m_ActionName: 'GamePlay/ChangeHand[/Keyboard/x]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: GamePlay
@@ -2472,6 +2492,7 @@ GameObject:
   m_Component:
   - component: {fileID: 421506196616900323}
   - component: {fileID: 7793214397378440027}
+  - component: {fileID: 1432835207256696606}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -2518,7 +2539,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60.000004
+    FieldOfView: 70
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -2537,6 +2558,23 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!114 &1432835207256696606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6059300231559083900}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 2a138436052248641b83600fd2a6f3e8, type: 2}
 --- !u!1 &6634796238611695022
 GameObject:
   m_ObjectHideFlags: 0
@@ -2550,6 +2588,7 @@ GameObject:
   - component: {fileID: 5148467332725320114}
   - component: {fileID: 1782244477389463945}
   - component: {fileID: 1018131733051252517}
+  - component: {fileID: 8087707952870383226}
   m_Layer: 0
   m_Name: Camera (1)
   m_TagString: Untagged
@@ -2605,7 +2644,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 60.000004
+  field of view: 70
   orthographic: 0
   orthographic size: 10
   m_Depth: 0
@@ -2649,7 +2688,7 @@ MonoBehaviour:
   m_CameraType: 0
   m_Cameras:
   - {fileID: 82105979072306439}
-  m_RendererIndex: -1
+  m_RendererIndex: 1
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -2708,6 +2747,23 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!114 &8087707952870383226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6634796238611695022}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 2a138436052248641b83600fd2a6f3e8, type: 2}
 --- !u!1 &6907243404430894141
 GameObject:
   m_ObjectHideFlags: 0

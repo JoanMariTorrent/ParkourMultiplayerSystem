@@ -174,16 +174,7 @@ public class Player : NetworkBehaviour
 
         playerCharacter.UpdateInput(characterInput);
 
-#if UNITY_EDITOR
-        if (Keyboard.current.tKey.wasPressedThisFrame)
-        {
-            var ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            if (Physics.Raycast(ray, out var hit))
-            {
-                Teleport(hit.point);
-            }
-        }
-#endif
+        
     }
 
 

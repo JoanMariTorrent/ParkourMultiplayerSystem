@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Cloud
-  m_Shader: {fileID: -6465566751694194690, guid: 787caba0ffa136046b52ca7cc896fb59,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 787caba0ffa136046b52ca7cc896fb59, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -99,7 +98,7 @@ Material:
     - _DstBlendAlpha: 0
     - _EdgeFade: 0
     - _EnvironmentReflections: 1
-    - _FadeOutDistance: 0.362
+    - _FadeOutDistance: 0.302
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0

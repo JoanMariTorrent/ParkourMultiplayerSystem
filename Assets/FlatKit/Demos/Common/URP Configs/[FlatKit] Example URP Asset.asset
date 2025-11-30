@@ -18,8 +18,9 @@ MonoBehaviour:
   m_RendererData: {fileID: 11400000, guid: 618d298269e66c542b306de85db1faea, type: 2}
   m_RendererDataList:
   - {fileID: 11400000, guid: 4cbdadf2d11484d7aab34b901b5d9c52, type: 2}
-  - {fileID: 11400000, guid: dc6e6c2cb0c98b444a9b69b34beef920, type: 2}
-  m_DefaultRendererIndex: 1
+  - {fileID: 11400000, guid: 5e7c64e6d57ed624495e212177a8df0a, type: 2}
+  - {fileID: 11400000, guid: a81fb6f7578d3e04f8aa53ff979a325e, type: 2}
+  m_DefaultRendererIndex: 0
   m_RequireDepthTexture: 1
   m_RequireOpaqueTexture: 1
   m_OpaqueDownsampling: 0
@@ -55,7 +56,7 @@ MonoBehaviour:
   m_ReflectionProbeBlending: 0
   m_ReflectionProbeBoxProjection: 0
   m_ShadowDistance: 100
-  m_ShadowCascadeCount: 4
+  m_ShadowCascadeCount: 1
   m_Cascade2Split: 0.25
   m_Cascade3Split: {x: 0.1, y: 0.3}
   m_Cascade4Split: {x: 0.067, y: 0.2, z: 0.467}

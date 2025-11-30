@@ -342,7 +342,11 @@ public class Gun : NetworkBehaviour, ITakeGun
             PlayShotEffectObserversRpc();
             PlayerHitObserversRpc(victim, victim.transform.InverseTransformPoint(hit.point), hit.normal);
         }
-
+        else if (hit.transform.TryGetComponent(out HealthObject objectVictim))
+        {
+            ApplyDamageServerRpcToObject(objectVictim, _gunDamage);
+            PlayShotEffectObserversRpc();
+        }
         // Si no tiene el script HealthManager, se hace el VFX de mapa
         else
         {
@@ -366,6 +370,12 @@ public class Gun : NetworkBehaviour, ITakeGun
         }
 
     }
+
+    [ServerRpc]
+    private void ApplyDamageServerRpcToObject(HealthObject healthObject, int gunDamage)
+    {
+        healthObject.ChangeHealth(-gunDamage, transform.position);
+    } 
 
 
     private PlayerHealth FindPlayerByID(PlayerID id)

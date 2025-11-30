@@ -8,6 +8,7 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private int _selfLayer, _otherLayer;
     [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject deathVFX;
 
     public Action<PlayerID> OnDeath_Server;
     public PlayerID PlayerID => owner.Value;
@@ -70,10 +71,18 @@ public class PlayerHealth : NetworkBehaviour
                 if(owner.HasValue)
                     scoreManager.AddDeath(owner.Value);
             }
+            PlayDeathEffects();
             OnDeath_Server?.Invoke(owner.Value);
             Destroy(gameObject);
         }
 
 
+    }
+    
+    [ObserversRpc(runLocally: true)]
+    private void PlayDeathEffects()
+    {
+        Vector3 spawnVFX = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+        Instantiate(deathVFX, spawnVFX, Quaternion.identity);
     }
 }

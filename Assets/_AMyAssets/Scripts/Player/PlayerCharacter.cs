@@ -21,29 +21,13 @@ public struct CharacterInput
     public int RequestedGunIndex;
     public bool Interact;
     public bool Reload;
-
     public bool DropGun;
 }
 
-public enum LastGunEquiped
-{
-    None, Primary, Secondary, Utility
-}
-
-public enum CrouchInput
-{
-    None, Toggle
-}
-
-public enum Stance
-{
-    Stand, Crouch, Slide, Wall
-}
-
-public enum WallSide
-{
-    Left, Right, None
-}
+public enum LastGunEquiped { None, Primary, Secondary, Utility }
+public enum CrouchInput { None, Toggle }
+public enum Stance { Stand, Crouch, Slide, Wall, Climb }
+public enum WallSide { Left, Right, None }
 
 public struct CharacterState
 {
@@ -51,13 +35,13 @@ public struct CharacterState
     public Stance Stance;
     public Vector3 Velocity;
     public Vector3 Acceleration;
+    public Vector3 WallNormal; 
 }
-
 
 public class PlayerCharacter : NetworkBehaviour, ICharacterController
 {
+    [Header("References")]
     public int currentGunIndex;
-    [Space]
     [SerializeField] private LayerMask interactLayerMask;
     [Range(0f, 10f)][SerializeField] private float interactDistance;
     [Space]
@@ -71,7 +55,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [SerializeField] private CinemachineCamera playerCamera;
     [SerializeField] private Rigidbody rb;
 
-    [Space]
+    [Header("Movement")]
     [SerializeField] private float walkSpeed = 12f;
     [SerializeField] private float runSpeed = 20f;
     [SerializeField] private float crouchSpeed = 7f;
@@ -87,17 +71,38 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [Range(0f, 1f)]
     [SerializeField] private float jumpSustainGravity = 0.4f;
     [SerializeField] private float gravity = -90f;
-    [Space]
-    [SerializeField] private float wallVelocity = 15f;
-    [SerializeField] private float wallGravity = -10f;
-    [SerializeField] private float wallCheckDistance = 1f;
+    
+    [Header("Wall Run Settings")]
+    [SerializeField] private float wallRunSpeed = 18f; 
+    [SerializeField] private float wallGravity = -10f; 
+    [SerializeField] private float wallCheckDistance = 0.8f; 
     [SerializeField] private LayerMask wallLayer;
-    [Space]
+    [SerializeField] private float wallJumpOutForce = 15f;
+    [SerializeField] private float wallJumpUpForce = 12f;
+    [SerializeField] private float wallEnterMinHeight = 0.5f;
+    [SerializeField] private float wallJumpPostTime = 0.35f;
+    [Tooltip("Qué tan rápido pierdes el impulso extra (valores bajos = más deslizamiento)")]
+    [SerializeField] private float wallMomentumDecay = 2f; 
+    [Tooltip("Qué tan rápido aceleras hasta la velocidad base de wallrun")]
+    [SerializeField] private float wallRunAcceleration = 10f;
+
+    [Header("Wall Climb Settings")]
+    [SerializeField] private float climbSpeed = 20f; 
+    [SerializeField] private float maxClimbDuration = 1.0f; 
+    [SerializeField] private float climbJumpBackForce = 10f;
+    [SerializeField] private float climbJumpUpForce = 15f;
+    [Tooltip("Ángulo máximo de mirada a la pared para permitir escalar (ej: 30 grados). Si miras más de lado, hará Wall Run.")]
+    [SerializeField] private float maxClimbAngle = 30f; 
+
+    [Header("Slide Settings")]
     [SerializeField] private float slideStartSpeed = 25f;
     [SerializeField] private float slideEndSpeed = 15f;
     [SerializeField] private float slideFriction = 0.5f;
     [SerializeField] private float slideSteerAcceleration = 5f;
     [SerializeField] private float slideGravity = -90f;
+    [Tooltip("Tiempo de espera en segundos antes de poder deslizarse de nuevo")]
+    [SerializeField] private float slideCooldown = 1.0f; 
+
     [Space]
     [SerializeField] private float standheight = 2f;
     [SerializeField] private float crouchHeight = 1f;
@@ -107,20 +112,24 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [Range(0f, 1f)]
     [SerializeField] private float crouchCameraTargetHeight = 0.7f;
 
+    [Header("Camera Effects")]
+    [SerializeField] private float wallRunTiltAngle = 15f; 
+    [SerializeField] private float tiltSpeed = 10f;
+
+    // State
     public CharacterState _state;
     private CharacterState _lastState;
     private CharacterState _tempState;
     public LastGunEquiped _lastGunEquiped;
 
+    // Input
     private Quaternion _requestedRotation;
     private Vector3 _requestedMovement;
     private bool _requestedJump;
     private bool _requestedSustainedJump;
     private bool _requestedCrouch;
     private bool _requestedCrouchInAir;
-    private float _timeSinceUngrounded;
-    private float _timeSinceJumpRequest;
-    private bool _ungroundedDueToJump;
+    
     public bool _requestedShoot;
     public bool _requestedShootThisFrame;
     public bool _requestedAim;
@@ -131,27 +140,34 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public int gunToSwitchIndex;
 
     private Collider[] _unCrouchOverlapResults;
-
+    private float _timeSinceUngrounded;
+    private float _timeSinceJumpRequest;
+    private bool _ungroundedDueToJump;
+    
     public bool primaryIndex = false;
     private bool secondaryIndex = false;
 
-    // GODMODE
+    // Wall Run & Climb vars
+    private Vector3 _wallNormal; 
+    private WallSide _currentWallSide;
+    private float _timeSinceWallJump = 10f;
+    private bool _isFacingWall = false; 
+    private float _currentClimbTimer = 0f;
+
+    // Slide vars
+    private float _timeSinceLastSlide = 10f; 
+
+    // GodMode
     private float initGravity;
     private float initAirAcceleration;
     public bool GodMode;
 
-    
-
-    //Netcode
+    // Netcode
     private float syncTimer;
     private float syncRate = 0.05f;
-
     private Vector3 latestReceivedPosition;
     private Quaternion latestReceivedRotation;
     private bool hasReceivedRemote = false;
-
-
-
 
     protected override void OnSpawned()
     {
@@ -160,7 +176,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         playerCamera.gameObject.SetActive(isOwner);
         if (isOwner)
         {
-            
             foreach (var rend in renderers)
             {
                 rend.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
@@ -180,45 +195,36 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _state.Stance = Stance.Stand;
         _lastState = _state;
         _unCrouchOverlapResults = new Collider[8];
-
         motor.CharacterController = this;
     }
 
     public void UpdateInput(CharacterInput input)
     {
         _requestedRotation = input.Rotation;
-        // Pilla el input 2D y crea el movimiento 3D en el vector xz
         _requestedMovement = new Vector3(input.Move.x, 0f, input.Move.y);
-        // Clamp del movimiento para que este regulado al pulsar 2 teclas a la vez
         _requestedMovement = Vector3.ClampMagnitude(_requestedMovement, 1f);
-        // Orienta el input hacia donde mira el jugador
         _requestedMovement = input.Rotation * _requestedMovement;
 
         _requestedShoot = input.Shoot;
         _requestedShootThisFrame = input.ShootThisFrame;
-
         _requestedAim = input.Aim;
-
         _requestedRun = input.Running;
-
         _requestedReload = input.Reload;
-
         _requestedDropGun = input.DropGun;
         _requestedInteract = input.Interact;
 
         if (_requestedInteract)
         {
-            Physics.Raycast(cameraTransform.transform.position, cameraTransform.forward, out var hit, interactDistance, interactLayerMask);
-            Debug.DrawLine(cameraTransform.transform.position, hit.point, Color.red, 0.1f);
+            Physics.Raycast(cameraTransform.transform.position, cameraTransform.forward, out var hit, interactDistance, interactLayerMask, QueryTriggerInteraction.Collide);
+            Debug.DrawLine(cameraTransform.transform.position, hit.point, Color.red, 1.0f);
+            
             if (hit.transform != null)
             {
-                Debug.LogWarning(hit.transform.name);
                 if (hit.collider.TryGetComponent(out ITakeGun takeGun))
                 {
                     takeGun.TakeGun(this);
                 }
             }
-
         }
 
         var wasRequestedJump = _requestedJump;
@@ -229,37 +235,28 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _requestedSustainedJump = input.JumpSustain;
 
         var wasRequestingCrouch = _requestedCrouch;
-
         _requestedCrouch = input.Crouch switch
         {
             CrouchInput.Toggle => !_requestedCrouch,
             CrouchInput.None => _requestedCrouch,
             _ => _requestedCrouch
         };
+
         if (_requestedCrouch && !wasRequestingCrouch)
             _requestedCrouchInAir = !_state.Grounded;
         else if (!_requestedCrouch && wasRequestingCrouch)
             _requestedCrouchInAir = false;
 
-        if (_requestedReload && weaponManager != null)
-        {
-            weaponManager._currentGun.Reload();
-        }
-
-        if (_requestedDropGun)
-        {
-            weaponManager.DropGun();
-        }
+        if (_requestedReload && weaponManager != null) weaponManager._currentGun.Reload();
+        if (_requestedDropGun) weaponManager.DropGun();
 
         if (input.ChangeGun && input.RequestedGunIndex > 0)
         {
             currentGunIndex = input.RequestedGunIndex;
-            Debug.Log(currentGunIndex);
             ChangeGun(currentGunIndex);
         }
     }
     
-
     [ObserversRpc(runLocally: false)]
     public void ChangeGun(int currentGunIndex)
     {
@@ -339,7 +336,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateBody(float deltaTime)
     {
-
         var currentHeight = motor.Capsule.height;
         var normalizeHeight = currentHeight / standheight;
 
@@ -363,19 +359,17 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             b: rootTargetScale,
             t: 1f - Mathf.Exp(-crouchHeightResponse * deltaTime)
         );
-
     }
 
     void Update()
     {
         if (isOwner)
         {
-            // Copiamos la posición y rotación reales del motor al transform,
-            // así el personaje se mueve también en el objeto de red
             transform.position = motor.TransientPosition;
             transform.rotation = motor.TransientRotation;
 
-            // Cada cierto tiempo, enviamos esa posición por la red
+            HandleCameraTilt();
+
             syncTimer += Time.deltaTime;
             if (syncTimer >= syncRate)
             {
@@ -385,7 +379,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         }
         else
         {
-            // Si no somos el dueño, actualizamos hacia la última posición recibida
             if (hasReceivedRemote)
             {
                 transform.position = Vector3.Lerp(transform.position, latestReceivedPosition, Time.deltaTime * 10f);
@@ -394,46 +387,47 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         }
     }
 
+    private void HandleCameraTilt()
+    {
+        if (playerCamera == null) return;
+
+        float targetTilt = 0f;
+
+        if (_state.Stance == Stance.Wall)
+        {
+            if (_currentWallSide == WallSide.Left)
+                targetTilt = -wallRunTiltAngle; 
+            else if (_currentWallSide == WallSide.Right)
+                targetTilt = wallRunTiltAngle;  
+        }
+
+        var lens = playerCamera.Lens;
+        lens.Dutch = Mathf.Lerp(lens.Dutch, targetTilt, Time.deltaTime * tiltSpeed);
+        playerCamera.Lens = lens;
+    }
 
     [ObserversRpc]
     public void RpcSyncTransform(Vector3 pos, Quaternion rot)
     {
-        // Esto se ejecuta en los demás clientes (no en el dueño)
         latestReceivedPosition = pos;
         latestReceivedRotation = rot;
         hasReceivedRemote = true;
     }
 
-
-
-
     public void AfterCharacterUpdate(float deltaTime)
     {
-        //UnCrouch
-        if (!_requestedCrouch && _state.Stance is not Stance.Stand)
+        if (!_requestedCrouch && _state.Stance is not Stance.Stand && _state.Stance is not Stance.Wall && _state.Stance is not Stance.Climb)
         {
             _state.Stance = Stance.Stand;
-            motor.SetCapsuleDimensions
-            (
-                radius: motor.Capsule.radius,
-                height: standheight,
-                yOffset: standheight * 0.5f
-            );
+            motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
 
-            //Allowing the character to standup
             var pos = motor.TransientPosition;
             var rot = motor.TransientRotation;
             var mask = motor.CollidableLayers;
             if (motor.CharacterOverlap(pos, rot, _unCrouchOverlapResults, mask, QueryTriggerInteraction.Ignore) > 0)
             {
-                //Re-crouch
                 _requestedCrouch = true;
-                motor.SetCapsuleDimensions
-                (
-                    radius: motor.Capsule.radius,
-                    height: standheight,
-                    yOffset: standheight * 0.5f
-                );
+                motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
             }
             else
                 _state.Stance = Stance.Stand;
@@ -447,43 +441,36 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public void BeforeCharacterUpdate(float deltaTime)
     {
         _tempState = _state;
-        //Crouch
-        if (_requestedCrouch && _state.Stance is Stance.Stand)
+        
+        if (_requestedCrouch && _state.Stance == Stance.Stand)
         {
             _state.Stance = Stance.Crouch;
-            motor.SetCapsuleDimensions
-            (
-                radius: motor.Capsule.radius,
-                height: crouchHeight,
-                yOffset: crouchHeight * 0.5f
-            );
+            motor.SetCapsuleDimensions(motor.Capsule.radius, crouchHeight, crouchHeight * 0.5f);
         }
+        
+        _timeSinceWallJump += deltaTime;
+        _timeSinceLastSlide += deltaTime; 
+
+        DetectWall(out _currentWallSide, out _wallNormal);
+        DetectFrontWall(out _isFacingWall, out Vector3 frontWallNormal);
+        
+        if (_isFacingWall) _wallNormal = frontWallNormal;
     }
 
     public bool IsColliderValidForCollisions(Collider coll)
     {
-        // Ignora triggers y el propio collider del personaje
         if (coll.isTrigger) return false;
         if (coll.transform.IsChildOf(transform)) return false;
-
-        // Solo colisiona con el suelo o paredes (opcional: filtra por layer)
-        if (coll.gameObject.layer == LayerMask.NameToLayer("Ground") ||
-            coll.gameObject.layer == LayerMask.NameToLayer("Wall"))
-            return true;
-
-        return false;
+        return true; 
     }
 
-
     public void OnDiscreteCollisionDetected(Collider hitCollider) { }
-
     public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
-
     public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
 
     public void PostGroundingUpdate(float deltaTime)
     {
-        if (!motor.GroundingStatus.IsStableOnGround && _state.Stance is Stance.Slide)
+        if (!motor.GroundingStatus.IsStableOnGround && _state.Stance == Stance.Slide)
             _state.Stance = Stance.Crouch;
     }
 
@@ -491,14 +478,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
     {
-        // actualiza la rotacion del character hacia la misma direccion de la rotacion requerida (camera rotation)
-
-        var forward = Vector3.ProjectOnPlane
-       (
-            _requestedRotation * Vector3.forward,
-            motor.CharacterUp
-       );
-
+        var forward = Vector3.ProjectOnPlane(_requestedRotation * Vector3.forward, motor.CharacterUp);
         if (forward != Vector3.zero)
             currentRotation = Quaternion.LookRotation(forward, motor.CharacterUp);
     }
@@ -506,266 +486,291 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
         _state.Acceleration = Vector3.zero;
-        // if on the ground...
+
+        // --- GROUNDED MOVEMENT ---
         if (motor.GroundingStatus.IsStableOnGround)
         {
             _timeSinceUngrounded = 0f;
             _ungroundedDueToJump = false;
-            //Velocity
-            var groundedMovement = motor.GetDirectionTangentToSurface
-            (
-                direction: _requestedMovement,
-                surfaceNormal: motor.GroundingStatus.GroundNormal
-            ) * _requestedMovement.magnitude;
+            _currentClimbTimer = 0f; 
+            
+            if (_state.Stance == Stance.Wall || _state.Stance == Stance.Climb) 
+                _state.Stance = Stance.Stand;
 
-            //Start sliding
+            var groundedMovement = motor.GetDirectionTangentToSurface(_requestedMovement, motor.GroundingStatus.GroundNormal) * _requestedMovement.magnitude;
+
+            // SLIDING LOGIC
             {
-                var moving = groundedMovement.sqrMagnitude > 0f;
-                var crouching = _state.Stance is Stance.Crouch;
-                var wasStanding = _lastState.Stance is Stance.Stand;
-                var wasInAir = !_lastState.Grounded;
-                if (moving && crouching && (wasStanding || wasInAir) && _state.Stance is not Stance.Wall)
+                bool isMoving = groundedMovement.sqrMagnitude > 0f;
+                bool isCrouching = _state.Stance == Stance.Crouch;
+                
+                // MODIFICADO: Añadido "&& _requestedRun" para que solo deslice si estás corriendo
+                if (isMoving && isCrouching && _requestedRun && (_lastState.Stance == Stance.Stand || !_lastState.Grounded) && _state.Stance != Stance.Wall && _timeSinceLastSlide >= slideCooldown)
                 {
                     _state.Stance = Stance.Slide;
+                    _timeSinceLastSlide = 0f; 
 
-                    if (wasInAir)
-                    {
-                        currentVelocity = Vector3.ProjectOnPlane
-                        (
-                            vector: _lastState.Velocity,
-                            planeNormal: motor.GroundingStatus.GroundNormal
-                        );
-                    }
+                    if (!_lastState.Grounded)
+                        currentVelocity = Vector3.ProjectOnPlane(_lastState.Velocity, motor.GroundingStatus.GroundNormal);
 
-                    var effectiveSliderStartSpeed = slideStartSpeed;
-                    if (!_lastState.Grounded && !_requestedCrouchInAir)
-                    {
-                        effectiveSliderStartSpeed = 0f;
-                        _requestedCrouchInAir = false;
-                    }
+                    var effectiveSliderStartSpeed = (!_lastState.Grounded && !_requestedCrouchInAir) ? 0f : slideStartSpeed;
+                    if (!_lastState.Grounded && !_requestedCrouchInAir) _requestedCrouchInAir = false;
+
                     var slideSpeed = Mathf.Max(effectiveSliderStartSpeed, currentVelocity.magnitude);
-                    currentVelocity = motor.GetDirectionTangentToSurface
-                    (
-                        direction: currentVelocity,
-                        surfaceNormal: motor.GroundingStatus.GroundNormal
-                    ) * slideSpeed;
+                    currentVelocity = motor.GetDirectionTangentToSurface(currentVelocity, motor.GroundingStatus.GroundNormal) * slideSpeed;
                 }
             }
-            //Move
-            if (_state.Stance is Stance.Stand or Stance.Crouch)
+
+            // Move
+            if (_state.Stance == Stance.Stand || _state.Stance == Stance.Crouch)
             {
-                // Calculate the speed and responsiveneess of movement based on the character's stance
-                var speed = 0f;
+                float speed = _state.Stance == Stance.Stand ? (_requestedRun ? runSpeed : walkSpeed) : crouchSpeed;
+                float response = _state.Stance == Stance.Stand ? walkResponse : crouchResponse;
 
-                if (_state.Stance is Stance.Stand)
-                    speed = _requestedRun ? runSpeed : walkSpeed;
-                else if (_state.Stance is Stance.Crouch)
-                    speed = crouchSpeed;
-
-                var response = _state.Stance is Stance.Stand
-                    ? walkResponse
-                    : crouchResponse;
-
-                // And smoothly move along the ground in that direction
                 var targetVelocity = groundedMovement * speed;
-                var moveVelocity = Vector3.Lerp
-                (
-                    a: currentVelocity,
-                    b: targetVelocity,
-                    t: 1f - Mathf.Exp(-response * deltaTime)
-                );
-
+                var moveVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 1f - Mathf.Exp(-response * deltaTime));
                 _state.Acceleration = moveVelocity - currentVelocity;
                 currentVelocity = moveVelocity;
             }
-
-
-            //Continue sliding
+            // Sliding Continue
             else
             {
-                //Friction
                 currentVelocity -= currentVelocity * (slideFriction * deltaTime);
+                currentVelocity -= Vector3.ProjectOnPlane(-motor.CharacterUp, motor.GroundingStatus.GroundNormal) * slideGravity * deltaTime; 
 
-                //Slope
-                {
-                    var force = Vector3.ProjectOnPlane
-                    (
-                        vector: -motor.CharacterUp,
-                        planeNormal: motor.GroundingStatus.GroundNormal
-                    ) * slideGravity;
+                var currentSpeed = currentVelocity.magnitude;
+                var targetVelocity = groundedMovement * currentSpeed;
+                var steerForce = (targetVelocity - currentVelocity) * slideSteerAcceleration * deltaTime;
+                var newVelocity = currentVelocity + steerForce;
+                
+                currentVelocity = Vector3.ClampMagnitude(newVelocity, currentSpeed);
+                _state.Acceleration = (currentVelocity - newVelocity) / deltaTime; 
 
-                    currentVelocity -= force * deltaTime;
-                }
-
-                //Steer
-                {
-                    // Target velocity is the player's movement direction, at the current speed
-                    var currentSpeed = currentVelocity.magnitude;
-                    var targetVelocity = groundedMovement * currentSpeed;
-                    var steervelocity = currentVelocity;
-                    var steerForce = (targetVelocity - steervelocity) * slideSteerAcceleration * deltaTime;
-                    // Add steer force, but clamp velocity so the slide speed doesn't increase due to direction movement input
-                    steervelocity += steerForce;
-                    steervelocity = Vector3.ClampMagnitude(steervelocity, currentSpeed);
-
-                    _state.Acceleration = (steervelocity - currentVelocity) / deltaTime;
-                    currentVelocity = steervelocity;
-                }
-
-                //Stop
-                if (currentVelocity.magnitude < slideEndSpeed)
-                {
-                    _state.Stance = Stance.Crouch;
-                }
+                if (currentVelocity.magnitude < slideEndSpeed) _state.Stance = Stance.Crouch;
             }
         }
-        //else, in the air
+        // --- AIR MOVEMENT & WALL MECHANICS ---
         else
         {
             _timeSinceUngrounded += deltaTime;
-            // Move
-            if (_requestedMovement.sqrMagnitude > 0f)
+            bool isMovingForward = Vector3.Dot(_requestedMovement, motor.CharacterForward) > 0.1f;
+
+            // --- CÁLCULO DE ÁNGULO PARA CLIMB ---
+            // Solo escalar si miramos la pared directamente (dentro de maxClimbAngle)
+            float lookAngle = Vector3.Angle(motor.CharacterForward, -_wallNormal);
+            bool isLookingAtWall = lookAngle < maxClimbAngle;
+
+            // Prioridad 1: WALL CLIMB
+            if (_isFacingWall && isLookingAtWall && !_state.Grounded && isMovingForward && _currentClimbTimer < maxClimbDuration)
             {
-                // Requested movement projected on to movement plane. (,agnitude preserved)
-                var planarMovement = Vector3.zero;
-                var projected = Vector3.ProjectOnPlane
-                (
-                    vector: _requestedMovement,
-                    planeNormal: motor.CharacterUp
-                );
-                if (projected.sqrMagnitude > 0)
-                    planarMovement = projected.normalized;
-
-                // Current velocity on movement plane
-                var currentPlanarVelocity = Vector3.ProjectOnPlane
-                (
-                    vector: currentVelocity,
-                    planeNormal: motor.CharacterUp
-                );
-
-                // Calculate movement force
-                var movementForce = planarMovement * airAcceleration * deltaTime;
-
-                // If moving slower than the max air speed, treat movementForce as a simple steering force
-                if (currentPlanarVelocity.magnitude < airSpeed)
+                if (_requestedCrouch || _requestedCrouchInAir)
                 {
-                    // Add it to the current planar velocity for a target velocity
-                    var targetPlanarVelocity = currentPlanarVelocity + movementForce;
-
-                    // Limit target velocity to air speed
-                    targetPlanarVelocity = Vector3.ClampMagnitude(targetPlanarVelocity, airSpeed);
-
-                    // Steer towards target velocity
-                    movementForce = targetPlanarVelocity - currentPlanarVelocity;
-                }
-                // Otherwise, nerf the movement force when it is in the direction of the current planar velocity
-                // to prevent acceleration further beyond the max air speed
-                else if (Vector3.Dot(currentPlanarVelocity, movementForce) > 0f)
-                {
-                    // Project movement force onto the plane whose normal is the current planar velocity
-                    var constrainedMovementForce = Vector3.ProjectOnPlane
-                    (
-                        vector: movementForce,
-                        planeNormal: currentPlanarVelocity.normalized
-                    );
-
-                    movementForce = constrainedMovementForce;
+                    _requestedCrouch = false;
+                    _requestedCrouchInAir = false;
                 }
 
-                // Prevent air-climbing steep slopes
-                if (motor.GroundingStatus.FoundAnyGround)
+                if (_state.Stance != Stance.Climb)
                 {
-                    // If moving in the same direction as the resultant velocity...
-                    if (Vector3.Dot(movementForce, currentVelocity + movementForce) > 0f)
+                    if (!Physics.Raycast(transform.position, -Vector3.up, wallEnterMinHeight, LayerMask.GetMask("Ground", "Default")))
                     {
-                        // Calculate obstruction normal
-                        var obstructionNormal = Vector3.Cross
-                        (
-                            motor.CharacterUp,
-                            Vector3.Cross
-                            (
-                                motor.CharacterUp,
-                                motor.GroundingStatus.GroundNormal
-                            )
-                        ).normalized;
-
-                        // Projected movement force onto obstruction plane
-                        movementForce = Vector3.ProjectOnPlane(movementForce, obstructionNormal);
+                        _state.Stance = Stance.Climb;
+                        motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
+                        
+                        // --- FIX CONSISTENCIA ESCALADA ---
+                        currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
+                        currentVelocity.y = climbSpeed;
+                        
+                        jumps = 2; 
                     }
                 }
-
-                currentVelocity += movementForce;
             }
-
-            // Gravity
-            var effectiveGravity = gravity;
-            var verticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
-            if (_requestedSustainedJump && verticalSpeed > 0f)
-                effectiveGravity *= jumpSustainGravity;
-            currentVelocity += motor.CharacterUp * effectiveGravity * deltaTime;
-
-
-            // wall run
-            var wall = GetWallSide;
-
-            if (wall != WallSide.None && _state.Stance is not Stance.Wall)
+            // Prioridad 2: WALL RUN (Si no estamos escalando)
+            else if (_currentWallSide != WallSide.None && !_state.Grounded && _requestedMovement.magnitude > 0.1f && isMovingForward)
             {
-                _state.Stance = Stance.Wall;
-                Debug.Log("Cambio de estado a pared");
-            }
+                if (_requestedCrouch || _requestedCrouchInAir)
+                {
+                    _requestedCrouch = false;
+                    _requestedCrouchInAir = false;
+                }
 
-            if (_state.Stance is Stance.Wall)
-            {
-                _state.Stance = Stance.Wall;
+                if (_state.Stance != Stance.Wall && _state.Stance != Stance.Climb) 
+                {
+                    if (!Physics.Raycast(transform.position, -Vector3.up, wallEnterMinHeight, LayerMask.GetMask("Ground", "Default")))
+                    {
+                        _state.Stance = Stance.Wall;
+                        motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
+                        currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
+                        
+                        // --- FIX: ANCLAJE VERTICAL ---
+                        // Matamos la velocidad vertical al entrar para que te quedes a la altura
+                        currentVelocity.y = 0; 
 
-                float verticalVelocity = Vector3.Dot(currentVelocity, motor.CharacterUp);
-
-                // 1. Reducir gravedad
-                verticalVelocity += wallGravity * deltaTime;
-            }
-
-        }
-
-        if (_requestedJump)
-        {
-            var grounded = motor.GroundingStatus.IsStableOnGround;
-            var canCoyoteJump = _timeSinceUngrounded < coyoteTime && !_ungroundedDueToJump;
-            if (grounded)
-                jumps = 2;
-
-            if (jumps > 0 || canCoyoteJump)
-            {
-                Debug.Log("JUMP!");
-                _requestedJump = false; // Unset jump request
-                _requestedCrouch = false; // and request the character uncrouches
-                _requestedCrouchInAir = false;
-
-                //Unstick the player of the ground
-                motor.ForceUnground(time: 0f);
-                _ungroundedDueToJump = true;
-
-                //Set minum vertical speed to the jump speed
-                var currentVerticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
-                var targetVerticalSpeed = Mathf.Max(currentVerticalSpeed, jumpSpeed);
-                //Add the difference in current vertical speed to the character's velocity
-                currentVelocity += motor.CharacterUp * (targetVerticalSpeed - currentVerticalSpeed);
-
-                jumps -= 1;
+                        jumps = 2; 
+                    }
+                }
             }
             else
             {
-                _timeSinceJumpRequest += deltaTime;
-
-                // Defer the jump request until coyote time has passed.
-                var canJumpLater = _timeSinceJumpRequest < coyoteTime;
-                _requestedJump = canJumpLater;
+                if (_state.Stance == Stance.Wall || _state.Stance == Stance.Climb)
+                {
+                    _state.Stance = Stance.Stand;
+                }
             }
 
+            // --- EJECUCIÓN FÍSICA ---
 
+            // A. WALL CLIMB
+            if (_state.Stance == Stance.Climb)
+            {
+                jumps = 2;
+                _currentClimbTimer += deltaTime;
+
+                float deceleration = climbSpeed / maxClimbDuration; 
+                currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, 0f, deceleration * deltaTime);
+                
+                Vector3 horizontalVel = Vector3.ProjectOnPlane(currentVelocity, Vector3.up);
+                currentVelocity -= horizontalVel * 5f * deltaTime; 
+
+                currentVelocity += -_wallNormal * 2f; 
+            }
+            // B. WALL RUN (FIX CURVAS + Y ISOLATION)
+            else if (_state.Stance == Stance.Wall)
+            {
+                jumps = 2;
+                _currentClimbTimer = 0f; 
+
+                // 1. Separamos la velocidad en Horizontal y Vertical
+                float verticalVelocity = currentVelocity.y;
+                Vector3 horizontalVelocity = Vector3.ProjectOnPlane(currentVelocity, Vector3.up);
+                float horizontalSpeed = horizontalVelocity.magnitude;
+
+                // 2. Redireccionar velocidad (Steering) SOLO en el plano horizontal
+                Vector3 tangentDir = Vector3.ProjectOnPlane(horizontalVelocity, _wallNormal).normalized;
+
+                if (horizontalSpeed > 0.1f && tangentDir.sqrMagnitude > 0.01f)
+                {
+                    horizontalVelocity = tangentDir * horizontalSpeed;
+                }
+
+                // 3. Aplicar Input (Aceleración / Deceleración)
+                Vector3 wallRunDirection = Vector3.ProjectOnPlane(motor.CharacterForward, _wallNormal).normalized;
+                wallRunDirection.y = 0; wallRunDirection.Normalize();
+
+                if (_requestedMovement.magnitude > 0)
+                {
+                   Vector3 targetVelocity = wallRunDirection * wallRunSpeed;
+                   float currentSpeedAlongWall = Vector3.Dot(horizontalVelocity, wallRunDirection);
+
+                   if (currentSpeedAlongWall > wallRunSpeed)
+                       horizontalVelocity = Vector3.Lerp(horizontalVelocity, targetVelocity, wallMomentumDecay * deltaTime);
+                   else
+                       horizontalVelocity = Vector3.Lerp(horizontalVelocity, targetVelocity, wallRunAcceleration * deltaTime);
+                }
+
+                // 4. Reconstruimos la velocidad + Gravedad
+                currentVelocity = horizontalVelocity + (Vector3.up * verticalVelocity);
+                currentVelocity += Vector3.down * (Mathf.Abs(wallGravity) * deltaTime);
+                
+                // 5. Fuerza "Lapa" (Sticky Force)
+                float speedFactor = horizontalSpeed * 0.5f; 
+                currentVelocity += -_wallNormal * (2f + speedFactor); 
+            }
+            // C. AIRE NORMAL
+            else
+            {
+                if (_requestedMovement.sqrMagnitude > 0f)
+                {
+                    var planarMovement = Vector3.zero;
+                    var projected = Vector3.ProjectOnPlane(_requestedMovement, motor.CharacterUp);
+                    if (projected.sqrMagnitude > 0) planarMovement = projected.normalized;
+                    
+                    var currentPlanarVelocity = Vector3.ProjectOnPlane(currentVelocity, motor.CharacterUp);
+                    var movementForce = planarMovement * airAcceleration * deltaTime;
+
+                    if (currentPlanarVelocity.magnitude < airSpeed)
+                    {
+                        var targetPlanarVelocity = Vector3.ClampMagnitude(currentPlanarVelocity + movementForce, airSpeed);
+                        movementForce = targetPlanarVelocity - currentPlanarVelocity;
+                    }
+                    else if (Vector3.Dot(currentPlanarVelocity, movementForce) > 0f)
+                    {
+                        movementForce = Vector3.ProjectOnPlane(movementForce, currentPlanarVelocity.normalized);
+                    }
+
+                    if (motor.GroundingStatus.FoundAnyGround)
+                    {
+                        if (Vector3.Dot(movementForce, currentVelocity + movementForce) > 0f)
+                        {
+                            var obstructionNormal = Vector3.Cross(motor.CharacterUp, Vector3.Cross(motor.CharacterUp, motor.GroundingStatus.GroundNormal)).normalized;
+                            movementForce = Vector3.ProjectOnPlane(movementForce, obstructionNormal);
+                        }
+                    }
+                    currentVelocity += movementForce;
+                }
+
+                float effectiveGravity = gravity;
+                float verticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
+                if (_requestedSustainedJump && verticalSpeed > 0f) effectiveGravity *= jumpSustainGravity;
+                currentVelocity += motor.CharacterUp * effectiveGravity * deltaTime;
+            }
+        }
+
+        // --- JUMPING LOGIC ---
+        if (_requestedJump)
+        {
+            if (_state.Stance == Stance.Climb)
+            {
+                Vector3 jumpDirection = (_wallNormal * climbJumpBackForce) + (Vector3.up * climbJumpUpForce);
+                currentVelocity = jumpDirection; 
+                
+                _state.Stance = Stance.Stand;
+                _requestedJump = false;
+                _ungroundedDueToJump = true;
+                _timeSinceWallJump = 0f;
+                _currentClimbTimer = maxClimbDuration; 
+            }
+            else if (_state.Stance == Stance.Wall)
+            {
+                Vector3 velocityForward = Vector3.ProjectOnPlane(currentVelocity, motor.CharacterUp);
+                velocityForward = Vector3.ProjectOnPlane(velocityForward, _wallNormal);
+
+                Vector3 jumpImpulse = (_wallNormal * wallJumpOutForce) + (motor.CharacterUp * wallJumpUpForce);
+                currentVelocity = velocityForward + jumpImpulse;
+                
+                _state.Stance = Stance.Stand;
+                _requestedJump = false;
+                _ungroundedDueToJump = true;
+                _timeSinceWallJump = 0f; 
+            }
+            else
+            {
+                bool grounded = motor.GroundingStatus.IsStableOnGround;
+                bool canCoyoteJump = _timeSinceUngrounded < coyoteTime && !_ungroundedDueToJump;
+                if (grounded) jumps = 2;
+
+                if (jumps > 0 || canCoyoteJump)
+                {
+                    _requestedJump = false;
+                    _requestedCrouch = false;
+                    _requestedCrouchInAir = false;
+
+                    motor.ForceUnground(time: 0f);
+                    _ungroundedDueToJump = true;
+
+                    float currentVerticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
+                    float targetVerticalSpeed = Mathf.Max(currentVerticalSpeed, jumpSpeed);
+                    currentVelocity += motor.CharacterUp * (targetVerticalSpeed - currentVerticalSpeed);
+
+                    jumps -= 1;
+                }
+                else
+                {
+                    _timeSinceJumpRequest += deltaTime;
+                    _requestedJump = _timeSinceJumpRequest < coyoteTime;
+                }
+            }
         }
     }
-
-
 
     public Transform GetCameraTarget() => cameraTarget;
     public CharacterState GetState() => _state;
@@ -773,83 +778,79 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void SetPosition(Vector3 position, bool killVelocity = true)
     {
-        if (killVelocity)
-            motor.BaseVelocity = Vector3.zero;
+        if (killVelocity) motor.BaseVelocity = Vector3.zero;
+        motor.SetPosition(position);
     }
 
-    public WallSide GetWallSide
+    private void DetectWall(out WallSide side, out Vector3 normal)
     {
-        get
-        {
-            if (IsOnLeftWall)
-                return WallSide.Left;
-            else if (IsOnRightWall)
-                return WallSide.Right;
-            else
-                return WallSide.None;
+        side = WallSide.None;
+        normal = Vector3.zero;
 
+        if (motor.GroundingStatus.IsStableOnGround || _timeSinceWallJump < wallJumpPostTime) return;
+
+        Vector3 origin = transform.position + (motor.CharacterUp * standheight * 0.5f);
+        float radius = 0.2f;
+        float castDistance = wallCheckDistance;
+
+        if (Physics.SphereCast(origin, radius, motor.CharacterRight, out RaycastHit rightHit, castDistance, wallLayer))
+        {
+            side = WallSide.Right;
+            normal = rightHit.normal;
+            return; 
+        }
+
+        if (Physics.SphereCast(origin, radius, -motor.CharacterRight, out RaycastHit leftHit, castDistance, wallLayer))
+        {
+            side = WallSide.Left;
+            normal = leftHit.normal;
+            return;
         }
     }
+
+    private void DetectFrontWall(out bool isFacing, out Vector3 normal)
+    {
+        isFacing = false;
+        normal = Vector3.zero;
+
+        if (motor.GroundingStatus.IsStableOnGround || _timeSinceWallJump < wallJumpPostTime) return;
+
+        Vector3 origin = transform.position + Vector3.up * 0.5f;
+        
+        if (Physics.SphereCast(origin, 0.2f, motor.CharacterForward, out RaycastHit hit, wallCheckDistance + 0.2f, wallLayer))
+        {
+            isFacing = true;
+            normal = hit.normal;
+        }
+    }
+    
+    public WallSide GetWallSide => _currentWallSide;
 
     void OnDrawGizmos()
     {
+        if (motor == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + -motor.CharacterRight * wallCheckDistance);
-
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(transform.position, transform.position + motor.CharacterRight * wallCheckDistance);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position + Vector3.up * 0.5f, transform.position + Vector3.up * 0.5f + motor.CharacterForward * (wallCheckDistance + 0.2f));
     }
 
-    public bool IsOnLeftWall => Physics.Raycast(transform.position, -motor.CharacterRight, wallCheckDistance, wallLayer);
-    public bool IsOnRightWall => Physics.Raycast(transform.position, motor.CharacterRight, wallCheckDistance, wallLayer);
-
-    public bool GetNormal(out Vector3 normal)
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, -motor.CharacterRight, out hit, wallCheckDistance, wallLayer))
-        {
-            normal = hit.normal;
-            return true;
-        }
-        else if (Physics.Raycast(transform.position, motor.CharacterRight, out hit, wallCheckDistance, wallLayer))
-        {
-            normal = hit.normal;
-            return true;
-        }
-        normal = Vector3.zero;
-        return false;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    // GODMODe
     public void ToggleGodMode(bool godMode)
     {
         GodMode = godMode;
-
         if (godMode)
         {
             motor.CollidableLayers = 0;
-            motor.SetPosition(transform.position, true);
+            motor.SetPosition(transform.position, true); 
             motor.BaseVelocity = Vector3.zero;
             rb.useGravity = false;
             gravity = 0;
             airAcceleration = 0;
             jumps = 0;
-
             Debug.Log("<color=yellow>GODMODE ACTIVADO ✅</color>");
         }
-
-
         else
         {
             motor.CollidableLayers = LayerMask.GetMask("Default", "Ground", "Wall");
@@ -857,12 +858,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             rb.useGravity = true;
             gravity = initGravity;
             airAcceleration = initAirAcceleration;
-
             Debug.Log("<color=orange>GODMODE DESACTIVADO ❌</color>");
-
         }
     }
-
 
     public void HandleFreeFly()
     {
@@ -878,14 +876,15 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         if (move != Vector3.zero)
         {
-            transform.position += move.normalized * speed * Time.deltaTime;
-            motor.SetPosition(transform.position, true);
+            motor.SetPosition(transform.position + (move.normalized * speed * Time.deltaTime));
         }
     }
 
 
+    
 }
- namespace Interfaces
+
+namespace Interfaces
 {
     public interface ITakeGun
     {
