@@ -336,7 +336,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateBody(float deltaTime)
     {
-        var currentHeight = motor.Capsule.height;
+        var currentHeight = 3;
         var normalizeHeight = currentHeight / standheight;
 
         var cameraTargetHeight = currentHeight *
