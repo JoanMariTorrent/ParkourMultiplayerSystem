@@ -187,10 +187,7 @@ public class Player : NetworkBehaviour
 
 
 
-    public void Teleport(Vector3 position)
-    {
-        playerCharacter.SetPosition(position);
-    }
+    
 
 
     // En Player.cs
