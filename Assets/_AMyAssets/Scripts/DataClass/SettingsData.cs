@@ -1,8 +1,17 @@
 using UnityEngine;
+using System;
 
-[System.Serializable]
-public class CrosshairSettings
+[CreateAssetMenu(fileName = "NewGameSettings", menuName = "Game/Settings Data")]
+public class SettingsData : ScriptableObject
 {
+
+    [Header("General Settings")]
+    public float sensitivity = 0.1f;
+    public Action OnSensitivityChanged;
+    public Action OnSettingsEnabled;
+    public Action OnSettingsDisabled;
+
+    [Space][Header("Crosshair Settings")]
     public Color crosshairColor = Color.white;
     public bool useCenterDot = true;
     public float centerDotSize = 1.0f;

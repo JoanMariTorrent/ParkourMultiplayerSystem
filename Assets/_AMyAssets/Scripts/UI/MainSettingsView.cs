@@ -20,6 +20,8 @@ public class MainSettingsView : View
 
     [SerializeField] private Canvas canvas;
 
+    [SerializeField] private SettingsData settings;
+
     public Views views;
 
     private void Awake()
@@ -44,6 +46,8 @@ public class MainSettingsView : View
             canvas.ShowView<MainSettingsView>(true);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+
+            if (settings != null) settings.OnSettingsEnabled?.Invoke();
         }
     }
 
@@ -83,6 +87,7 @@ public class MainSettingsView : View
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        settings.OnSettingsDisabled?.Invoke();
     }
 
     public override void OnShow()

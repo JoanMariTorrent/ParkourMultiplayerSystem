@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using PurrNet;
 using Steamworks;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 public class Player : NetworkBehaviour
 {
@@ -24,6 +24,11 @@ public class Player : NetworkBehaviour
     public bool prueba = false;
     [SerializeField] private PruebasRPC pruebasRPC;
     [SerializeField] private WeaponDatabase weaponDataBase;
+
+    [Space][Header("Settings")]
+    [SerializeField] private SettingsData settings;
+
+    public bool cameraActive = true;
 
     void Awake()
     {
@@ -47,6 +52,9 @@ public class Player : NetworkBehaviour
 
         pruebasRPC = FindFirstObjectByType<PruebasRPC>();
         pruebasRPC.players.Add(this);
+
+        settings.OnSettingsEnabled += SettingsEnabled;
+        settings.OnSettingsDisabled += SettingsDisabled;
     }
 
     [ServerRpc]
@@ -98,6 +106,7 @@ public class Player : NetworkBehaviour
         var state = playerCharacter.GetState();
         
         playerCharacter.UpdateBody(deltaTime);
+
         playerCamera.UpdatePosition(cameraTarget);
         cameraSpring.UpdateSpring(deltaTime, cameraTarget.up);
         cameraLean.UpdateLean
@@ -107,6 +116,7 @@ public class Player : NetworkBehaviour
             state.Acceleration,
             cameraTarget.up
         );
+        
 
         if (Input.GetKeyDown(KeyCode.H))
         {
@@ -136,7 +146,7 @@ public class Player : NetworkBehaviour
 
         // Pilla camera input y actualiza su rotacion
         var cameraInput = new CameraInput { Look = input.Look.ReadValue<Vector2>() };
-        playerCamera.UpdateRotation(cameraInput);
+        if(cameraActive) playerCamera.UpdateRotation(cameraInput);
 
 
 
@@ -172,7 +182,7 @@ public class Player : NetworkBehaviour
             DropGun = input.DropGun.WasPressedThisFrame(),
         };
 
-        playerCharacter.UpdateInput(characterInput);
+        if(cameraActive) playerCharacter.UpdateInput(characterInput);
 
         
     }
@@ -253,6 +263,11 @@ public class Player : NetworkBehaviour
             spawningGunsState.OnPlayerFinishedSpin(playerID);
         }
     }
+
+
+    public void SettingsEnabled() { cameraActive = false; }
+
+    public void SettingsDisabled() { cameraActive = true; }
 
 
 }

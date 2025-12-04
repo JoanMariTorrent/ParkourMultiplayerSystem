@@ -9,7 +9,7 @@ public class CrosshairController : MonoBehaviour
     public RectTransform[] innerLines;
 
     [Header("Datos")]
-    public CrosshairSettings settings;
+    public SettingsData settings;
 
     private void OnValidate()
     {

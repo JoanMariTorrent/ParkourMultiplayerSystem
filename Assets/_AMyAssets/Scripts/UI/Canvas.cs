@@ -1,7 +1,6 @@
 using UnityEngine;
 using PurrNet;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 public class Canvas : NetworkBehaviour
 {

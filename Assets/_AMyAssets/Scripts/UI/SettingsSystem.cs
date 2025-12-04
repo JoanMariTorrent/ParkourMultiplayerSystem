@@ -1,9 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CrosshairMenu : MonoBehaviour
+
+public class SettingsSystem : MonoBehaviour
 {
     [SerializeField] private CrosshairController[] crosshairControllers;
+    public SettingsData settings;
+
+    [Header("General")]
+    public Slider sensitivitySlider;
+
+    [Space(5)][Header("Crosshair")]
 
     [Header("Referencias UI - Color")]
     public Slider sliderR;
@@ -35,7 +42,6 @@ public class CrosshairMenu : MonoBehaviour
     private void LoadValuesFromSettings()
     {
         if(crosshairControllers.Length == 0) return;
-        var settings = crosshairControllers[0].settings;
 
         sliderR.value = settings.crosshairColor.r;
         sliderG.value = settings.crosshairColor.g;
@@ -62,34 +68,28 @@ public class CrosshairMenu : MonoBehaviour
 
         if(innerOpacitySlider != null)
             innerOpacitySlider.value = settings.innerOpacity;
+
+        if(sensitivitySlider != null)
+            sensitivitySlider.value = settings.sensitivity;
     }
 
     public void OnUseDotChanged(bool newValue)
     {
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.useCenterDot = newValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.useCenterDot = newValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     public void OnDotSizeChanged(float newValue)
     {
         float realValue = Mathf.Lerp(3, 18, newValue);
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.centerDotSize = realValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.centerDotSize = realValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     public void OnDotOpacityChanged(float newValue)
     {
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.centerDotOpacity = newValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.centerDotOpacity = newValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     
@@ -99,59 +99,49 @@ public class CrosshairMenu : MonoBehaviour
     public void OnInnerThicknessChanged(float newValue)
     {
         float realValue = Mathf.Lerp(1, 60, newValue);
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.innerThickness = realValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.innerThickness = realValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     public void OnInnerOpacityChanged(float newValue)
     {
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.innerOpacity = newValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.innerOpacity = newValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     public void OnInnerLenghtChanged(float newValue)
     {
         float realValue = Mathf.Lerp(1, 50, newValue);
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.innerLenght = realValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.innerLenght = realValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     public void OnInnerOffsetChanged(float newValue)
     {
         float realValue = Mathf.Lerp(1, 65, newValue);
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.innerOffset = realValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.innerOffset = realValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     public void OnShowInner(bool newValue)
     {
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.showInnerLines = newValue;
-            crosshair.UpdateCrosshair();
-        }
+        settings.showInnerLines = newValue;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }
 
     public void UpdateRGBColor(float valueIgnored) 
     {
         Color finalColor = new Color(sliderR.value, sliderG.value, sliderB.value, 1f);
 
-        foreach(var crosshair in crosshairControllers)
-        {
-            crosshair.settings.crosshairColor = finalColor;
-            crosshair.UpdateCrosshair();
-        }
+        settings.crosshairColor = finalColor;
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
+    }
+
+    public void OnSensibilityChange(float newValue)
+    {
+        float realValue = Mathf.Lerp(0.05f, 2.5f, newValue);
+
+        settings.sensitivity = realValue;
+        settings.OnSensitivityChanged?.Invoke();
     }
 }
