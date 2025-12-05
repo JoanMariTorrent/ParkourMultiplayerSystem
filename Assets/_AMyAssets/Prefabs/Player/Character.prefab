@@ -627,7 +627,7 @@ MonoBehaviour:
   _selfLayer: 7
   _otherLayer: 8
   playerCharacter: {fileID: 8159890137296869839}
-  canvas: {fileID: 0}
+  canvas: {fileID: 1776478738878679272}
   deathVFX: {fileID: 5094046088325549080, guid: 5193592141f1fad4eba8dbe541335509, type: 3}
 --- !u!114 &2662652551195715526
 MonoBehaviour:
@@ -1638,6 +1638,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1224085259338201639}
     m_Modifications:
+    - target: {fileID: 300543128688618649, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 775225628979565400, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1734,6 +1738,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 921525208541086065, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1044869084228673830, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1798,6 +1806,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3766377392297160403, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4114580501495861720, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4166668613640161143, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4388610555926171150, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1829,6 +1849,10 @@ PrefabInstance:
     - target: {fileID: 4765859770418423253, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5044833013000707037, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5654349524300858919, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1878,6 +1902,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 7083435975532781434, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7096706669105339898, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1893,11 +1921,19 @@ PrefabInstance:
     - target: {fileID: 7096706669105339898, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011809724183685046, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8123727983099212798, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 7636289352493295535}
+    - target: {fileID: 8231356450716504600, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8521737710295027032, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1913,6 +1949,10 @@ PrefabInstance:
     - target: {fileID: 8521737710295027032, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9133377576742560950, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: m_Color.g
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9206793934364182169, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchorMax.y
