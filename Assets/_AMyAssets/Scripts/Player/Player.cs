@@ -51,9 +51,6 @@ public class Player : NetworkBehaviour
 
         pruebasRPC = FindFirstObjectByType<PruebasRPC>();
         pruebasRPC.players.Add(this);
-
-        settings.OnSettingsEnabled += SettingsEnabled;
-        settings.OnSettingsDisabled += SettingsDisabled;
     }
 
     [ServerRpc]

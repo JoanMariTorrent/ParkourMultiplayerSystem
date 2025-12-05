@@ -19,6 +19,7 @@ public class MainSettingsView : View
     [SerializeField] private GameObject ExitMenu;
 
     [SerializeField] private Canvas canvas;
+    [SerializeField] private Player player;
 
     [SerializeField] private SettingsData settings;
 
@@ -36,7 +37,8 @@ public class MainSettingsView : View
         settingsMenu.SetActive(false);
         ExitMenu.SetActive(false);
 
-        canvas = InstanceHandler.GetInstance<Canvas>();
+        if(canvas == null) canvas = InstanceHandler.GetInstance<Canvas>();
+        if(player == null && canvas != null) player = canvas.GetComponentInParent<Player>();
     }
 
     private void Update()
@@ -48,7 +50,8 @@ public class MainSettingsView : View
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            if (settings != null) settings.OnSettingsEnabled?.Invoke();
+            //if (settings != null) settings.OnSettingsEnabled?.Invoke();
+            player.SettingsEnabled();
         }
     }
 
@@ -88,7 +91,8 @@ public class MainSettingsView : View
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        settings.OnSettingsDisabled?.Invoke();
+        //settings.OnSettingsDisabled?.Invoke();
+        player.SettingsDisabled();
     }
 
     public override void OnShow()

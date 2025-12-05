@@ -7,7 +7,7 @@ public class ScoreboardView : View
     [SerializeField] private Transform scoreboardEntriesParent;
     [SerializeField] private ScoreboardEntry scoreboardEntryPrefab;
 
-    private Canvas _gameViewManager;
+    [SerializeField] private Canvas _gameViewManager;
 
     private void Awake()
     {
@@ -17,7 +17,7 @@ public class ScoreboardView : View
 
     private void Start()
     {
-        _gameViewManager = InstanceHandler.GetInstance<Canvas>();
+        if(_gameViewManager == null) _gameViewManager = InstanceHandler.GetInstance<Canvas>();
     }
 
     private void OnDestroy()
