@@ -36,6 +36,7 @@ Transform:
   m_Children:
   - {fileID: 8464588387490248032}
   - {fileID: 9179241711352422198}
+  - {fileID: 8772015516634861983}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1152818494256407487
@@ -137,6 +138,7 @@ MonoBehaviour:
   weaponType: 1
   weapon: 1
   displayName: Rifle MalPorro
+  shootSound: {fileID: 8300000, guid: 5bcc0b0217a180548b2dd8a48f03a00b, type: 3}
   childMeshes:
   - {fileID: 9093773589616848858}
   - {fileID: 1389950568450815574}
@@ -250,6 +252,7 @@ MonoBehaviour:
   recoilCamera: {fileID: 0}
   ownerGunTag: 7
   otherPlayerGunTag: 8
+  shootTransform: {fileID: 8772015516634861983}
   recoilX: -8
   recoilY: 1
   recoilZ: 0.1
@@ -290,6 +293,37 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &4936639041461952105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8772015516634861983}
+  m_Layer: 10
+  m_Name: shootTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8772015516634861983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4936639041461952105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.416, y: 0.029, z: 1.486}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3030647542937015979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &8282958882506920587
 PrefabInstance:
   m_ObjectHideFlags: 0

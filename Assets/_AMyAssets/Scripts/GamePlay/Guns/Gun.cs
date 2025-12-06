@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Interfaces;
 using System.Linq;
+using Unity.VisualScripting;
 
 public enum WeaponID
 {
@@ -35,8 +36,14 @@ public class Gun : NetworkBehaviour, ITakeGun
     public WeaponType weaponType;
     public Weapon weapon;
     public string displayName;
-    [Space]
-    [Header("Child meshes")]
+    
+    [Space] [Header("Audios")]
+    [SerializeField] private AudioClip shootSound;
+    [SerializeField] private float minPitch = 0.8f;
+    [SerializeField] private float maxPitch = 1.2f;
+    
+    
+    [Space] [Header("Child meshes")]
     [SerializeField] private GameObject[] childMeshes;
 
     [Header("GunType")]
@@ -83,6 +90,7 @@ public class Gun : NetworkBehaviour, ITakeGun
     [SerializeField] private ParticleSystem _enviormentHit, _playerHitEffect;
     [SerializeField] private RecoilCamera recoilCamera;
     [SerializeField] private int ownerGunTag, otherPlayerGunTag;
+    [SerializeField] private Transform shootTransform;
 
     [Header("GunRecoil")]
     [Header("normal recoil")]
@@ -324,6 +332,10 @@ public class Gun : NetworkBehaviour, ITakeGun
     private void ShootServerRpc(Vector3 origin, Vector3 direction)
     {
         Debug.Log("ShootServerRpc");
+
+        
+
+
         if (recoilCamera != null)
             recoilCamera.RecoilFire();
 
@@ -415,6 +427,11 @@ public class Gun : NetworkBehaviour, ITakeGun
     [ObserversRpc(runLocally: false)]
     private void PlayShotEffectObserversRpc()
     {
+        if(shootSound != null)
+        {
+            AudioManager.Instance.PlaySound(shootSound, shootTransform.position, 0.2f, pitch: Random.Range(minPitch, maxPitch));
+        }
+
         if (_muzzleFlash)
             _muzzleFlash.Play();
         if (_recoilCoroutine != null)

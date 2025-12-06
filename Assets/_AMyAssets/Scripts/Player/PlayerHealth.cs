@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject deathVFX;
+    [SerializeField] private List<GameObject> destroyObjectsList;
+    [SerializeField] private List<MonoBehaviour> scriptsToDisable;
 
     public Action<PlayerID> OnDeath_Server;
     public PlayerID PlayerID => owner.Value;
@@ -73,7 +76,10 @@ public class PlayerHealth : NetworkBehaviour
             }
             PlayDeathEffects();
             OnDeath_Server?.Invoke(owner.Value);
-            Destroy(gameObject);
+            foreach(var obj in destroyObjectsList)
+                Destroy(obj.gameObject);
+            foreach(var script in scriptsToDisable)
+                script.enabled = false;
         }
 
 
