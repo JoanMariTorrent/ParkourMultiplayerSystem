@@ -191,7 +191,19 @@ public class Player : NetworkBehaviour
 
 
 
-
+    [TargetRpc(requireServer: false)]
+    public void TargetShowFinalScreen(PlayerID target, bool win)
+    {
+        if(canvas == null) return;
+        if(win)
+        {
+            canvas.ShowView<WinGameView>(true);
+        }
+        else
+        {
+            canvas.ShowView<LoseGameView>(true);
+        }
+    }
 
     
 

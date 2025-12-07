@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 
@@ -85,18 +86,43 @@ public class ScoreManager : NetworkBehaviour
     public PlayerID GetWinner()
     {
         PlayerID winner = default;
-        var highestKills = 0;
+        var highestWins = -1;
 
-        foreach (var score in _scores)
+        foreach (var entry in _playersWins)
         {
-            if (score.Value._kills > highestKills)
+            if (entry.Value > highestWins)
             { 
-                highestKills  = score.Value._kills;
-                winner = score.Key;
+                highestWins = entry.Value;
+                winner = entry.Key;
             }
         }
 
         return winner;
+    }
+
+
+    public List<PlayerID> GetLosers()
+    {
+        List<PlayerID> losers = new List<PlayerID>();
+        var highestWins = -1;
+
+        foreach(var entry in _playersWins)
+        {
+            if(entry.Value > highestWins)
+            {
+                highestWins = entry.Value;
+            }
+        }
+
+        foreach(var entry in _playersWins)
+        {
+            if(entry.Value < highestWins)
+            {
+                losers.Add(entry.Key);
+            }
+        }
+
+        return losers;
     }
 
 

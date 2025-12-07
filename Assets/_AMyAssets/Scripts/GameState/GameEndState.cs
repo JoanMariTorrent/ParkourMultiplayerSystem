@@ -20,6 +20,8 @@ public class GameEndState : StateNode<List<PlayerID>>
         }
 
         var winner = scoreManager.GetWinner();
+        List<PlayerID> losers = scoreManager.GetLosers();
+        
         
         if (winner == default)
         {
@@ -27,21 +29,17 @@ public class GameEndState : StateNode<List<PlayerID>>
             return;
         }
 
-        if (!InstanceHandler.TryGetInstance(out EndGameView endGameView))
+        var winnerPlayerScript = PlayerRegistry.AllPlayers.FirstOrDefault(p => p.owner == winner);
+
+        if(winnerPlayerScript != null)
         {
-            Debug.LogError("GameEndState failed to get end game view!");
-            return;
+            Debug.Log($"Game has now ended with {winner} as our champion!");
+            winnerPlayerScript.TargetShowFinalScreen(winner, true);
         }
 
-        if (!InstanceHandler.TryGetInstance(out Canvas gameViewManager))
+        else
         {
-            Debug.LogError("GameEndState failed to get Canvas script!");
-            return;
+            Debug.LogError("¡Tenemos una ID de ganador pero no encontramos su script Player!");
         }
-
-        //asdasd
-        endGameView.SetWinner(winner);
-        gameViewManager.ShowView<EndGameView>();
-        Debug.Log($"Game has now ended with {winner} as our champion!");
     }
 }
