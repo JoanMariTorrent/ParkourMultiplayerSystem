@@ -27,7 +27,7 @@ public class RoundEndState : StateNode<List<PlayerID>>
         }
 
         foreach (var winners in winner)
-                CheckForGameEnd(winners);
+            CheckForGameEnd(winners);
     }
 
     private void CheckForGameEnd(PlayerID winners)

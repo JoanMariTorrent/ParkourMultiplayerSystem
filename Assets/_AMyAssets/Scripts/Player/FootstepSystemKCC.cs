@@ -1,6 +1,5 @@
 using UnityEngine;
 using KinematicCharacterController;
-using PurrNet;
 
 public class FootstepSystemKCC : MonoBehaviour
 {

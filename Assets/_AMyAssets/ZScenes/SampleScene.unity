@@ -5016,7 +5016,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2331428047142539963}
   m_Layer: 0
-  m_Name: Enviorment
+  m_Name: Enviroment
   m_TagString: Untagged
   m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -5113,12 +5113,12 @@ SceneRoots:
   - {fileID: 1906733320}
   - {fileID: 1959706445}
   - {fileID: 1700515021}
+  - {fileID: 1933624560}
   - {fileID: 209221665}
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 201362517}
   - {fileID: 2331428047142539963}
-  - {fileID: 1933624560}
   - {fileID: 113923399}
   - {fileID: 1517831309}
   - {fileID: 84064261827147580}

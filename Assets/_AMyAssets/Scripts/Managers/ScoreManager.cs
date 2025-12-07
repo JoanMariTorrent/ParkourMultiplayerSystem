@@ -71,18 +71,14 @@ public class ScoreManager : NetworkBehaviour
     [ServerRpc]
     public void AddDamageServerRpc(PlayerID victimID, int amount, RPCInfo info = default)
     {
-        // El atacante REAL es el que llam� al ServerRpc:
-        var attackerID = info.sender; // PlayerID del cliente que mand� el RPC
+        var attackerID = info.sender; 
 
-        // Registrar al atacante
         CheckForDictionaryEntry(attackerID);
         var attackerScore = _scores[attackerID];
         attackerScore._damage += amount;
         _scores[attackerID] = attackerScore;
 
-        // Registrar da�o a la v�ctima
         CheckForDictionaryEntry(victimID);
-        // aqu� podr�as restarle vida tambi�n si quieres
     }
 
 
