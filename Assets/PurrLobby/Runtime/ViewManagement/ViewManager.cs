@@ -103,6 +103,11 @@ namespace PurrLobby
             ShowView<MainMenuView>();
         }
 
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
+
         #endregion
     }
     

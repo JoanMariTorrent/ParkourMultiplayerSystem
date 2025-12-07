@@ -509,11 +509,11 @@ MonoBehaviour:
   jumpSustainGravity: 0.6
   gravity: -60
   wallRunSpeed: 25
-  wallGravity: -5
+  wallGravity: -2.5
   wallCheckDistance: 1
   wallLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 2112
   wallJumpOutForce: 15
   wallJumpUpForce: 12
   wallEnterMinHeight: 0.5
@@ -668,6 +668,7 @@ MonoBehaviour:
   - {fileID: 8021116977053843990}
   - {fileID: 8482129210503842699}
   - {fileID: 6592323882771729509}
+  colliderToDisable: {fileID: 3086454144717506805}
 --- !u!114 &2662652551195715526
 MonoBehaviour:
   m_ObjectHideFlags: 0

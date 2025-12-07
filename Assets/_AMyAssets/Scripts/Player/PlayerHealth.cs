@@ -12,6 +12,7 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private GameObject deathVFX;
     [SerializeField] private List<GameObject> destroyObjectsList;
     [SerializeField] private List<MonoBehaviour> scriptsToDisable;
+    [SerializeField] private Collider colliderToDisable;
 
     public Action<PlayerID> OnDeath_Server;
     public PlayerID PlayerID => owner.Value;
@@ -76,6 +77,7 @@ public class PlayerHealth : NetworkBehaviour
             }
             PlayDeathEffects();
             OnDeath_Server?.Invoke(owner.Value);
+            Destroy(colliderToDisable);
             foreach(var obj in destroyObjectsList)
                 Destroy(obj.gameObject);
             foreach(var script in scriptsToDisable)

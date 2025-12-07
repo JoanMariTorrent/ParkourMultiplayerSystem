@@ -132,9 +132,15 @@ MonoBehaviour:
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
   timer: 0
-  timeNextGun: 10
+  timeNextGun: 5
   spawnGunPos: {fileID: 9119915950472962771}
   gunSpawned: 0
+  typeGun: 0
+  spawnGun: []
+  spawnedGun: {fileID: 0}
+  primaryWeapon: 0
+  player: {fileID: 0}
+  playerInCollision: 0
 --- !u!1 &9119915950472962771
 GameObject:
   m_ObjectHideFlags: 0
