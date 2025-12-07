@@ -45,8 +45,8 @@ public class Player : NetworkBehaviour
         if (isOwner)
         {
             
-            //string steamName = SteamFriends.GetPersonaName();
-            //CmdPlayerName(steamName);
+            string steamName = SteamFriends.GetPersonaName();
+            CmdPlayerName(steamName);
         }
 
         pruebasRPC = FindFirstObjectByType<PruebasRPC>();
