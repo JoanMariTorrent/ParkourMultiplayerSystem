@@ -20,8 +20,6 @@ public class GameEndState : StateNode<List<PlayerID>>
         }
 
         var winner = scoreManager.GetWinner();
-        List<PlayerID> losers = scoreManager.GetLosers();
-        
         
         if (winner == default)
         {
@@ -29,17 +27,11 @@ public class GameEndState : StateNode<List<PlayerID>>
             return;
         }
 
-        var winnerPlayerScript = PlayerRegistry.AllPlayers.FirstOrDefault(p => p.owner == winner);
-
-        if(winnerPlayerScript != null)
+        foreach (var playerScript in PlayerRegistry.AllPlayers)
         {
-            Debug.Log($"Game has now ended with {winner} as our champion!");
-            winnerPlayerScript.TargetShowFinalScreen(winner, true);
-        }
+            bool isThisPlayerTheWinner = (playerScript.owner.Value == winner);
 
-        else
-        {
-            Debug.LogError("¡Tenemos una ID de ganador pero no encontramos su script Player!");
+            playerScript.TargetShowFinalScreen(playerScript.owner.Value, isThisPlayerTheWinner);
         }
     }
 }
