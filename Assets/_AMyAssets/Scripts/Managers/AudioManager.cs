@@ -50,7 +50,7 @@ public class AudioManager : MonoBehaviour
     }
 
 
-    public void PlaySound(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f)
+    public void PlaySound(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, Transform parent = null)
     {
         AudioSource source = RequestedAudio();
 
@@ -58,17 +58,19 @@ public class AudioManager : MonoBehaviour
         source.clip = clip;
         source.volume = volume;
         source.pitch = pitch;
+        if(parent != null) source.gameObject.transform.parent = parent;
 
         source.gameObject.SetActive(true);
         source.Play();
 
-        StartCoroutine(DisableAudioDelayed(source, clip.length + 0.05f));
+        StartCoroutine(DisableAudioDelayed(source, clip.length + 0.05f, parent));
     }
 
 
-    private System.Collections.IEnumerator DisableAudioDelayed(AudioSource source, float duration)
+    private System.Collections.IEnumerator DisableAudioDelayed(AudioSource source, float duration, Transform parent = null)
     {
         yield return new WaitForSeconds(duration);
+        if(parent != null) source.gameObject.transform.parent = this.transform;
         source.gameObject.SetActive(false);
     }
 }

@@ -199,6 +199,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Emote"",
+                    ""type"": ""Button"",
+                    ""id"": ""c3a10a97-1515-4b56-932b-557773caeaf7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -283,17 +292,6 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""fa41498b-1abf-4805-83df-8767a0de3d2f"",
                     ""path"": ""<Keyboard>/ctrl"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Crouch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d43e4ef1-711d-4179-9346-530154cb1b15"",
-                    ""path"": ""<Mouse>/backButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -432,6 +430,17 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""action"": ""ChangeHand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3308aebb-5d42-41c2-9b83-e3566f15b17a"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Emote"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -458,6 +467,7 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         m_GamePlay_Reload = m_GamePlay.FindAction("Reload", throwIfNotFound: true);
         m_GamePlay_DropGun = m_GamePlay.FindAction("DropGun", throwIfNotFound: true);
         m_GamePlay_ChangeHand = m_GamePlay.FindAction("ChangeHand", throwIfNotFound: true);
+        m_GamePlay_Emote = m_GamePlay.FindAction("Emote", throwIfNotFound: true);
     }
 
     ~@PlayerInputsAction()
@@ -550,6 +560,7 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Reload;
     private readonly InputAction m_GamePlay_DropGun;
     private readonly InputAction m_GamePlay_ChangeHand;
+    private readonly InputAction m_GamePlay_Emote;
     /// <summary>
     /// Provides access to input actions defined in input action map "GamePlay".
     /// </summary>
@@ -609,6 +620,10 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "GamePlay/ChangeHand".
         /// </summary>
         public InputAction @ChangeHand => m_Wrapper.m_GamePlay_ChangeHand;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Emote".
+        /// </summary>
+        public InputAction @Emote => m_Wrapper.m_GamePlay_Emote;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -671,6 +686,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @ChangeHand.started += instance.OnChangeHand;
             @ChangeHand.performed += instance.OnChangeHand;
             @ChangeHand.canceled += instance.OnChangeHand;
+            @Emote.started += instance.OnEmote;
+            @Emote.performed += instance.OnEmote;
+            @Emote.canceled += instance.OnEmote;
         }
 
         /// <summary>
@@ -718,6 +736,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @ChangeHand.started -= instance.OnChangeHand;
             @ChangeHand.performed -= instance.OnChangeHand;
             @ChangeHand.canceled -= instance.OnChangeHand;
+            @Emote.started -= instance.OnEmote;
+            @Emote.performed -= instance.OnEmote;
+            @Emote.canceled -= instance.OnEmote;
         }
 
         /// <summary>
@@ -855,5 +876,12 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnChangeHand(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Emote" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEmote(InputAction.CallbackContext context);
     }
 }

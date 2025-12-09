@@ -86,7 +86,7 @@ public class GunPlatform : NetworkBehaviour
         gunSpawned = true;
         spawnedGun = Instantiate(spawnGun[0], spawnGunPos.transform.position, spawnGunPos.transform.rotation);
         spawnedGun.gameObject.SetActive(true);
-        spawnedGun.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        spawnedGun.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
     private void OnTriggerEnter(Collider other)

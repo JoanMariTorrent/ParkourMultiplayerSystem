@@ -22,6 +22,7 @@ public struct CharacterInput
     public bool Interact;
     public bool Reload;
     public bool DropGun;
+    public bool Emote;
 }
 
 public enum LastGunEquiped { None, Primary, Secondary, Utility }
@@ -115,6 +116,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [Header("Camera Effects")]
     [SerializeField] private float wallRunTiltAngle = 15f; 
     [SerializeField] private float tiltSpeed = 10f;
+    [Header("Audio")]
+    [SerializeField] private AudioClip dontShoot;
+    private bool cantEmote = false;
 
     // State
     public CharacterState _state;
@@ -137,7 +141,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedInteract;
     public bool _requestedReload;
     public bool _requestedDropGun;
+    public bool _requestedEmote;
     public int gunToSwitchIndex;
+
 
     private Collider[] _unCrouchOverlapResults;
     private float _timeSinceUngrounded;
@@ -212,6 +218,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _requestedReload = input.Reload;
         _requestedDropGun = input.DropGun;
         _requestedInteract = input.Interact;
+        _requestedEmote = input.Emote;
 
         if (_requestedInteract)
         {
@@ -255,6 +262,19 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             currentGunIndex = input.RequestedGunIndex;
             ChangeGun(currentGunIndex);
         }
+
+        if(_requestedEmote && !cantEmote)
+        {
+            AudioManager.Instance.PlaySound(dontShoot, transform.position, 1, pitch: Random.Range(0.95f, 1.1f), parent: transform);
+            cantEmote = true;
+            StartCoroutine(Emote());
+        }
+    }
+
+    private System.Collections.IEnumerator Emote()
+    {
+        yield return new WaitForSeconds(dontShoot.length + 0.05f);
+        cantEmote = false;
     }
     
     [ObserversRpc(runLocally: false)]
@@ -580,7 +600,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
                         currentVelocity.y = climbSpeed;
                         
-                        jumps = 2; 
+                        jumps = 1; 
                     }
                 }
             }
@@ -605,7 +625,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         // Matamos la velocidad vertical al entrar para que te quedes a la altura
                         currentVelocity.y = 0; 
 
-                        jumps = 2; 
+                        jumps = 1; 
                     }
                 }
             }
@@ -622,7 +642,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             // A. WALL CLIMB
             if (_state.Stance == Stance.Climb)
             {
-                jumps = 2;
+                jumps = 1;
                 _currentClimbTimer += deltaTime;
 
                 float deceleration = climbSpeed / maxClimbDuration; 
@@ -636,7 +656,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             // B. WALL RUN (FIX CURVAS + Y ISOLATION)
             else if (_state.Stance == Stance.Wall)
             {
-                jumps = 2;
+                jumps = 1;
                 _currentClimbTimer = 0f; 
 
                 // 1. Separamos la velocidad en Horizontal y Vertical

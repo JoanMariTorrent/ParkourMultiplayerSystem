@@ -176,6 +176,7 @@ public class Player : NetworkBehaviour
             Interact = input.Interact.WasPressedThisFrame(),
             Reload = input.Reload.WasPressedThisFrame(),
             DropGun = input.DropGun.WasPressedThisFrame(),
+            Emote = input.Emote.WasPressedThisFrame(),
         };
 
         if(cameraActive) playerCharacter.UpdateInput(characterInput);

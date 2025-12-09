@@ -15,7 +15,7 @@ MonoBehaviour:
   useDistance: 1
   distanceGradient:
     serializedVersion: 2
-    key0: {r: 0.5330188, g: 0.9453902, b: 1, a: 0.14509805}
+    key0: {r: 0.53333336, g: 1, b: 0.98993045, a: 0.14509805}
     key1: {r: 0.53333336, g: 1, b: 0.98993045, a: 1}
     key2: {r: 0.0098211765, g: 0.9762391, b: 0.69175977, a: 1}
     key3: {r: 0, g: 1, b: 0.7056353, a: 0}
