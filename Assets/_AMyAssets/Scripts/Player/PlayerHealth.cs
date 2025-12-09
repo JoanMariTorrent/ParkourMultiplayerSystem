@@ -13,6 +13,9 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private List<GameObject> destroyObjectsList;
     [SerializeField] private List<MonoBehaviour> scriptsToDisable;
     [SerializeField] private Collider colliderToDisable;
+    [Header("Audios")]
+    [SerializeField] private AudioClip[] damageClips;
+    [SerializeField] private AudioClip[] deathClips;
 
     public Action<PlayerID> OnDeath_Server;
     public PlayerID PlayerID => owner.Value;
@@ -67,8 +70,17 @@ public class PlayerHealth : NetworkBehaviour
         _health.value += _amount;
         Debug.Log(_amount);
 
+        if(_health.value > 0)
+        {
+            AudioClip damageClip = damageClips[UnityEngine.Random.Range(0, damageClips.Length)];
+            AudioManager.Instance.PlaySound(damageClip, transform.position, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f));
+        }
+
         if (_health.value <= 0)
         {
+            AudioClip deathClip = deathClips[UnityEngine.Random.Range(0, deathClips.Length)];
+            AudioManager.Instance.PlaySound(deathClip, transform.position, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f));
+
             if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
             {
                 scoreManager.Addkills(_info.sender);

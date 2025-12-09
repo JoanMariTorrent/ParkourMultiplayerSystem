@@ -507,7 +507,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     {
         _state.Acceleration = Vector3.zero;
 
-        // --- GROUNDED MOVEMENT ---
         if (motor.GroundingStatus.IsStableOnGround)
         {
             _timeSinceUngrounded = 0f;
@@ -519,12 +518,11 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
             var groundedMovement = motor.GetDirectionTangentToSurface(_requestedMovement, motor.GroundingStatus.GroundNormal) * _requestedMovement.magnitude;
 
-            // SLIDING LOGIC
+            // SLIDING 
             {
                 bool isMoving = groundedMovement.sqrMagnitude > 0f;
                 bool isCrouching = _state.Stance == Stance.Crouch;
                 
-                // MODIFICADO: Añadido "&& _requestedRun" para que solo deslice si estás corriendo
                 if (isMoving && isCrouching && _requestedRun && (_lastState.Stance == Stance.Stand || !_lastState.Grounded) && _state.Stance != Stance.Wall && _timeSinceLastSlide >= slideCooldown)
                 {
                     _state.Stance = Stance.Slide;
@@ -569,18 +567,16 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 if (currentVelocity.magnitude < slideEndSpeed) _state.Stance = Stance.Crouch;
             }
         }
-        // --- AIR MOVEMENT & WALL MECHANICS ---
+        // AIR MOVEMENT / WALL MECHANICS 
         else
         {
             _timeSinceUngrounded += deltaTime;
             bool isMovingForward = Vector3.Dot(_requestedMovement, motor.CharacterForward) > 0.1f;
 
-            // --- CÁLCULO DE ÁNGULO PARA CLIMB ---
-            // Solo escalar si miramos la pared directamente (dentro de maxClimbAngle)
             float lookAngle = Vector3.Angle(motor.CharacterForward, -_wallNormal);
             bool isLookingAtWall = lookAngle < maxClimbAngle;
 
-            // Prioridad 1: WALL CLIMB
+            // WALL CLIMB
             if (_isFacingWall && isLookingAtWall && !_state.Grounded && isMovingForward && _currentClimbTimer < maxClimbDuration)
             {
                 if (_requestedCrouch || _requestedCrouchInAir)
@@ -596,7 +592,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         _state.Stance = Stance.Climb;
                         motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
                         
-                        // --- FIX CONSISTENCIA ESCALADA ---
                         currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
                         currentVelocity.y = climbSpeed;
                         
@@ -604,7 +599,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     }
                 }
             }
-            // Prioridad 2: WALL RUN (Si no estamos escalando)
+            //WALL RUN (Si no estamos escalando)
             else if (_currentWallSide != WallSide.None && !_state.Grounded && _requestedMovement.magnitude > 0.1f && isMovingForward)
             {
                 if (_requestedCrouch || _requestedCrouchInAir)
@@ -621,8 +616,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
                         currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
                         
-                        // --- FIX: ANCLAJE VERTICAL ---
-                        // Matamos la velocidad vertical al entrar para que te quedes a la altura
                         currentVelocity.y = 0; 
 
                         jumps = 1; 
@@ -637,9 +630,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 }
             }
 
-            // --- EJECUCIÓN FÍSICA ---
-
-            // A. WALL CLIMB
+            // WALL CLIMB
             if (_state.Stance == Stance.Climb)
             {
                 jumps = 1;
@@ -653,18 +644,16 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
                 currentVelocity += -_wallNormal * 2f; 
             }
-            // B. WALL RUN (FIX CURVAS + Y ISOLATION)
+            // WALL RUN 
             else if (_state.Stance == Stance.Wall)
             {
                 jumps = 1;
                 _currentClimbTimer = 0f; 
 
-                // 1. Separamos la velocidad en Horizontal y Vertical
                 float verticalVelocity = currentVelocity.y;
                 Vector3 horizontalVelocity = Vector3.ProjectOnPlane(currentVelocity, Vector3.up);
                 float horizontalSpeed = horizontalVelocity.magnitude;
 
-                // 2. Redireccionar velocidad (Steering) SOLO en el plano horizontal
                 Vector3 tangentDir = Vector3.ProjectOnPlane(horizontalVelocity, _wallNormal).normalized;
 
                 if (horizontalSpeed > 0.1f && tangentDir.sqrMagnitude > 0.01f)
@@ -672,7 +661,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     horizontalVelocity = tangentDir * horizontalSpeed;
                 }
 
-                // 3. Aplicar Input (Aceleración / Deceleración)
                 Vector3 wallRunDirection = Vector3.ProjectOnPlane(motor.CharacterForward, _wallNormal).normalized;
                 wallRunDirection.y = 0; wallRunDirection.Normalize();
 
@@ -687,15 +675,13 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                        horizontalVelocity = Vector3.Lerp(horizontalVelocity, targetVelocity, wallRunAcceleration * deltaTime);
                 }
 
-                // 4. Reconstruimos la velocidad + Gravedad
                 currentVelocity = horizontalVelocity + (Vector3.up * verticalVelocity);
                 currentVelocity += Vector3.down * (Mathf.Abs(wallGravity) * deltaTime);
                 
-                // 5. Fuerza "Lapa" (Sticky Force)
                 float speedFactor = horizontalSpeed * 0.5f; 
                 currentVelocity += -_wallNormal * (2f + speedFactor); 
             }
-            // C. AIRE NORMAL
+            // AIRE NORMAL
             else
             {
                 if (_requestedMovement.sqrMagnitude > 0f)
@@ -869,7 +855,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             gravity = 0;
             airAcceleration = 0;
             jumps = 0;
-            Debug.Log("<color=yellow>GODMODE ACTIVADO ✅</color>");
+            Debug.Log("<color=yellow>GODMODE ACTIVADO </color>");
         }
         else
         {
@@ -878,7 +864,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             rb.useGravity = true;
             gravity = initGravity;
             airAcceleration = initAirAcceleration;
-            Debug.Log("<color=orange>GODMODE DESACTIVADO ❌</color>");
+            Debug.Log("<color=orange>GODMODE DESACTIVADO </color>");
         }
     }
 

@@ -38,8 +38,9 @@ public class FootstepSystemKCC : MonoBehaviour
         bool isGrounded = CheckGrounded();
 
         bool isSliding = playerCharacter != null && playerCharacter._state.Stance == Stance.Slide;
+        bool isOnWall = playerCharacter != null && playerCharacter._state.Stance == Stance.Wall;
 
-        if(isGrounded && distanceMoved > 0.005f && !isSliding)
+        if((isGrounded || isOnWall) && distanceMoved > 0.005f && !isSliding)
         {
             float currentStepDist = (playerCharacter != null && playerCharacter._state.Stance == Stance.Crouch) ? stepDistance * 1.3f : stepDistance;
 

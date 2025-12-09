@@ -138,7 +138,9 @@ MonoBehaviour:
   weaponType: 1
   weapon: 1
   displayName: Rifle MalPorro
-  shootSound: {fileID: 8300000, guid: 5bcc0b0217a180548b2dd8a48f03a00b, type: 3}
+  shootSound: {fileID: 8300000, guid: b8418d17dc8d16d4ea0981ae7d861391, type: 3}
+  minPitch: 0.8
+  maxPitch: 1.2
   childMeshes:
   - {fileID: 9093773589616848858}
   - {fileID: 1389950568450815574}
