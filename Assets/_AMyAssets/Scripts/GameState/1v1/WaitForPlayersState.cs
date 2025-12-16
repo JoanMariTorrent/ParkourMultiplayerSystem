@@ -17,6 +17,9 @@ public class WaitForPlayersState : StateNode
         if (!asServer)
             return;
 
+
+        Debug.Log($"Cantidad de jugadores guardado en memoria: <color=green> {MatchData.PlayerCount} </color>");
+
         StartCoroutine(WaitForPlayers());
     }
 

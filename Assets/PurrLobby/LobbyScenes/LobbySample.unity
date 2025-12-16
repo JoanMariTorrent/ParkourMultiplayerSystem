@@ -2536,7 +2536,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentProvider: {fileID: 1097043114}
   createRoomArgs:
-    maxPlayers: 5
+    maxPlayers: 4
     roomProperties:
       keys:
       - PurrNet

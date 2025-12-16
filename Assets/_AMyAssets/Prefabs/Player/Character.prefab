@@ -514,7 +514,7 @@ MonoBehaviour:
   gravity: -70
   wallRunSpeed: 25
   wallGravity: -2.5
-  wallCheckDistance: 1
+  wallCheckDistance: 0.65
   wallLayer:
     serializedVersion: 2
     m_Bits: 2112
