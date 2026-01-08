@@ -13,9 +13,7 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
     public override void Enter(List<PlayerHealth> data, bool asServer)
     {
         base.Enter(data, asServer);
-
         if (!asServer) return;
-
         _players.Clear();
         timer = matchDuration;
 

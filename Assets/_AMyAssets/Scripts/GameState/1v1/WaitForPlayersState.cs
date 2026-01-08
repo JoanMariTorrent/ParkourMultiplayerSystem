@@ -5,11 +5,6 @@ using UnityEngine;
 public class WaitForPlayersState : StateNode
 {
     [SerializeField] private int _minPlayers = 2;
-
-    private void Awake()
-    {
-        Debug.Log("Starting machine");
-    }
     public override void Enter(bool asServer)
     {
         base.Enter(asServer);

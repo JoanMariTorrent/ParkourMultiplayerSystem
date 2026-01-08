@@ -272,7 +272,11 @@ public class Player : NetworkBehaviour
         
         if(InstanceHandler.TryGetInstance(out SpawningGunsState spawningGunsState))
         {
-            spawningGunsState.OnPlayerFinishedSpin(playerID);
+            //spawningGunsState.OnPlayerFinishedSpin(playerID);
+            if(SpawningGunsState.SpawningGunsStateActiveInstance != null)
+            {
+                SpawningGunsState.SpawningGunsStateActiveInstance.OnPlayerFinishedSpin(playerID);
+            }
         }
     }
 

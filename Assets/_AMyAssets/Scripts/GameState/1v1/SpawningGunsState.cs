@@ -3,7 +3,9 @@ using PurrNet.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 public enum randomType
 {
@@ -19,10 +21,12 @@ public enum randomType
 // que hacer, es que el servidor active una funcion en cada jugar, y esa funcion sea el spin
 public class SpawningGunsState : StateNode<List<PlayerHealth>>
 {
+
+    public static SpawningGunsState SpawningGunsStateActiveInstance;
     [SerializeField] private List<Player> normalPlayers = new();
     [SerializeField] private List<SlotMachine> PlayersSlotMachines = new();
-    [SerializeField] private int playerCount;
     [SerializeField] private int playerEndedSpinCount;
+    [SerializeField] private int totalPlayers = 0;
     [SerializeField] private List<WeaponScripteableObject> weapons;
     [SerializeField] private List<WeaponScripteableObject> filteredWeapons = new List<WeaponScripteableObject>();
     [SerializeField] private WeaponDatabase weaponDataBase;
@@ -36,11 +40,14 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
+        SpawningGunsStateActiveInstance = this;
     }
 
     public override void Enter(List<PlayerHealth> data, bool asServer)
     {
         base.Enter(data, asServer);
+
+        SpawningGunsStateActiveInstance = this;
 
         if (!asServer)
             return;
@@ -56,22 +63,22 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         _players.Clear();
         _playersDataCache.Clear();
 
-        playerCount = 0;
         playerEndedSpinCount = 0;
+        totalPlayers = 0;
 
         _playersDataCache = data;
-
+        totalPlayers = data.Count;
 
         foreach (var player in data)
         {
             var getPlayer = player.GetComponent<Player>();
             if (getPlayer == null)
                 continue;
-            
             normalPlayers.Add(getPlayer);
             _players.Add(player.owner.Value);
-            playerCount++;
         }
+
+        Debug.Log($"[Enter] Players count: {normalPlayers.Count}");
 
         ServerShowSlot();
         TryGoNextState(data);
@@ -96,19 +103,26 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     [ServerRpc(requireOwnership: false)]
     public void OnPlayerFinishedSpin(PlayerID playerID)
     {
+
+        Debug.Log(normalPlayers.Count);
+
         playerEndedSpinCount ++;
-        Debug.Log($"<color=green> Player {playerID} finished his spin ({playerEndedSpinCount} / {playerCount})");
+        
+        Debug.Log($"<color=green> Player {playerID} finished his spin ({playerEndedSpinCount} / {totalPlayers})");
         TryGoNextState(_playersDataCache);
     }
 
     private void TryGoNextState(List<PlayerHealth> data)
     {
-        if (playerEndedSpinCount == playerCount)
+        if (totalPlayers == 0 && data.Count > 0) return;
+        if (totalPlayers == 0 && data.Count == 0) {machine.Next(data); return;}
+
+        if (playerEndedSpinCount == normalPlayers.Count)
         {
             Debug.Log($"<color=purple> All players have finished their spin!</color>");
             machine.Next(data);
         }
-        else if (playerEndedSpinCount != playerCount)
+        else if (playerEndedSpinCount != normalPlayers.Count)
         {
             Debug.Log("<color=orange> Wait for other playes to finish his spins!</color>");
         }

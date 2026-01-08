@@ -18,7 +18,6 @@ public class ConfigurationSettingsView : MonoBehaviour
     void OnEnable()
     {
         ChangeView(0);
-        Debug.Log("Asodjniahsbdiajsbdijabijkhdbasd");
     }
     public void ChangeView(int newView)
     {

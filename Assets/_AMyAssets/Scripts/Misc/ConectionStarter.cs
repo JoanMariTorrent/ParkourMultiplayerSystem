@@ -61,7 +61,6 @@ public class ConnectionStarter : MonoBehaviour
 
     private void StartNormal()
     {
-        Debug.Log("start normal");
         _networkManager.transport = _udpTransport;
 
 #if UNITY_EDITOR
