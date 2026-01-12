@@ -5,6 +5,7 @@ using UnityEngine;
 public class WaitForPlayersStateDM : StateNode
 {
     [SerializeField] private int _minPlayers = 2;
+    [SerializeField] private bool testingStart = false;
 
     public override void Enter(bool asServer)
     {
@@ -16,10 +17,14 @@ public class WaitForPlayersStateDM : StateNode
 
         Debug.Log($"Cantidad de jugadores guardado en memoria: <color=green> {MatchData.PlayerCount} </color>");
 
-        if (MatchData.PlayerCount != 0)
+        if(testingStart == false)
+        {
+            if (MatchData.PlayerCount != 0)
             _minPlayers = MatchData.PlayerCount;
-        else
-            _minPlayers = 1;
+            else
+                _minPlayers = 1;
+        }
+        
         StartCoroutine(WaitForPlayers());
     }
 

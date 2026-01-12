@@ -655,27 +655,23 @@ MonoBehaviour:
     _value: 100
     _ownerAuth: 0
     _sendIntervalInSeconds: 0
+  _maxHealth: 100
   _selfLayer: 7
   _otherLayer: 8
   playerCharacter: {fileID: 8159890137296869839}
   canvas: {fileID: 1776478738878679272}
   deathVFX: {fileID: 5094046088325549080, guid: 5193592141f1fad4eba8dbe541335509, type: 3}
-  destroyObjectsList:
-  - {fileID: 1682570989994884229}
+  visualObjectsList:
   - {fileID: 3784153320970718965}
+  - {fileID: 9079398816623654485}
   scriptsToDisable:
   - {fileID: 1656825130629811245}
   - {fileID: 7636289352493295535}
   - {fileID: 8159890137296869839}
   - {fileID: 5399229469991889200}
-  - {fileID: 3728205283233136871}
   - {fileID: 2662652551195715526}
-  - {fileID: 6742959374811469856}
-  - {fileID: 5855341915361668786}
-  - {fileID: 8021116977053843990}
-  - {fileID: 8482129210503842699}
-  - {fileID: 6592323882771729509}
   colliderToDisable: {fileID: 3086454144717506805}
+  _rb: {fileID: 0}
   damageClips:
   - {fileID: 8300000, guid: 110a6fb3a6a8a394d8fb12da29edd1c6, type: 3}
   deathClips:

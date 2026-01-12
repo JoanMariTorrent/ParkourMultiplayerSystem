@@ -125,6 +125,8 @@ public class Player : NetworkBehaviour
 
     private void HandleInputs()
     {
+        if (playerHealth.health <= 0) return;
+
         if (_inputActions == null)
         {
             _inputActions = new PlayerInputsAction();
@@ -136,7 +138,6 @@ public class Player : NetworkBehaviour
             }
         }
         var input = _inputActions.GamePlay;
-        float deltaTime = Time.deltaTime;
 
         if (!canMove) return;
 
@@ -206,7 +207,7 @@ public class Player : NetworkBehaviour
         }
 
         if(playerHealth == null) return;
-        playerHealth.DestroyAllComponents();
+        playerHealth.DieVisualsObserversRpc();
     }
 
     

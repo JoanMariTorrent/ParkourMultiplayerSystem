@@ -55,6 +55,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [SerializeField] private List<Renderer> renderers = new();
     [SerializeField] private CinemachineCamera playerCamera;
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private PlayerHealth playerHealth;
 
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 12f;
@@ -206,6 +207,14 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateInput(CharacterInput input)
     {
+        if(playerHealth != null && (playerHealth.IsDead || playerHealth.health <= 0))
+        {
+            _requestedMovement = Vector3.zero;
+            _requestedJump = false;
+            _requestedShoot = false;
+            _requestedAim = false;
+            return;
+        }
         _requestedRotation = input.Rotation;
         _requestedMovement = new Vector3(input.Move.x, 0f, input.Move.y);
         _requestedMovement = Vector3.ClampMagnitude(_requestedMovement, 1f);
@@ -884,6 +893,20 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         {
             motor.SetPosition(transform.position + (move.normalized * speed * Time.deltaTime));
         }
+    }
+
+    public void TeleportTo(Vector3 position, Quaternion rotation)
+    {
+        motor.SetPositionAndRotation(position, rotation);
+        
+        motor.BaseVelocity = Vector3.zero;
+        _state.Velocity = Vector3.zero;
+        _state.Acceleration = Vector3.zero;
+        
+        _state.Stance = Stance.Stand;
+        
+        transform.position = position;
+        transform.rotation = rotation;
     }
     
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
+using System.Linq;
 
 public class ScoreManager : NetworkBehaviour
 {
@@ -141,6 +142,20 @@ public class ScoreManager : NetworkBehaviour
     {
         if (!_scores.ContainsKey(_playerID))
             _scores.Add(_playerID, new ScoreData());
+    }
+    
+    public List<KeyValuePair<PlayerID, ScoreData>> GetDeathmatchPodium(int topCount = 3)
+    {
+        // 1. Convertimos el SyncDictionary a un Diccionario normal para poder operar con LINQ
+        var sortedPlayers = _scores.ToDictionary()
+            // ORDENAMIENTO:
+            .OrderByDescending(x => x.Value._kills)   // 1º Prioridad: Más Kills
+            .ThenBy(x => x.Value._deaths)             // 2º Desempate: Menos Muertes es mejor
+            .ThenByDescending(x => x.Value._damage)   // 3º Desempate: Más Daño es mejor
+            .Take(topCount)                           // Cogemos solo los 'topCount' (3)
+            .ToList();
+
+        return sortedPlayers;
     }
 
 

@@ -1169,6 +1169,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 143521565}
+  - component: {fileID: 143521566}
   m_Layer: 0
   m_Name: GameEndStateDM
   m_TagString: Untagged
@@ -1191,6 +1192,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1283184984}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &143521566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143521564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 632c585c1eabf7b40bd0087d472b110b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
 --- !u!1 &161492524
 GameObject:
   m_ObjectHideFlags: 0
@@ -10243,7 +10265,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 0
+  _minPlayers: 2
+  testingStart: 1
 --- !u!1001 &525913456
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21264,6 +21287,11 @@ MonoBehaviour:
   _visitiblityRules: {fileID: 0}
   matchDuration: 120
   timer: 0
+  respawnDelay: 3
+  _playerPrefab: {fileID: 6592323882771729509, guid: 268fda2d2fb972c4b8fcc919c39ec668, type: 3}
+  _spawnPoints:
+  - {fileID: 4968686437031759553}
+  - {fileID: 278023948605504118}
 --- !u!4 &1032208030
 Transform:
   m_ObjectHideFlags: 0
@@ -32808,7 +32836,7 @@ GameObject:
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1283184983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32836,6 +32864,7 @@ MonoBehaviour:
   - {fileID: 1618040073}
   - {fileID: 2029495557}
   - {fileID: 1032208029}
+  - {fileID: 143521566}
 --- !u!4 &1283184984
 Transform:
   m_ObjectHideFlags: 0
@@ -51581,7 +51610,7 @@ GameObject:
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1933624559
 MonoBehaviour:
   m_ObjectHideFlags: 0
