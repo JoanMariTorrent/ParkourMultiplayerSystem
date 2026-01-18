@@ -500,6 +500,7 @@ MonoBehaviour:
   - {fileID: 5400225345847635257}
   playerCamera: {fileID: 7793214397378440027}
   rb: {fileID: 6714405065655426304}
+  playerHealth: {fileID: 0}
   walkSpeed: 12
   runSpeed: 20
   crouchSpeed: 7
@@ -659,17 +660,12 @@ MonoBehaviour:
   _selfLayer: 7
   _otherLayer: 8
   playerCharacter: {fileID: 8159890137296869839}
+  weaponManager: {fileID: 1656825130629811245}
   canvas: {fileID: 1776478738878679272}
   deathVFX: {fileID: 5094046088325549080, guid: 5193592141f1fad4eba8dbe541335509, type: 3}
   visualObjectsList:
   - {fileID: 3784153320970718965}
   - {fileID: 9079398816623654485}
-  scriptsToDisable:
-  - {fileID: 1656825130629811245}
-  - {fileID: 7636289352493295535}
-  - {fileID: 8159890137296869839}
-  - {fileID: 5399229469991889200}
-  - {fileID: 2662652551195715526}
   colliderToDisable: {fileID: 3086454144717506805}
   _rb: {fileID: 0}
   damageClips:

@@ -520,7 +520,7 @@ public class Gun : NetworkBehaviour, ITakeGun
         Destroy(gameObject);
     }
 
-    [ObserversRpc(runLocally: false)]
+    [ObserversRpc(runLocally: true)]
     public void Reload()
     {
         if (reloadsAmmo <= 0)
@@ -538,7 +538,7 @@ public class Gun : NetworkBehaviour, ITakeGun
         ReloadFinished();
     }
 
-    [ObserversRpc(runLocally: false)]
+    [ObserversRpc(runLocally: true)]
     public void ReloadFinished()
     {
         if ((ammo + reloadsAmmo) < maxAmmo)
@@ -563,7 +563,7 @@ public class Gun : NetworkBehaviour, ITakeGun
         if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
     }
 
-    [ObserversRpc(runLocally: false)]
+    [ObserversRpc(runLocally: true)] // Se ejecuta al interactuar
     public void TakeGun(PlayerCharacter playerCharacter)
     {
         weaponManager = playerCharacter.GetComponent<WeaponManager>(); 
@@ -573,15 +573,21 @@ public class Gun : NetworkBehaviour, ITakeGun
             return;
         }
 
-        
+        // Definimos los booleanos según el tipo de arma
+        bool isPrimary = (weaponType == WeaponType.Primary);
+        bool isSecondary = (weaponType == WeaponType.Secundary); // Ojo con el typo 'Secundary' en tu enum
 
-        if (weaponType == WeaponType.Primary)
+        // LÓGICA DE AUTORIDAD:
+        if (isServer)
         {
-            weaponManager.NewWeapon(gameObject, true, false, true);
+            // Si soy el servidor, ejecuto la lógica directamente
+            weaponManager.NewWeapon(gameObject, isPrimary, false, true);
         }
-        else if (weaponType == WeaponType.Secundary)
+        else if (isOwner) // Si soy el cliente dueño del jugador
         {
-            weaponManager.NewWeapon(gameObject, false, false, true);
+            // PIDO al servidor que me de el arma
+            // Pasamos el gameObject del arma (PurrNet enviará la referencia de red)
+            weaponManager.RequestPickupGunServerRpc(gameObject, isPrimary, false);
         }
     }
 

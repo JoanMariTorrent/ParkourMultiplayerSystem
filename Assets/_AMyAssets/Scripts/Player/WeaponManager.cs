@@ -2,7 +2,6 @@
 using UnityEngine;
 using Unity.Cinemachine;
 
-
 public class WeaponManager : NetworkBehaviour
 {
     [SerializeField] private Transform _handTransform;
@@ -12,7 +11,8 @@ public class WeaponManager : NetworkBehaviour
 
     public Gun _currentGun;
     [SerializeField] private LastGunEquiped lastGun;
-    public SyncList <GameObject> _ownedWeapons = new(true);
+    
+    public SyncList <GameObject> _ownedWeapons = new(ownerAuth: false); 
     public SyncList <GameObject> mySync = new(ownerAuth: true);
     [SerializeField] private GameObject weaponInstance = null;
     [SerializeField] private PlayerCharacter playerChar;
@@ -20,16 +20,10 @@ public class WeaponManager : NetworkBehaviour
     [Space][Header("Audios")]
     [SerializeField] private AudioClip[] takeGunSound;
 
-    void Start()
-    {
-        //if(isOwner) _ownedWeapons = new(ownerAuth: true);
-    }
-
-
-
     protected override void OnSpawned()
     {
         GetPlayerScript();
+        if(isServer) EnsureWeaponSlots();
     }
 
     void Update()
@@ -37,485 +31,331 @@ public class WeaponManager : NetworkBehaviour
         lastGun = playerChar._lastGunEquiped;
     }
 
-    private void EquipWeapon(GameObject weaponPrefab, bool deleteWeapon, bool primaryWeapon, bool groundGun)
+    // --- RPCs y LOGICA SERVER ---
+
+    [ServerRpc(requireOwnership: true)] 
+    public void RequestPickupGunServerRpc(GameObject gunObject, bool isPrimary, bool isUtility)
     {
-        if (deleteWeapon) // Si el arma hay que borrarla
-        {
-            // Busca el indice del arma que hay que borrar
-            Gun gunScript = weaponPrefab.GetComponent<Gun>();
-            int currentIndex = IndexHasWeaponOfType(gunScript.weaponID);
-
-
-
-            
-            if (currentIndex >= 0 && _ownedWeapons[currentIndex] != null) // Si encuentro un arma del mismo tipo, la destruye
-            {
-                //SwitchWeapon(currentIndex);
-                //DropGun();
-                Destroy(_ownedWeapons[currentIndex]);
-                _ownedWeapons[currentIndex] = null;
-                    
-            }
-            else
-            {
-                if (primaryWeapon)
-                {
-                    if (_ownedWeapons[0] != null && _ownedWeapons[1] != null)
-                    {
-                        Debug.LogAssertionFormat("asdasdasd");
-                        Destroy(_ownedWeapons[playerChar.gunToSwitchIndex]);
-                        _ownedWeapons[playerChar.gunToSwitchIndex] = null;
-                    }
-                }
-                else if (!primaryWeapon)
-                {
-                    if (_ownedWeapons[2] != null && _ownedWeapons[3] != null)
-                    {
-                        Destroy(_ownedWeapons[playerChar.gunToSwitchIndex]);
-                        _ownedWeapons[playerChar.gunToSwitchIndex] = null;
-                    }
-                 }
-            }
-            
-            if (groundGun)
-            {
-                AddGunFromGround(weaponPrefab);
-            }
-
-            else if (!groundGun)
-            {
-                // Instancia la nueva arma
-                InstantiateGun(weaponPrefab);
-                Debug.Log($"<color=orange>🧱 Instanciado objeto en escena: {weaponInstance.name}</color>");
-            }
-
-            if (currentIndex >= 0) // Si el indice "existe" se guarda la nueva arma en el array de armas obtenidas
-            {
-                _ownedWeapons[currentIndex] = weaponInstance;
-            }
-
-            else // Si el indice "no existe" 
-            {
-                int indexWeapon = GetWeaponIndex(primaryWeapon);
-                _ownedWeapons[indexWeapon] = weaponInstance;
-            }
-        }
-
-        else if (!deleteWeapon) // Si no hay que borrar el arma
-        {
-            if (groundGun)
-            {
-                AddGunFromGround(weaponPrefab);
-            }
-            else
-            {
-                if (primaryWeapon) // Arma principal
-                {
-                    // Se busca el indice mas bajo, y se guarda el arma nueva en el indice buscado
-                    int indexWeapon = GetWeaponIndex(true);
-                    _ownedWeapons[indexWeapon] = weaponPrefab;
-                    Debug.Log($"{_ownedWeapons[indexWeapon].name} {indexWeapon}");
-
-                    // Se instancia la nueva arma
-                    InstantiateGun(weaponPrefab);
-                }
-                else if (!primaryWeapon) // Arma secundaria
-                {
-                    // Se busca el indice mas bajo, y se guarda el arma nueva en el indice buscado
-                    int indexWeapon = GetWeaponIndex(false);
-                    _ownedWeapons[indexWeapon] = weaponPrefab;
-                    Debug.Log($"{_ownedWeapons[indexWeapon].name} {indexWeapon}");
-
-                    // Se instancia la nueva arma
-                    InstantiateGun(weaponPrefab);
-                }
-            }
-        }
+        NewWeapon(gunObject, isPrimary, isUtility, true);
     }
-
-    private void EquipUtility(GameObject utilityPrefab)
-    {
-        _ownedWeapons[4] = utilityPrefab;
-        InstantiateGun(utilityPrefab);
-    }
-
 
     public void NewWeapon(GameObject weaponPrefab, bool primary, bool utility, bool groundGun)
     {
-        // Se generan los todos los espacios del array
+        if (!isServer) return;
+
         EnsureWeaponSlots();
-
         Gun gunScript = weaponPrefab.GetComponent<Gun>();
-        WeaponID newWeaponID = gunScript.weaponID;
+        if(gunScript == null) return;
 
-        // Dos bools para ver si es arma principal o secundaria la que se intenta agregar
+        WeaponID newWeaponID = gunScript.weaponID;
         bool havePrimary = _ownedWeapons[0] || _ownedWeapons[1];
         bool haveSecondary = _ownedWeapons[2] || _ownedWeapons[3];
+        bool shouldDelete = false;
 
-        if (primary && havePrimary && !utility)
+        if (primary && !utility)
         {
-            if (_ownedWeapons[0] != null && _ownedWeapons[1] != null) // Si tiene 2 principales
+            if (havePrimary)
             {
-                if (groundGun) EquipWeapon(weaponPrefab, true, true, true);
-                else EquipWeapon(weaponPrefab, true, true, false); // como tiene 2 armas ya, tendra que destruirla 100%
-                Debug.LogWarning("Borrar armas, tienes 2");
-            }
-
-            else if (_ownedWeapons[0] == null || _ownedWeapons[1] == null) // tiene un hueco libre en la arma principal
-            {
-                if (HasWeaponOfType(newWeaponID)) // si la arma que esta pillando ya la tiene
-                {
-                    if (groundGun) EquipWeapon(weaponPrefab, true, true, true);
-                    else EquipWeapon(weaponPrefab, true, true, false);
-                    Debug.LogWarning("Borrar arma porque ya la tienes");
-                }
-
-                else  // si el arma que esta pillando no la tiene en general
-                {
-                    if (groundGun) EquipWeapon(weaponPrefab, false, true, true);
-                    else EquipWeapon(weaponPrefab, false, true, false);
-                    Debug.LogWarning("Añadiendo arma nueva");
-                }
+                if ((_ownedWeapons[0] != null && _ownedWeapons[1] != null) || HasWeaponOfType(newWeaponID))
+                    shouldDelete = true;
             }
         }
-        else if (!primary && haveSecondary && !utility)
+        else if (!primary && !utility)
         {
-
-            if (_ownedWeapons[2] != null && _ownedWeapons[3] != null) // si tiene 2 secundarias
+            if (haveSecondary)
             {
-                if (groundGun) EquipWeapon(weaponPrefab, true, false, true);
-                else EquipWeapon(weaponPrefab, true, false, false); // como tiene 2 armas ya, tendra que destruirla 100%
-            }
-
-            else if (_ownedWeapons[2] == null || _ownedWeapons[3] == null) // tiene un hueco libre en la arma secundaria
-            {
-                if (HasWeaponOfType(newWeaponID)) // si la arma que esta pillando ya la tiene
-                {
-                    if (groundGun) EquipWeapon(weaponPrefab, true, false, true);
-                    else EquipWeapon(weaponPrefab, true, false, false);
-                }
-
-                else // si el arma que esta pillando no la tiene en general
-                {
-                    if (groundGun) EquipWeapon(weaponPrefab, false, false, true);
-                    else EquipWeapon(weaponPrefab, false, false, false);
-                }
+                if ((_ownedWeapons[2] != null && _ownedWeapons[3] != null) || HasWeaponOfType(newWeaponID))
+                    shouldDelete = true;
             }
         }
-
-        else if (utility)
-        {
-            EquipUtility(weaponPrefab);
-        }
-
-        if ((primary && !havePrimary) || (!primary && !haveSecondary)) // Si no tiene ningun arma, tanto principal como secundaria, se le pasa false en destruir y asi instancia una nueva
-        {
-            if (groundGun) EquipWeapon(weaponPrefab, false, primary, true);
-            else EquipWeapon(weaponPrefab, false, primary, false);
-        }
-
-
-        AudioClip clipToPlay = takeGunSound[Random.Range(0, takeGunSound.Length)];
-        AudioManager.Instance.PlaySound(clipToPlay, transform.position, pitch: Random.Range(0.98f, 1.02f));
+        
+        EquipWeapon(weaponPrefab, shouldDelete, primary, groundGun);
+        PlayEquipSoundObserversRpc();
     }
 
-    private bool HasWeaponOfType(WeaponID id)
+    private void EquipWeapon(GameObject weaponPrefab, bool deleteWeapon, bool primaryWeapon, bool groundGun)
     {
-        foreach (var weapon in _ownedWeapons)
+        int targetIndex = -1;
+        GameObject finalWeaponObject = null;
+
+        if (deleteWeapon)
         {
-            if (weapon == null) continue;
-            Gun g = weapon.GetComponent<Gun>();
-            if (g != null && g.weaponID == id)
-                return true;
+            Gun gunScript = weaponPrefab.GetComponent<Gun>();
+            targetIndex = IndexHasWeaponOfType(gunScript.weaponID);
+
+            if (targetIndex == -1)
+            {
+                if (primaryWeapon)
+                {
+                    targetIndex = (_currentGun != null && _currentGun.weaponType == WeaponType.Primary) 
+                                     ? IndexHasWeaponOfType(_currentGun.weaponID) 
+                                     : 0;
+                    if (targetIndex == -1) targetIndex = 0;
+                }
+                else
+                {
+                    targetIndex = (_currentGun != null && _currentGun.weaponType == WeaponType.Secundary) 
+                                     ? IndexHasWeaponOfType(_currentGun.weaponID) 
+                                     : 2;
+                    if (targetIndex == -1) targetIndex = 2;
+                }
+            }
+
+            if (targetIndex >= 0 && _ownedWeapons[targetIndex] != null)
+            {
+                DropWeaponAtIndex(targetIndex);
+            }
         }
-        return false;
+        else
+        {
+            targetIndex = GetWeaponIndex(primaryWeapon);
+        }
+
+        if (groundGun)
+        {
+            AddGunFromGround(weaponPrefab); 
+            finalWeaponObject = weaponPrefab;
+        }
+        else
+        {
+            InstantiateGun(weaponPrefab);
+            finalWeaponObject = weaponInstance;
+        }
+
+        if (targetIndex >= 0)
+        {
+            while (_ownedWeapons.Count <= targetIndex) _ownedWeapons.Add(null);
+            _ownedWeapons[targetIndex] = finalWeaponObject;
+            SwitchWeapon(targetIndex, finalWeaponObject);
+        }
     }
 
-    private int IndexHasWeaponOfType(WeaponID id)
+    // --- SWITCH WEAPON (Aquí estaba el problema) ---
+
+    [ObserversRpc(requireServer: false)]
+    public void SwitchWeapon(int index, GameObject forcedWeapon = null) 
     {
+        GameObject weaponToSwitch = forcedWeapon;
+
+        if (weaponToSwitch == null)
+        {
+            if (index >= 0 && index < _ownedWeapons.Count)
+                weaponToSwitch = _ownedWeapons[index];
+        }
+
+        if (weaponToSwitch == null) return;
+        if (_currentGun != null && weaponToSwitch == _currentGun.gameObject) return;
+
+        // 1. Ocultar anteriores
         for (int i = 0; i < _ownedWeapons.Count; i++)
         {
-            var weapon = _ownedWeapons[i];
-            if (weapon == null) continue;
-
-            Gun g = weapon.GetComponent<Gun>();
-            if (g != null && g.weaponID == id)
-                return i;
+            if (_ownedWeapons[i] != null) _ownedWeapons[i].SetActive(false);
         }
 
-        return -1;
+        // 2. Activar nueva
+        weaponToSwitch.SetActive(true);
+        _currentGun = weaponToSwitch.GetComponent<Gun>();
+        
+        // <--- CAMBIO CRÍTICO: Asegurar físicas desactivadas en el CLIENTE ---
+        // Aunque AddGunFromGround lo haga en el server, el cliente necesita ejecutar esto también.
+        if (_currentGun.rb != null)
+        {
+            _currentGun.rb.isKinematic = true;
+            _currentGun.rb.useGravity = false;
+        }
+        Collider col = _currentGun.GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+        // ------------------------------------------------------------------
+
+        _currentGun.GiveOwnership(owner.Value);
+        
+        // 3. Emparentar
+        weaponToSwitch.transform.SetParent(_handTransform);
+        weaponToSwitch.transform.localPosition = Vector3.zero;
+        weaponToSwitch.transform.localRotation = Quaternion.identity;
+
+        if(player == null) GetPlayerScript();
+        
+        // 4. Setup lógico
+        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this);
+
+        Debug.Log($"Cambio de arma a {_currentGun.name} en el slot {index}");
     }
 
+    public void SwitchWeapon(int index) { SwitchWeapon(index, null); }
 
-    private void EnsureWeaponSlots() // Genera todos los slots y los pone en null, para tenerlos creados
-    {
-        while (_ownedWeapons.Count < 5)
-            _ownedWeapons.Add(null);
-    }
-
+    // --- RESTO DE FUNCIONES ---
 
     private void InstantiateGun(GameObject weaponPrefab)
     {
-        if (_currentGun != null)
-            _currentGun.gameObject.SetActive(false);
-
-
-        if(_handTransform == null) { Debug.Log("HAND TRANSFORM ES NUUUUUUUUUUUUUUUUUUUULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"); }
-
-        // Instanciar el arma
+        if (_currentGun != null) _currentGun.gameObject.SetActive(false);
         weaponInstance = Instantiate(weaponPrefab, _handTransform);
         weaponInstance.SetActive(true);
         weaponInstance.transform.localPosition = Vector3.zero;
         weaponInstance.transform.localRotation = Quaternion.identity;
-        Debug.Log($"<color=white> Posicion de la nueva arma: {weaponInstance.transform.localPosition} </color>");
-
-        // Obtener script
-        _currentGun = weaponInstance.GetComponent<Gun>();
-
-        if (_currentGun == null)
-        {
-            Debug.LogError("❌ El prefab no tiene componente Gun!");
-            return;
-        }
-
-        // Configurar arma
-        _currentGun.GiveOwnership(owner.Value);
-        if (player == null)
-            GetPlayerScript();
-
-        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this);
-
-        // Buscar índice correcto
-        Gun prefabGun = weaponPrefab.GetComponent<Gun>();
-        int index = IndexHasWeaponOfType(prefabGun.weaponID);
-
-        if (index < 0)
-        {
-            bool isPrimary = prefabGun.weaponType == WeaponType.Primary;
-            index = GetWeaponIndex(isPrimary);
-            if (index < 0)
-                index = isPrimary ? 0 : 2;
-        }
-
-        // Asegurar tamaño
-        while (_ownedWeapons.Count <= index)
-            _ownedWeapons.Add(null);
-
-        // Asignar
-        _ownedWeapons[index] = weaponInstance;
-        Debug.Log($"<color=blue>✅ Instanciada '{_currentGun.name}' en slot {index} y el arma actual es {_currentGun.name} </color>");
-        
-        SwitchWeapon(index);
-
-        weaponInstance.transform.localPosition = Vector3.zero;
-        weaponInstance.transform.localRotation = Quaternion.identity;
+        Gun newGun = weaponInstance.GetComponent<Gun>();
+        if (newGun == null) return;
+        newGun.GiveOwnership(owner.Value);
+        if (player == null) GetPlayerScript();
+        newGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this);
     }
-
-
 
     public void AddGunFromGround(GameObject weaponObject)
     {
         Gun gunScript = weaponObject.GetComponent<Gun>();
         if (gunScript == null) return;
-
-        _currentGun = gunScript;
-
-        _currentGun.transform.SetParent(_handTransform);
-        _currentGun.transform.localPosition = Vector3.zero;
-        _currentGun.transform.localRotation = Quaternion.identity;
-
-        _currentGun.rb.isKinematic = true;
-        _currentGun.rb.useGravity = false;
-        Collider col = _currentGun.GetComponent<Collider>();
+        
+        // Configuración lógica para el Servidor
+        gunScript.transform.SetParent(_handTransform);
+        gunScript.transform.localPosition = Vector3.zero;
+        gunScript.transform.localRotation = Quaternion.identity;
+        
+        gunScript.rb.isKinematic = true;
+        gunScript.rb.useGravity = false;
+        
+        Collider col = gunScript.GetComponent<Collider>();
         if (col != null) col.enabled = false;
 
-        _currentGun.GiveOwnership(owner.Value);
-
-        if(player ==  null)
-            GetPlayerScript();
-        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this);
-
-        int indexWeapon = GetWeaponIndex(_currentGun.weaponType == WeaponType.Primary);
-        _ownedWeapons[indexWeapon] = weaponObject;
-
-
-        _currentGun.gameObject.SetActive(true);
-
-        SwitchWeapon(indexWeapon);
+        gunScript.GiveOwnership(owner.Value);
+        if(player == null) GetPlayerScript();
+        gunScript.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this);
+        gunScript.gameObject.SetActive(true);
     }
 
-    [ObserversRpc(requireServer: false)]
-    public void SwitchWeapon(int index) // FALTA ARREGLAR QUE AL CAMBIAR EL ARMA, SE OCULTE LA ANTERIOR Y SE ACTIVE LA NUEVA
+    [ObserversRpc(runLocally: true)]
+    private void DropWeaponAtIndex(int index)
     {
-        if (index < 0 || index >= _ownedWeapons.Count)
+        if (index < 0 || index >= _ownedWeapons.Count) return;
+        GameObject weaponObj = _ownedWeapons[index];
+        if (weaponObj == null) return;
+
+        Gun gunScript = weaponObj.GetComponent<Gun>();
+        if (gunScript == null) return;
+
+        gunScript.SetDown();
+        weaponObj.transform.SetParent(null);
+        weaponObj.SetActive(true);
+        
+        gunScript.rb.isKinematic = false;
+        gunScript.rb.useGravity = true;
+        gunScript.rb.AddForce((transform.forward + Vector3.up).normalized * 3f, ForceMode.Impulse);
+
+        gunScript.GiveOwnership(null);
+
+        if(isServer) _ownedWeapons[index] = null;
+        if (_currentGun == gunScript) _currentGun = null;
+    }
+
+    // ... (El resto de funciones: GetWeaponIndex, EnsureWeaponSlots, Utility, DoDrop, DeathDrop, etc. siguen igual) ...
+    // Copia las funciones auxiliares de abajo de la respuesta anterior si las necesitas, no han cambiado.
+    
+    // --- PEQUEÑO RECORDATORIO DEL RESTO PARA QUE NO DE ERROR AL COPIAR ---
+    private void EquipUtility(GameObject utilityPrefab) 
+    { 
+        InstantiateGun(utilityPrefab); 
+        if(isServer) _ownedWeapons[4] = weaponInstance; SwitchWeapon(4, weaponInstance); 
+    }
+    private bool HasWeaponOfType(WeaponID id) 
+    { 
+        foreach (var w in _ownedWeapons) 
+        { 
+            if (w && w.GetComponent<Gun>().weaponID == id) return true; 
+        }
+        return false; 
+    }
+    private int IndexHasWeaponOfType(WeaponID id) 
+    { 
+        for (int i = 0; i < _ownedWeapons.Count; i++) 
+        { 
+            if (_ownedWeapons[i] && _ownedWeapons[i].GetComponent<Gun>().weaponID == id) return i; 
+        } 
+        return -1; 
+    }
+    private int GetWeaponIndex(bool primaryWeapon) 
+    { 
+        int start = primaryWeapon ? 0 : 2; 
+        int end = primaryWeapon ? 2 : 4; 
+        for (int i = start; i < end; i++) 
+        { 
+            while (_ownedWeapons.Count <= i) 
+                _ownedWeapons.Add(null); 
+            if (_ownedWeapons[i] == null) return i; 
+        } 
+        return -1; 
+    }
+    private void EnsureWeaponSlots() 
+    { 
+        while (_ownedWeapons.Count < 5) 
+            _ownedWeapons.Add(null); 
+    }
+    public void UtilityThrowed() 
+    { 
+        if(isServer) 
+        { 
+            _ownedWeapons.RemoveAt(4); 
+            _ownedWeapons.Insert(4, null); 
+        } 
+        SwitchWeapon(0); 
+    }
+    public void DropGun() 
+    { 
+        if(isServer) 
+            DoDropGunLogic(); 
+        else 
+            RequestDropGunServerRpc(); }
+    [ServerRpc(requireOwnership: true)] private void RequestDropGunServerRpc() { DoDropGunLogic(); }
+    [ObserversRpc(runLocally: true)] private void DoDropGunLogic() 
+    { 
+        if (_currentGun == null) 
             return;
-
-        GameObject weaponToSwitch = _ownedWeapons[index];
-
-        if (weaponToSwitch == null)
-            return;
-
-
-        if (_currentGun != null && weaponToSwitch == _currentGun.gameObject)
-        {
-            Debug.Log("<color=yellow>⚠️ Ya tienes equipada esta arma, no se cambia.</color>");
-            return;
-        }
-
-        // ocultar todas las armas
-        for (int i = 0; i < _ownedWeapons.Count; i++)
-        {
-            if (_ownedWeapons[i] != null)
-            {
-                _ownedWeapons[i].SetActive(false);
-            }
-        }
-
-
-        // Activar el arma
-        weaponToSwitch.SetActive(true);
-        _currentGun = weaponToSwitch.GetComponent<Gun>();
-        // Asignar el ownership al jugador que posee esta arma
-        _currentGun.GiveOwnership(owner.Value);
-
-
-        // Setea la posicion y rotacion de la nueva arma
-        weaponToSwitch.transform.SetParent(_handTransform);
-        weaponToSwitch.transform.localPosition = Vector3.zero;
-        weaponToSwitch.transform.localRotation = Quaternion.identity;
-
-        // reconfigurar camara y recoil
-        if(player == null)
-            GetPlayerScript();
-        _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this);
-
-        weaponToSwitch.SetActive(true);
-
-        Debug.Log($"Cambio de arma a {_currentGun.name} en el slot {index}");
+        _currentGun.equipedGun = false; 
+        GameObject dropped = _currentGun.gameObject; 
+        _currentGun.SetDown(); 
+        dropped.transform.SetParent(null); 
+        _currentGun.rb.isKinematic = false; 
+        _currentGun.rb.useGravity = true; 
+        _currentGun.rb.AddForce(_handTransform.transform.forward * 5f, ForceMode.Impulse); 
+        _currentGun.GiveOwnership(null); 
+        if (isServer) 
+        { 
+            int idx = _ownedWeapons.IndexOf(_currentGun.gameObject); 
+            if (idx >= 0) 
+                _ownedWeapons[idx] = null; 
+        } 
+        _currentGun = null; 
+        int next = -1; 
+        if (_ownedWeapons[0]) next = 0; 
+        else if (_ownedWeapons[1]) next = 1; 
+        else if (_ownedWeapons[2]) next = 2; 
+        else if (_ownedWeapons[3]) next = 3; 
+        if (next != -1) SwitchWeapon(next); 
     }
-
-    private int GetWeaponIndex(bool primaryWeapon) // Un int para devolver el hueco libre dentro del array _ownedWeapons dependiendo de si es principal o secundaria 
-    {
-        // Setear inicio y final del loop
-        int startIndex = primaryWeapon ? 0 : 2;
-        int endIndex = primaryWeapon ? 2 : 4;
-
-        // loop para encontrar el indice libre mas bajo
-        for (int i = startIndex; i < endIndex; i++)
-        {
-            if (i >= _ownedWeapons.Count || _ownedWeapons[i] == null)
-            {
-                while (_ownedWeapons.Count <= i)
-                    _ownedWeapons.Add(null);
-                Debug.Log($"Arma añadida en el slot {i}");
-                return i;
-            }
-        }
-
-        return -1;
+    [ObserversRpc(runLocally: true)] private void PlayEquipSoundObserversRpc() 
+    { 
+        if (takeGunSound.Length > 0) 
+            AudioManager.Instance.PlaySound(takeGunSound[Random.Range(0, takeGunSound.Length)], transform.position, pitch: Random.Range(0.98f, 1.02f)); 
     }
-
-    public void UtilityThrowed()
-    {
-        _ownedWeapons.RemoveAt(4);
-        SwitchWeapon(0);
+    [ObserversRpc(runLocally: true)] public void DropAllWeaponsOnDeath() 
+    { 
+        foreach (var w in _ownedWeapons) 
+        {  
+            if (!w) 
+                continue; 
+            Gun g = w.GetComponent<Gun>(); 
+            if (!g) 
+                continue; 
+            g.SetDown(); 
+            w.transform.SetParent(null); 
+            w.SetActive(true); 
+            g.rb.isKinematic = false; 
+            g.rb.useGravity = true; 
+            g.rb.AddForce((Random.insideUnitSphere + Vector3.up).normalized * 4f, ForceMode.Impulse); 
+            g.GiveOwnership(null); 
+        } 
+        _currentGun = null; 
+        if (isServer) 
+        for (int i = 0; i < _ownedWeapons.Count; i++) 
+            _ownedWeapons[i] = null; 
     }
-
-    public void DropGun()
-    {
-        DoDropGunLogic();
-    }
-
-    [ObserversRpc(runLocally: false)]
-    private void DoDropGunLogic()
-    {
-        if (_currentGun == null)
-        {
-            Debug.LogWarning("<color=red>❌ No hay arma equipada para dropear.</color>");
-            return;
-        }
-
-        _currentGun.equipedGun = false;
-
-        GameObject droppedGun = _currentGun.gameObject;
-
-        // Activar fisicas
-        _currentGun.rb.isKinematic = false;
-        _currentGun.rb.useGravity = true;
-        _currentGun.rb.AddForce(_handTransform.transform.forward * 5f, ForceMode.Impulse);
-
-        // Quitar Ownership
-        _currentGun.GiveOwnership(null);
-
-        // Quitarla del inventario
-        int currentIndex = _ownedWeapons.IndexOf(_currentGun.gameObject);
-        if (currentIndex >= 0)
-        {
-            _ownedWeapons[currentIndex] = null;
-            Debug.Log($"<color=orange>🪂 Dropeada '{droppedGun.name}' del slot {currentIndex}</color>");
-        }
-        else
-        {
-            Debug.LogWarning("<color=red>⚠️ DropGun: No se encontró el arma en _ownedWeapons</color>");
-        }
-
-        // Estado del arma fisica en el suelo
-        _currentGun.SetDown();
-
-        // No cambiamos de arma todavia, dejamos el _currentGun en null temporalmente
-        Gun prevGun = _currentGun;
-        _currentGun = null;
-
-
-        int _case = -1;
-
-        if (playerChar._lastGunEquiped == LastGunEquiped.Primary && _case == -1)
-        {
-            if (_ownedWeapons[0] != null || _ownedWeapons[1] != null)
-            {
-                _case = _ownedWeapons[0] != null ? 0 : 1;
-                playerChar._lastGunEquiped = LastGunEquiped.Primary;
-            }
-            else if ((_ownedWeapons[2] != null || _ownedWeapons[3] != null) && _case == -1)
-            {
-                _case = _ownedWeapons[2] != null ? 2 : 3;
-                playerChar._lastGunEquiped = LastGunEquiped.Secondary;
-            }
-            else
-                Debug.Log("Cambiar a cuchillo (principal)");
-        }
-        else if (playerChar._lastGunEquiped == LastGunEquiped.Secondary && _case == -1)
-        {
-            if (_ownedWeapons[2] != null || _ownedWeapons[3] != null)
-            {
-                _case = _ownedWeapons[2] != null ? 2 : 3;
-                playerChar._lastGunEquiped = LastGunEquiped.Secondary;
-            }
-            else if ((_ownedWeapons[0] != null || _ownedWeapons[1] != null) && _case == -1)
-            {
-                _case = _ownedWeapons[0] != null ? 0 : 1;
-                playerChar._lastGunEquiped = LastGunEquiped.Primary;
-            }
-            else
-                Debug.Log("Cambiar a cuchillo (secundaria)");
-        }
-
-        if (_case != -1)
-        {
-            SwitchWeapon(_case);
-            Debug.Log(_case);
-            Debug.LogWarning(_ownedWeapons[_case]);
-        }
-        else if (_case == -1)
-            Debug.LogWarning("_case es -1");
-
-
-
-    }
-
-    private void GetPlayerScript()
-    {
-        player = GetComponent<Player>();
-    }
-
+    private void GetPlayerScript() { player = GetComponent<Player>(); }
 }

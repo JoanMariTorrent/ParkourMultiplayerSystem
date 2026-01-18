@@ -1,15 +1,13 @@
-using NUnit.Framework;
 using PurrNet;
 using PurrNet.StateMachine;
 using UnityEngine;
 using System.Collections.Generic;
-using System;
+using System.Collections; // Necesario para Corrutinas
 
 public class PlayerSpawningState : StateNode
 {
     [SerializeField] private PlayerHealth _playerPrefab;
     [SerializeField] private List<Transform> _spawnPoints = new();
-
 
     public override void Enter(bool asServer)
     {
@@ -20,36 +18,58 @@ public class PlayerSpawningState : StateNode
 
         DespawnPlayers();
 
-        var _spawnedPlayers = SpawnPlayers();
-        foreach(var player in _spawnedPlayers)
-            Debug.Log($"<color=purple> player: {player}</color>");
-        machine.Next(_spawnedPlayers);
+        // Iniciamos el proceso de spawn (ahora lo hacemos como corrutina para asegurar tiempos)
+        StartCoroutine(SpawnPlayersRoutine());
     }
 
-    
-
-    private List<PlayerHealth> SpawnPlayers()
+    private IEnumerator SpawnPlayersRoutine()
     {
         var _spawnedPlayers = new List<PlayerHealth>();
-
         int _currentSpawnIndex = 0;
 
         foreach (var _player in networkManager.players)
         {
             var _spawnPoint = _spawnPoints[_currentSpawnIndex];
 
+            // 1. Instanciamos
             var _newPlayer = Instantiate(_playerPrefab, _spawnPoint.position, _spawnPoint.rotation);
+            
+            // 2. Damos propiedad
             _newPlayer.GiveOwnership(_player);
+
+            // 3. Forzamos la posición usando el sistema KCC para evitar el bug del (0,0,0)
+            // Buscamos el componente de movimiento
+            var character = _newPlayer.GetComponent<PlayerCharacter>();
+            if (character != null)
+            {
+                // Esperamos un frame para que el motor se inicialice si es necesario
+                yield return new WaitForEndOfFrame();
+                
+                // Forzamos la posición en el Servidor (el KCC server-side)
+                character.TeleportTo(_spawnPoint.position, _spawnPoint.rotation);
+                
+                // IMPORTANTE: Avisamos al Cliente dueño de que se teletransporte ahí también
+                // Usamos el ReviveObserversRpc que ya creaste, ya que hace exactamente eso: Teleportar KCC + Resetear vida
+                _newPlayer.ReviveObserversRpc(_spawnPoint.position, _spawnPoint.rotation);
+            }
+            else
+            {
+                // Fallback si no tiene KCC
+                _newPlayer.transform.position = _spawnPoint.position;
+                _newPlayer.transform.rotation = _spawnPoint.rotation;
+            }
 
             _spawnedPlayers.Add(_newPlayer);
             _currentSpawnIndex++;
-            //_newPlayer.GetComponent<Player>().canMove = false;
 
             if (_currentSpawnIndex >= _spawnPoints.Count)
                 _currentSpawnIndex = 0;
         }
 
-        return _spawnedPlayers;
+        foreach(var player in _spawnedPlayers)
+            Debug.Log($"<color=purple> player spawned: {player.owner}</color>");
+            
+        machine.Next(_spawnedPlayers);
     }
 
     private void DespawnPlayers()
@@ -65,15 +85,8 @@ public class PlayerSpawningState : StateNode
         }
     }
 
-
-
-
     public override void Exit(bool asServer)
     { 
         base.Exit(asServer);
     }
-
-
-
-
 }

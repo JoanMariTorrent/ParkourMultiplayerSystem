@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using PurrNet;
-using Random = UnityEngine.Random;
+using System.Collections.Generic;
 
 public class GunPlatform : NetworkBehaviour
 {
@@ -10,19 +10,15 @@ public class GunPlatform : NetworkBehaviour
     [Space]
     [SerializeField] private GameObject spawnGunPos;
 
-    [Space] [SerializeField] private bool gunSpawned = false;
-
-    [SerializeField] private int typeGun;
-    [SerializeField] private GameObject[] spawnGun;
-    [SerializeField] private GameObject spawnedGun;
+    [Space] 
+    [SerializeField] private bool gunSpawned = false;
+    [SerializeField] private int currentGunIndex = 0; 
+    [SerializeField] private GameObject spawnedGunVisual; 
     [SerializeField] private bool primaryWeapon;
+    
     [Space]
     private WeaponsDataManager _weaponsData;
-    [SerializeField] private PlayerCharacter player;
-    
-    [SerializeField]private bool playerInCollision;
-    
-
+    private PlayerCharacter localPlayerInTrigger;
 
     private void Start()
     {
@@ -31,88 +27,126 @@ public class GunPlatform : NetworkBehaviour
         _weaponsData = weaponsDataManager;
     }
 
-
     private void Update()
     {
-        
-        if (playerInCollision && gunSpawned)
+        if (gunSpawned && localPlayerInTrigger != null && localPlayerInTrigger.isOwner)
         {
-            if (player == null) return;
-            if (player._requestedInteract)
+            if (localPlayerInTrigger._requestedInteract)
             {
-                var weaponManager = player.GetComponent<WeaponManager>();
-                if (weaponManager == null) return;
-
-                
-                weaponManager.NewWeapon(spawnGun[0].gameObject, primaryWeapon, false, false);
-
-                RestartAll();
+                RequestPickUpServerRpc(localPlayerInTrigger.owner.Value);
+                localPlayerInTrigger._requestedInteract = false; 
             }
         }
 
-        if (!gunSpawned)
+        if (isServer)
         {
-            timer += Time.deltaTime;
-        
-            if (timer < timeNextGun) return;
-            timer = 0;
-            SpawnGun();
+            if (!gunSpawned)
+            {
+                timer += Time.deltaTime;
+                if (timer >= timeNextGun)
+                {
+                    timer = 0;
+                    ServerDecideAndSpawnGun();
+                }
+            }
         }
-        
     }
 
-    private void SpawnGun()
+    private void ServerDecideAndSpawnGun()
     {
-        typeGun = 1; //Random.Range(1, 3);
-        spawnGun = _weaponsData.GetRandomWeapons(1, typeGun);
-        var gunScript = spawnGun[0].GetComponent<Gun>();
-        if (gunScript)
+        int typeGun = 1; 
+        
+        GameObject[] selectedGunArray = _weaponsData.GetRandomWeapons(1, typeGun);
+        
+        if (selectedGunArray == null || selectedGunArray.Length == 0) return;
+
+        SpawnGunObserversRpc(typeGun);
+    }
+
+    [ObserversRpc]
+    private void SpawnGunObserversRpc(int typeGun)
+    {
+        GameObject[] possibleGuns = _weaponsData.GetRandomWeapons(1, typeGun);
+        if (possibleGuns == null || possibleGuns.Length == 0) return;
+        
+        GameObject gunPrefab = possibleGuns[0];
+
+        if (typeGun == 1) primaryWeapon = true;
+        else if (typeGun == 2) primaryWeapon = false;
+
+        if (spawnedGunVisual != null) Destroy(spawnedGunVisual);
+        
+        spawnedGunVisual = Instantiate(gunPrefab, spawnGunPos.transform.position, spawnGunPos.transform.rotation);
+        
+        var gunScript = spawnedGunVisual.GetComponent<Gun>();
+        if (gunScript) 
         {
+            gunScript.enabled = false; 
             gunScript.equipedGun = false;
         }
-
-        if (typeGun == 1)
-            primaryWeapon = true;
-        else if (typeGun == 2)
-            primaryWeapon = false;
         
-        if (spawnGun == null)
+        spawnedGunVisual.gameObject.SetActive(true);
+        spawnedGunVisual.transform.localScale = Vector3.one;
+        
+        gunSpawned = true;
+        currentGunIndex = typeGun; 
+    }
+
+    [ServerRpc(requireOwnership: false)] 
+    private void RequestPickUpServerRpc(PlayerID playerID)
+    {
+        if (!gunSpawned) return; 
+
+        Player playerScript = null;
+        
+        foreach (var p in FindObjectsByType<Player>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
         {
-            Debug.LogError("GunPlatform is trying to spawn some gun, but this gun is null");
-            return;
+            if (p.owner.Value == playerID)
+            {
+                playerScript = p;
+                break;
+            }
         }
 
-        gunSpawned = true;
-        spawnedGun = Instantiate(spawnGun[0], spawnGunPos.transform.position, spawnGunPos.transform.rotation);
-        spawnedGun.gameObject.SetActive(true);
-        spawnedGun.transform.localScale = new Vector3(1f, 1f, 1f);
+        if (playerScript == null) return;
+
+        WeaponManager weaponManager = playerScript.GetComponent<WeaponManager>();
+        if (weaponManager == null) return;
+
+        GameObject[] gunToGive = _weaponsData.GetRandomWeapons(1, currentGunIndex);
+        
+        weaponManager.NewWeapon(gunToGive[0], primaryWeapon, false, false);
+
+        RestartAllObserversRpc();
+    }
+
+    [ObserversRpc]
+    private void RestartAllObserversRpc()
+    {
+        if (spawnedGunVisual != null) Destroy(spawnedGunVisual);
+        gunSpawned = false;
+        timer = 0;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        var playercoll = other.GetComponent<PlayerCharacter>();
-        if (playercoll == null) return;
-        Debug.Log(playercoll);
-        
-        playerInCollision = true;
-        player = playercoll;
+        var playerChar = other.GetComponent<PlayerCharacter>();
+        if (playerChar == null) return;
+
+        if (playerChar.isOwner)
+        {
+            localPlayerInTrigger = playerChar;
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        var playercoll = other.GetComponent<PlayerCharacter>();
-        if (playercoll == null) return;
-        
-        playerInCollision = false;
-        player = null;
-    }
+        var playerChar = other.GetComponent<PlayerCharacter>();
+        if (playerChar == null) return;
 
-    private void RestartAll()
-    {
-        Destroy(spawnedGun);
-        gunSpawned = false;
-        typeGun = 0;
-        spawnGun = null;
-        primaryWeapon = false;
+        if (playerChar == localPlayerInTrigger)
+        {
+            localPlayerInTrigger = null;
+        }
     }
 }

@@ -9,6 +9,7 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private int _maxHealth = 100;
     [SerializeField] private int _selfLayer, _otherLayer;
     [SerializeField] private PlayerCharacter playerCharacter;
+    [SerializeField] private WeaponManager weaponManager;
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject deathVFX;
 
@@ -96,10 +97,15 @@ public class PlayerHealth : NetworkBehaviour
             {
                 if(attackerID != null || attackerID.HasValue) scoreManager.Addkills(attackerID.Value);
                 if(owner.HasValue)
-                    scoreManager.AddDeath(owner.Value);
+                scoreManager.AddDeath(owner.Value);
             }
 
+            if (weaponManager != null)
+            {
+                weaponManager.DropAllWeaponsOnDeath();
+            }
 
+            
             DieVisualsObserversRpc();
             OnDeath_Server?.Invoke(owner.Value);
         }
