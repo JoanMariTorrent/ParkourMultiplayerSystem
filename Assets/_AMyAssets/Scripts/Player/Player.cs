@@ -262,14 +262,7 @@ public class Player : NetworkBehaviour
     [ServerRpc]
     public void NotifySpinFinished_ServerRPC(PlayerID playerID, int idWeapon)
     {
-        var selectedWeapon = weaponDataBase.GetWeaponByID(idWeapon);
-        var weaponManager = GetComponent<WeaponManager>();
-        if(selectedWeapon.weaponType == WeaponScripteableType.Primary)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, true, false, false);
-        else if (selectedWeapon.weaponType == WeaponScripteableType.Secondary)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, false, false);
-        else if (selectedWeapon.weaponType == WeaponScripteableType.Utility)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, true, false);
+        GiveGuns(idWeapon);
         
         if(InstanceHandler.TryGetInstance(out SpawningGunsState spawningGunsState))
         {
@@ -279,6 +272,18 @@ public class Player : NetworkBehaviour
                 SpawningGunsState.SpawningGunsStateActiveInstance.OnPlayerFinishedSpin(playerID);
             }
         }
+    }
+
+    private void GiveGuns(int idWeapon)
+    {
+        var selectedWeapon = weaponDataBase.GetWeaponByID(idWeapon);
+        var weaponManager = GetComponent<WeaponManager>();
+        if(selectedWeapon.weaponType == WeaponScripteableType.Primary)
+            weaponManager.NewWeapon(selectedWeapon.gunPrefab, true, false, false);
+        else if (selectedWeapon.weaponType == WeaponScripteableType.Secondary)
+            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, false, false);
+        else if (selectedWeapon.weaponType == WeaponScripteableType.Utility)
+            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, true, false);
     }
 
 

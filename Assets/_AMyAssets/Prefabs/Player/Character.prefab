@@ -660,14 +660,16 @@ MonoBehaviour:
   _selfLayer: 7
   _otherLayer: 8
   playerCharacter: {fileID: 8159890137296869839}
+  player: {fileID: 7636289352493295535}
   weaponManager: {fileID: 1656825130629811245}
   canvas: {fileID: 1776478738878679272}
   deathVFX: {fileID: 5094046088325549080, guid: 5193592141f1fad4eba8dbe541335509, type: 3}
+  _weaponDatabase: {fileID: 11400000, guid: 345f17e1d2874594c8099d43d12a2912, type: 2}
   visualObjectsList:
   - {fileID: 3784153320970718965}
   - {fileID: 9079398816623654485}
   colliderToDisable: {fileID: 3086454144717506805}
-  _rb: {fileID: 0}
+  _rb: {fileID: 6714405065655426304}
   damageClips:
   - {fileID: 8300000, guid: 110a6fb3a6a8a394d8fb12da29edd1c6, type: 3}
   deathClips:

@@ -46,13 +46,18 @@ public class SlotMachine : View
 
     public void startSpin(WeaponScripteableObject selectedWeapon, List<WeaponScripteableObject> filteredWeapons)
     {
+        StopAllCoroutines(); 
+        isSpinning = false;
+
         StartCoroutine(Spin(selectedWeapon, filteredWeapons));
     }
 
     public IEnumerator Spin(WeaponScripteableObject selectedWeapon, List<WeaponScripteableObject> filteredWeapons)
     {
-        if (isSpinning) yield break;
+        finalWeapon = null; 
+        
         itemsContainer.anchoredPosition = Vector2.zero;
+        
         yield return StartCoroutine(SpinRoutine(selectedWeapon, filteredWeapons));
     }
 

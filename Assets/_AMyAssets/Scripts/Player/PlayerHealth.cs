@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using PurrNet;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerHealth : NetworkBehaviour
@@ -9,9 +10,14 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private int _maxHealth = 100;
     [SerializeField] private int _selfLayer, _otherLayer;
     [SerializeField] private PlayerCharacter playerCharacter;
+    [SerializeField] private Player player;
     [SerializeField] private WeaponManager weaponManager;
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject deathVFX;
+
+    [Header("Weapon Logic")]
+    private WeaponsDataManager _weaponsData;
+    [SerializeField] private WeaponDatabase _weaponDatabase;
 
     [Header("Componentes para Desactivar/Activar")]
     [SerializeField] private List<GameObject> visualObjectsList;
@@ -27,6 +33,13 @@ public class PlayerHealth : NetworkBehaviour
     public PlayerID PlayerID => owner.Value;
 
     public int health => _health.value;
+
+
+    void Start()
+    {
+        InstanceHandler.TryGetInstance(out WeaponsDataManager wm);
+        _weaponsData = wm;
+    }
 
 
     protected override void OnSpawned()
@@ -132,7 +145,7 @@ public class PlayerHealth : NetworkBehaviour
 
 
     [ObserversRpc(runLocally: true)]
-    public void ReviveObserversRpc(Vector3 spawnPos, Quaternion spawnRot)
+    public void ReviveObserversRpc(Vector3 spawnPos, Quaternion spawnRot, bool giveGuns = true)
     {
         if (isServer) _health.value = _maxHealth;
 
@@ -153,5 +166,30 @@ public class PlayerHealth : NetworkBehaviour
             if(obj != null) obj.SetActive(true);
         }
 
+        if (isServer && giveGuns) CastToSpinFromServer();
+
+    }
+
+    private void CastToSpinFromServer()
+    {
+        if (_weaponDatabase == null || player == null) 
+        {
+            Debug.LogError("Falta WeaponDatabase o player en PlayerHealth");
+            return;
+        }
+
+        var candidates = _weaponDatabase.weapons;
+
+        WeaponScripteableObject selectedWeapon = _weaponDatabase.GetRandomWeaponWeighted(candidates);
+
+        int selectedID = _weaponDatabase.GetIdOfWeapon(selectedWeapon);
+
+        int[] candidatesIDs = new int[candidates.Count];
+        for(int i = 0; i < candidates.Count; i++)
+        {
+            candidatesIDs[i] = _weaponDatabase.GetIdOfWeapon(candidates[i]);
+        }
+
+        player.TargetStartSpin(owner.Value, selectedID, candidatesIDs);
     }
 }

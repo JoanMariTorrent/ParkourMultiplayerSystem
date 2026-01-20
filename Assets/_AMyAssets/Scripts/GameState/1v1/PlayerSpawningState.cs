@@ -50,7 +50,7 @@ public class PlayerSpawningState : StateNode
                 
                 // IMPORTANTE: Avisamos al Cliente dueño de que se teletransporte ahí también
                 // Usamos el ReviveObserversRpc que ya creaste, ya que hace exactamente eso: Teleportar KCC + Resetear vida
-                _newPlayer.ReviveObserversRpc(_spawnPoint.position, _spawnPoint.rotation);
+                _newPlayer.ReviveObserversRpc(_spawnPoint.position, _spawnPoint.rotation, false);
             }
             else
             {

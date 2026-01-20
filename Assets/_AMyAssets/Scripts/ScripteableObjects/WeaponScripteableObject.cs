@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Game/Weapon")]
@@ -10,6 +11,7 @@ public class WeaponScripteableObject : ScriptableObject
     public GameObject gunPrefab;
 
 }
+
 
 
 
