@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using PurrNet;
 using System.Collections.Generic;
+using System.Linq; 
 
 public class GunPlatform : NetworkBehaviour
 {
@@ -12,7 +13,9 @@ public class GunPlatform : NetworkBehaviour
 
     [Space] 
     [SerializeField] private bool gunSpawned = false;
-    [SerializeField] private int currentGunIndex = 0; 
+    
+    [SerializeField] private WeaponID currentSpawnedID = WeaponID.None;
+    
     [SerializeField] private GameObject spawnedGunVisual; 
     [SerializeField] private bool primaryWeapon;
     
@@ -38,6 +41,7 @@ public class GunPlatform : NetworkBehaviour
             }
         }
 
+        // Lógica de Spawneo (Solo Server)
         if (isServer)
         {
             if (!gunSpawned)
@@ -54,22 +58,35 @@ public class GunPlatform : NetworkBehaviour
 
     private void ServerDecideAndSpawnGun()
     {
-        int typeGun = 1; 
+        int typeGun = 1; // 1 = Primary, 2 = Secondary
         
-        GameObject[] selectedGunArray = _weaponsData.GetRandomWeapons(1, typeGun);
+        // 1. El servidor elige el arma aleatoria
+        GameObject[] randomSelection = _weaponsData.GetRandomWeapons(1, typeGun);
         
-        if (selectedGunArray == null || selectedGunArray.Length == 0) return;
+        if (randomSelection == null || randomSelection.Length == 0) return;
 
-        SpawnGunObserversRpc(typeGun);
+        GameObject chosenPrefab = randomSelection[0];
+        Gun gunScript = chosenPrefab.GetComponent<Gun>();
+        
+        if (gunScript == null) return;
+
+        // 2. Extraemos su ID único
+        WeaponID idToSpawn = gunScript.weaponID;
+
+        // 3. Se lo mandamos a todos
+        SpawnGunObserversRpc(idToSpawn, typeGun);
     }
 
     [ObserversRpc]
-    private void SpawnGunObserversRpc(int typeGun)
+    private void SpawnGunObserversRpc(WeaponID weaponID, int typeGun)
     {
-        GameObject[] possibleGuns = _weaponsData.GetRandomWeapons(1, typeGun);
-        if (possibleGuns == null || possibleGuns.Length == 0) return;
+        // Guardamos el ID para saber qué tenemos
+        currentSpawnedID = weaponID;
         
-        GameObject gunPrefab = possibleGuns[0];
+        // BUSCAMOS EL PREFAB EXACTO USANDO EL ID
+        GameObject gunPrefab = FindPrefabByID(weaponID, typeGun);
+
+        if (gunPrefab == null) return;
 
         if (typeGun == 1) primaryWeapon = true;
         else if (typeGun == 2) primaryWeapon = false;
@@ -83,13 +100,15 @@ public class GunPlatform : NetworkBehaviour
         {
             gunScript.enabled = false; 
             gunScript.equipedGun = false;
+            // Desactiva físicas si hace falta
+             var rb = gunScript.GetComponent<Rigidbody>();
+             if(rb) rb.isKinematic = true;
         }
         
         spawnedGunVisual.gameObject.SetActive(true);
         spawnedGunVisual.transform.localScale = Vector3.one;
         
         gunSpawned = true;
-        currentGunIndex = typeGun; 
     }
 
     [ServerRpc(requireOwnership: false)] 
@@ -98,7 +117,6 @@ public class GunPlatform : NetworkBehaviour
         if (!gunSpawned) return; 
 
         Player playerScript = null;
-        
         foreach (var p in FindObjectsByType<Player>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
         {
             if (p.owner.Value == playerID)
@@ -113,11 +131,34 @@ public class GunPlatform : NetworkBehaviour
         WeaponManager weaponManager = playerScript.GetComponent<WeaponManager>();
         if (weaponManager == null) return;
 
-        GameObject[] gunToGive = _weaponsData.GetRandomWeapons(1, currentGunIndex);
+        // No generamos una aleatoria. Buscamos el prefab que coincide con el ID que está visualmente spawneda.
+        int typeGun = primaryWeapon ? 1 : 2;
+        GameObject gunToGive = FindPrefabByID(currentSpawnedID, typeGun);
         
-        weaponManager.NewWeapon(gunToGive[0], primaryWeapon, false, false);
+        if (gunToGive != null)
+        {
+            weaponManager.NewWeapon(gunToGive, primaryWeapon, false, false);
+            RestartAllObserversRpc();
+        }
+    }
 
-        RestartAllObserversRpc();
+    //
+    private GameObject FindPrefabByID(WeaponID id, int typeGun)
+    {
+        GameObject[] allPossible = _weaponsData.GetRandomWeapons(50, typeGun); 
+        
+        foreach(var prefab in allPossible)
+        {
+            if(prefab == null) continue;
+            var g = prefab.GetComponent<Gun>();
+            if(g != null && g.weaponID == id)
+            {
+                return prefab;
+            }
+        }
+        
+        Debug.LogError($"No se encontró el prefab con ID {id} en el manager!");
+        return null;
     }
 
     [ObserversRpc]
@@ -125,6 +166,7 @@ public class GunPlatform : NetworkBehaviour
     {
         if (spawnedGunVisual != null) Destroy(spawnedGunVisual);
         gunSpawned = false;
+        currentSpawnedID = WeaponID.None; // Reset ID
         timer = 0;
     }
 

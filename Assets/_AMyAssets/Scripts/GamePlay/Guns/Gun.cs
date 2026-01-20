@@ -1,595 +1,290 @@
 using System.Collections;
+using System.Linq;
+using Interfaces;
 using PurrNet;
 using UnityEngine;
-using System.Collections.Generic;
-using Interfaces;
-using System.Linq;
 
-public enum WeaponID
-{
-    None,
-    PistolaSimple,
-    RifleMalPorro,
-    Ojo,
-}
-
-public enum Weapon
-{
-    None,
-    Normal,
-    Cuchillo,
-    Granada,
-}
-
-public enum WeaponType
-{
-    None,
-    Primary,
-    Secundary
-}
+public enum WeaponID { None, PistolaSimple, RifleMalPorro, Ojo, LanzaCigarros, FlameThrower }
+public enum WeaponType { None, Primary, Secundary } 
 
 public class Gun : NetworkBehaviour, ITakeGun
 {
-    [Header("Weapon Info")]
+    [Header("Base Info")]
     public WeaponID weaponID;
     public WeaponType weaponType;
-    public Weapon weapon;
     public string displayName;
-    
-    [Space] [Header("Audios")]
-    [SerializeField] private AudioClip shootSound;
-    [SerializeField] private float minPitch = 0.8f;
-    [SerializeField] private float maxPitch = 1.2f;
-    
-    
-    [Space] [Header("Child meshes")]
-    [SerializeField] private GameObject[] childMeshes;
-
-    [Header("GunType")]
-    [SerializeField] private bool _normalGun;
-    [SerializeField] private bool _knife;
-    [SerializeField] private bool _grenade;
-    [SerializeField] private bool _automatic;
-    [SerializeField] private bool _modificable;
 
     [Header("Stats")]
-    [SerializeField] private int ammo;
-    [SerializeField] private int maxAmmo;
-    [SerializeField] private int reloadsAmmo;
-    [SerializeField] private float timeToReload = 3f;
-    [SerializeField] private float _range = 20f;
-    [SerializeField] private int _gunDamage = 10;
-    [SerializeField] private float _fireRate = 0.5f;
+    [SerializeField] protected SyncVar<int> _ammo = new SyncVar<int>(30);
+    [SerializeField] protected SyncVar<int> _reloadsAmmo = new SyncVar<int>(90);
+    [SerializeField] protected int maxAmmo = 30;
+    
+    [SerializeField] protected bool _automatic; 
+    [SerializeField] protected float _fireRate = 0.5f;
+    [SerializeField] protected float timeToReload = 3f;
+    [SerializeField] protected int _gunDamage = 10;
 
+    [Header("Visuals & Audio")]
+    [SerializeField] protected Transform _cameraTransform;
+    [SerializeField] protected Transform shootTransform; 
+    [SerializeField] protected ParticleSystem _muzzleFlash;
+    [SerializeField] protected AudioClip shootSound;
+    [SerializeField] protected float minPitch = 0.8f, maxPitch = 1.2f;
+    [SerializeField] protected GameObject[] childMeshes;
 
-    [Header("Recoil")]
-    [SerializeField] private float _recoilStrenght = 1f;
-    [SerializeField] private float _recoilDuration = 0.2f;
-    [SerializeField] private AnimationCurve _recoilCurve;
-    [SerializeField] private AnimationCurve _rotationCurve;
-    [SerializeField] private float _rotationAmount = 25f;
+    [Header("Recoil System")]
+    [SerializeField] protected RecoilCamera recoilCamera;
+    [SerializeField] protected float _recoilStrenght = 1f;
+    [SerializeField] protected float _recoilDuration = 0.2f;
+    [SerializeField] protected AnimationCurve _recoilCurve;
+    [SerializeField] protected AnimationCurve _rotationCurve;
+    [SerializeField] protected float _rotationAmount = 25f;
 
-    [Header("Grenades")]
-    [SerializeField] private float _timeCharged;
-    [SerializeField] private float _timeToCharge;
-    [SerializeField] private float _maxTimeCharge;
-    [SerializeField] private float _grenadeForce;
-    bool grenadeCharged = false;
-    public bool grenadeThrowed = false;
+    [Header("Layers")]
+    [SerializeField] protected int ownerGunTag = 9;
+    [SerializeField] protected int otherPlayerGunTag = 10;
 
-    [Header("References")]
-    public Rigidbody rb;
-    [SerializeField] private GameMainView gameMainView;
-    [SerializeField] private PlayerCharacter playerCharacter;
-    [SerializeField] private Player player;
-    [SerializeField] private Transform _cameraTransform;
-    [SerializeField] private LayerMask _hitLayer;
-    [SerializeField] private ParticleSystem _muzzleFlash;
-    [SerializeField] private List<Renderer> _renderers = new();
-    [SerializeField] private ParticleSystem _enviormentHit, _playerHitEffect;
-    [SerializeField] private RecoilCamera recoilCamera;
-    [SerializeField] private int ownerGunTag, otherPlayerGunTag;
-    [SerializeField] private Transform shootTransform;
-
-    [Header("GunRecoil")]
-    [Header("normal recoil")]
+    [Header("Camera Recoil Stats")]
     public float recoilX;
     public float recoilY;
     public float recoilZ;
-    [Space(0.2f)]
-    [Header("aiming recoil")]
+    [Space]
     public float aimRecoilX;
     public float aimRecoilY;
     public float aimRecoilZ;
-    [Space(0.2f)]
-    [Header("speed recoil")]
-    public float returnSpeed;
-    public float snappiness;
-    [Space(1f)]
+    [Space]
+    public float snappiness = 10f;
+    public float returnSpeed = 20f;
 
-
-
-    [Header("Inspect")]
-    [SerializeField] private bool scopeEquiped;
-    [SerializeField] private MeshRenderer scopeMesh;
-    private Vector3 _originalPosition = new Vector3(0, 0, 0);
-    private Quaternion _originalRotation = new Quaternion(0,0,0,0);
-
-    private Coroutine _recoilCoroutine;
-    private float _lastFireTime;
-    private PlayerID _ownerID;
-
-    private bool reloading;
-
-    private WeaponManager weaponManager;
-
-
-
-
-
-    private bool _inspecting = false;
-    private float _inspectSpeed = 5f;
-    [SerializeField] private Vector3 _inspectPositionOffset = new Vector3();
-    [SerializeField] private Vector3 _inspectRotationEuler = new Vector3();
-
+    // Estado Interno
+    protected PlayerCharacter playerCharacter;
+    protected Player player;
+    protected WeaponManager weaponManager;
+    protected GameMainView gameMainView;
+    public Rigidbody rb;
+    
+    protected float _lastFireTime;
+    protected bool reloading;
     public bool equipedGun = false;
+    
+    protected Vector3 _originalPosition;
+    protected Quaternion _originalRotation;
+    protected Coroutine _recoilCoroutine;
 
+    // --- SETUP ---
 
-    private void Start()
+    protected virtual void Start()
     {
-        if (rb == null) rb = GetComponent<Rigidbody>();
-
+        rb = GetComponent<Rigidbody>();
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
         rb.isKinematic = true;
         rb.useGravity = false;
+
+        _originalPosition = transform.localPosition;
+        _originalRotation = transform.localRotation;
 
         if (!isOwner)
         {
             enabled = false;
-            gameObject.layer = otherPlayerGunTag;
+            SetLayerRecursive(gameObject, otherPlayerGunTag);
         }
         else
         {
             enabled = true;
-            gameObject.layer = ownerGunTag;
-            maxAmmo = ammo;
+            SetLayerRecursive(gameObject, ownerGunTag);
         }
-
-        if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
-
     }
 
-
-
-
-    public void Update()
-    {
-        if (!isOwner) return;
-        if (!equipedGun) return;
-
-
-
-        HandleShooting();
-    }
-
-
-    public void Setup(Transform cameraTransform, LayerMask hitLayer, RecoilCamera recoil, PlayerCharacter playerChar, Player normalPlayer, WeaponManager wm)
+    public virtual void Setup(Transform cam, LayerMask mask, RecoilCamera rec, PlayerCharacter pc, Player p, WeaponManager wm)
     {
         this.enabled = true;
-        equipedGun = true;
-        _cameraTransform = cameraTransform;
-        _hitLayer = hitLayer;
-        recoilCamera = recoil;
-        playerCharacter = playerChar;
-        player = normalPlayer;
-        reloading = false;
-        weaponManager = wm;
+        this.equipedGun = true;
+        this._cameraTransform = cam;
+        this.recoilCamera = rec;
+        this.playerCharacter = pc;
+        this.player = p;
+        this.weaponManager = wm;
+        this.reloading = false;
 
+        // Reset de posición
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+        _originalPosition = transform.localPosition;
+        _originalRotation = transform.localRotation;
+
+        // --- ARREGLO DE LA UI ---
+        if (p != null && p.isOwner && p.canvas != null)
+        {
+            gameMainView = p.canvas.GetComponentInChildren<GameMainView>();
+            UpdateAmmoUI(); 
+        }
+        
+        Collider col = GetComponent<Collider>();
+        if (col) col.enabled = false;
+
+        int targetLayer = (p != null && p.isOwner) ? ownerGunTag : otherPlayerGunTag;
+        SetLayerRecursive(gameObject, targetLayer);
+    }
+
+    // --- UPDATE & INPUT ---
+
+    protected virtual void Update()
+    {
+        if (!isOwner || !equipedGun || reloading) return;
+        HandleInput();
+    }
+
+    protected virtual void HandleInput()
+    {
+        if (playerCharacter == null) return;
+        bool wantsShoot = _automatic ? playerCharacter._requestedShoot : playerCharacter._requestedShootThisFrame;
+
+        if (wantsShoot)
+        {
+            if (Time.unscaledTime >= _lastFireTime + _fireRate)
+            {
+                AttemptShoot();
+            }
+        }
+    }
+
+    protected void AttemptShoot()
+    {
+        if (_ammo.value <= 0)
+        {
+            Reload();
+            return;
+        }
+
+        _lastFireTime = Time.unscaledTime;
+        RequestShootServerRpc(_cameraTransform.position, _cameraTransform.forward);
+    }
+
+    // --- RED Y DISPARO ---
+
+    [ServerRpc] // AQUI DEBERIA DE IR EL ServerRPC PERO SI LO PONGO EL JUGADOR 2 NO LE PUEDE DISPARAR AL JUGADOR 1, ASI QUE DE MOMENTO LO QUITO PERO SE TIENE QUE ARREGLAR.
+    private void RequestShootServerRpc(Vector3 pos, Vector3 dir)
+    {
+        if (_ammo.value <= 0) return;
+
+        _ammo.value--;
+        PlayEffectsObserversRpc(); 
+        ExecuteShootingLogic(pos, dir); 
+    }
+
+    protected virtual void ExecuteShootingLogic(Vector3 position, Vector3 direction) { }
+
+    // --- EFECTOS ---
+
+    [ObserversRpc(runLocally: true)]
+    protected void PlayEffectsObserversRpc()
+    {
+        if (shootSound) AudioManager.Instance.PlaySound(shootSound, transform.position, 0.2f, pitch: Random.Range(minPitch, maxPitch));
+        if (_muzzleFlash) _muzzleFlash.Play();
+        if (isOwner && recoilCamera) recoilCamera.RecoilFire();
+
+        if (gameObject.activeInHierarchy && equipedGun)
+        {
+            if (_recoilCoroutine != null) StopCoroutine(_recoilCoroutine);
+            _recoilCoroutine = StartCoroutine(PlayRecoil());
+        }
+    }
+
+    protected IEnumerator PlayRecoil()
+    {
+        float elapsed = 0f;
+        while (elapsed < _recoilDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / _recoilDuration;
+            
+            float rVal = _recoilCurve.Evaluate(t) * _recoilStrenght;
+            Vector3 posOffset = Vector3.back * rVal;
+            
+            float rotVal = _rotationCurve.Evaluate(t) * _rotationAmount;
+            Vector3 rotOffset = new Vector3(rotVal, 0, 0);
+
+            transform.localPosition = _originalPosition + posOffset;
+            transform.localRotation = _originalRotation * Quaternion.Euler(rotOffset);
+            yield return null;
+        }
         transform.localPosition = _originalPosition;
         transform.localRotation = _originalRotation;
-        Debug.Log($"<color=blue> local position del arma: {transform.localPosition}</color>");
+    }
 
-        if (isOwner && player == null)
+    // --- RECARGA ---
+
+    [ObserversRpc(runLocally: true)]
+    public void Reload()
+    {
+        if (_reloadsAmmo.value > 0 && _ammo.value < maxAmmo)
         {
-            Debug.LogAssertionFormat("player es null en setup!");
-            player = playerChar.GetComponent<Player>();
+            reloading = true;
+            StartCoroutine(ReloadCoroutine());
         }
+    }
 
-        if (isOwner && player.canvas != null)
-        {
-            gameMainView = player.canvas._allViews.OfType<GameMainView>().FirstOrDefault();
-        }
+    IEnumerator ReloadCoroutine()
+    {
+        yield return new WaitForSeconds(timeToReload);
+        FinishReloadServerRpc();
+    }
 
+    [ServerRpc]
+    void FinishReloadServerRpc()
+    {
+        int needed = maxAmmo - _ammo.value;
+        int available = _reloadsAmmo.value;
+        int toAdd = Mathf.Min(needed, available);
+        _ammo.value += toAdd;
+        _reloadsAmmo.value -= toAdd;
+        FinishReloadObserversRpc();
+    }
 
+    [ObserversRpc]
+    void FinishReloadObserversRpc() { reloading = false; UpdateAmmoUI(); }
 
-        if (gameMainView != null)
-        {
-            gameMainView.UpdateAmmo(ammo, reloadsAmmo);
-            Debug.Log("<color=green> Game main view existe</color>");
-        }
-        else if (gameMainView == null)
-            Debug.Log("<color=red> Game main view es null! </color>");
+    // --- UTILIDADES ---
 
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
-        if (isOwner)
-        {
-            gameObject.layer = 9;
-            if (childMeshes != null)
-            {
-                foreach (var i in childMeshes)
-                {
-                    i.layer = 9;
-                }
-            }
-
-        }
-
-        else
-        {
-            gameObject.layer = 10;
-            if (childMeshes != null)
-            {
-                foreach (var i in childMeshes)
-                {
-                    i.layer = 10;
-                }
-            }
-
-        }
+    [ObserversRpc(runLocally: true)]
+    public void TakeGun(PlayerCharacter pc)
+    {
+        var wm = pc.GetComponent<WeaponManager>();
+        bool isPrimary = weaponType == WeaponType.Primary;
+        if (isServer) wm.NewWeapon(gameObject, isPrimary, false, true);
+        else if (isOwner) wm.RequestPickupGunServerRpc(gameObject, isPrimary, false);
     }
 
     public void SetDown()
     {
         equipedGun = false;
-        _cameraTransform = null;
-        recoilCamera = null;
-        playerCharacter = null;
         reloading = false;
-        gameObject.transform.SetParent(null);
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = true;
-
-
-        foreach (var i in childMeshes)
-            i.layer = 12;
-        gameObject.layer = 12;
-
+        transform.SetParent(null);
+        var col = GetComponent<Collider>();
+        if (col) col.enabled = true;
         enabled = false;
+        SetLayerRecursive(gameObject, 12); 
     }
 
-
-
-    public void HandleShooting()
+    protected void UpdateAmmoUI()
     {
-        if (!isOwner) return;
-        if (reloading) return;
-
-        if (weapon is Weapon.Cuchillo)
+        if (gameMainView != null) 
         {
-
-        }
-        else if (weapon is Weapon.Normal)
-        {
-            // Si es automatica y no mantiene el click o no es automatica y no pulsa el click, se sale de la funcion
-            if (_automatic && !playerCharacter._requestedShoot || !_automatic && !playerCharacter._requestedShootThisFrame) return;
-
-            // si el ultimo disparo mas el cooldown de disparo sumado, es mas grande que el tiempo que llevas sin disparar antes de darle al click se sale de la funcion
-            if (_lastFireTime + _fireRate > Time.unscaledTime) return;
-
-            if (ammo <= 0)
-            {
-                Reload();
-                return;
-            }
-
-            ammo--;
-            if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
-
-            _lastFireTime = Time.unscaledTime;
-
-            ShootServerRpc(_cameraTransform.position, _cameraTransform.forward);
-        }
-
-        else if (weapon is Weapon.Granada)
-        {
-            if (playerCharacter._requestedShoot && !grenadeThrowed)
-            {
-                Debug.Log("Cargando granada");
-                _timeCharged += Time.deltaTime;
-
-                if (_timeCharged >= _timeToCharge && _timeCharged < _maxTimeCharge)
-                {
-                    grenadeCharged = true;
-                }
-                if (_timeCharged >= _maxTimeCharge)
-                {
-                    Debug.Log("BOOM!");
-                    _timeCharged = 0;
-                    grenadeCharged = false;
-                    return;
-                }
-
-            }
-            if (playerCharacter._requestedShoot && grenadeCharged && !grenadeThrowed)
-            {
-                grenadeCharged = false;
-                Debug.Log("Throwing grenade");
-
-                Rigidbody rbGrenade = GetComponent<Rigidbody>();
-                if (rbGrenade == null)
-                {
-                    Debug.LogError("rbGrenade is null!");
-                    return;
-                }
-                RpcThrowGrenade(_cameraTransform.forward, _grenadeForce);
-
-            }
-        }
-
-    }
-
-    private void ShootServerRpc(Vector3 origin, Vector3 direction)
-    {
-        Debug.Log("ShootServerRpc");
-
-        
-
-
-        if (recoilCamera != null)
-            recoilCamera.RecoilFire();
-
-        //Lanza un raycast, si no le da a nada, return
-        if (!Physics.Raycast(origin, direction, out var hit, _range, _hitLayer))
-        {
-            PlayShotEffectObserversRpc();
-            return;
-        }
-
-        //Mira si la colision que ha tocado el raycast contiene un PlayerHealth, si lo tiene hace todo el sistema de quitarle vida, VFX, a�adirle da�o al ScoreManager...
-
-        if (hit.transform.TryGetComponent(out PlayerHealth victim))
-        {
-            ApplyDamageServerRpc(victim, _gunDamage);
-            PlayShotEffectObserversRpc();
-            PlayerHitObserversRpc(victim, victim.transform.InverseTransformPoint(hit.point), hit.normal);
-        }
-        else if (hit.transform.TryGetComponent(out HealthObject objectVictim))
-        {
-            ApplyDamageServerRpcToObject(objectVictim, _gunDamage);
-            PlayShotEffectObserversRpc();
-        }
-        // Si no tiene el script HealthManager, se hace el VFX de mapa
-        else
-        {
-            PlayShotEffectObserversRpc();
-            EnviormentHitObserversRpc(hit.point, hit.normal);
-
-        }
-
-        Debug.Log(hit.transform.name);
-    }
-
-
-    [ServerRpc]
-    private void ApplyDamageServerRpc(PlayerHealth victim, int gunDamage)
-    {
-        Debug.Log("ApplyDamageServerRpc");
-        victim.ChangeHealth(-gunDamage, owner.Value);
-        if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
-        {
-            scoreManager.AddDamageServerRpc(victim.PlayerID, owner.Value , gunDamage);
-        }
-
-    }
-
-    [ServerRpc]
-    private void ApplyDamageServerRpcToObject(HealthObject healthObject, int gunDamage)
-    {
-        healthObject.ChangeHealth(-gunDamage, transform.position);
-    } 
-
-
-    private PlayerHealth FindPlayerByID(PlayerID id)
-    {
-        Debug.Log("FindPlayerByID");
-        foreach (var player in FindObjectsByType<PlayerHealth>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
-        {
-            if (player.PlayerID == id)
-                return player;
-        }
-        return null;
-    }
-
-    [ObserversRpc(runLocally: false)]
-    private void PlayerHitObserversRpc(PlayerHealth player, Vector3 localposition, Vector3 normal)
-    {
-        if (_playerHitEffect && player && player.transform)
-        {
-            var effect = Instantiate(_playerHitEffect, player.transform.TransformPoint(localposition), Quaternion.LookRotation(normal));
-            effect.Play();
+            gameMainView.UpdateAmmo(_ammo.value, _reloadsAmmo.value);
         }
     }
 
-
-    [ObserversRpc(runLocally: false)]
-    private void EnviormentHitObserversRpc(Vector3 position, Vector3 normal)
+    protected void SetLayerRecursive(GameObject obj, int layer)
     {
-        if (_enviormentHit)
-        {
-            var effect = Instantiate(_enviormentHit, position, Quaternion.LookRotation(normal));
-            effect.Play();
-        }
+        obj.layer = layer;
+        if (childMeshes != null) foreach (var mesh in childMeshes) if(mesh) mesh.layer = layer;
+        foreach (Transform child in obj.transform) SetLayerRecursive(child.gameObject, layer);
     }
-
-
-
-    [ObserversRpc(runLocally: false)]
-    private void PlayShotEffectObserversRpc()
-    {
-        if(shootSound != null)
-        {
-            AudioManager.Instance.PlaySound(shootSound, shootTransform.position, 0.2f, pitch: Random.Range(minPitch, maxPitch));
-        }
-
-        if (_muzzleFlash)
-            _muzzleFlash.Play();
-        if (_recoilCoroutine != null)
-            StopCoroutine(_recoilCoroutine);
-
-        if (!gameObject.activeInHierarchy)
-            return;
-
-        if (gameObject.layer == otherPlayerGunTag)
-            return;
-
-        _recoilCoroutine = StartCoroutine(PlayRecoil());
+    
+    protected override void OnSpawned() 
+    { 
+        base.OnSpawned(); 
+        _ammo.onChanged += (v) => UpdateAmmoUI(); 
+        _reloadsAmmo.onChanged += (v) => UpdateAmmoUI(); 
     }
-
-    private IEnumerator PlayRecoil()
-    {
-        if(equipedGun == false)
-            yield break;
-        float elapsed = 0f;
-
-        while (elapsed < _recoilDuration)
-        {
-            if(equipedGun == false)
-                yield break;
-            elapsed += Time.deltaTime;
-            float curveTime = elapsed / _recoilDuration;
-
-            //position recoil
-            float recoilValue = _recoilCurve.Evaluate(curveTime);
-            Vector3 recoilOffset = Vector3.back * (recoilValue * _recoilStrenght);
-            transform.localPosition = _originalPosition + recoilOffset;
-
-            //rotation recoil
-            float rotationValue = _rotationCurve.Evaluate(curveTime);
-            Vector3 rotationOffset = new Vector3(rotationValue * _rotationAmount, 0f, 0f);
-            transform.localRotation = _originalRotation * Quaternion.Euler(rotationOffset);
-
-            yield return null;
-        }
-
-        transform.localPosition = _originalPosition;
-        transform.localRotation = _originalRotation;
-    }
-
-    [ObserversRpc(runLocally: false)]
-    private void RpcThrowGrenade(Vector3 forward, float grenadeForce)
-    {
-        grenadeThrowed = true;
-
-        // Desemparentar la granada
-        transform.parent = null;
-
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb == null)
-        {
-            Debug.LogError("Rigidbody de la granada no encontrado!");
-            return;
-        }
-
-        // Aplicar fuerza
-        rb.isKinematic = false;
-        rb.AddForce(Vector3.up * 20);
-        rb.AddForce(forward * grenadeForce);
-
-        // Notificar al WeaponManager localmente
-        WeaponManager wm = GetComponentInParent<WeaponManager>();
-        wm?.UtilityThrowed();
-
-        // Inicia la coroutine local para explosión y destrucción
-        StartCoroutine(GrenadeCoroutine());
-    }
-
-    private IEnumerator GrenadeCoroutine()
-    {
-        yield return new WaitForSeconds(0.8f);
-
-        // Activa física inactiva localmente
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null)
-            rb.isKinematic = true;
-
-        Debug.Log("BOOM!!!!!");
-
-        yield return new WaitForSeconds(3);
-
-        // Destruye la granada localmente
-        Destroy(gameObject);
-    }
-
-    [ObserversRpc(runLocally: true)]
-    public void Reload()
-    {
-        if (reloadsAmmo <= 0)
-            return;
-        if (ammo < maxAmmo)
-        {
-            reloading = true;
-            StartCoroutine(CoroutineReload());
-        }
-    }
-
-    private IEnumerator CoroutineReload()
-    {
-        yield return new WaitForSeconds(timeToReload);
-        ReloadFinished();
-    }
-
-    [ObserversRpc(runLocally: true)]
-    public void ReloadFinished()
-    {
-        if ((ammo + reloadsAmmo) < maxAmmo)
-        {
-            ammo = reloadsAmmo + ammo;
-            reloadsAmmo = 0;
-        }
-        else if ((ammo + reloadsAmmo) >= maxAmmo)
-        {
-            if (ammo == 0)
-            {
-                reloadsAmmo -= maxAmmo;
-                Debug.LogWarning("asdasd");
-            }
-            else if (ammo > 0)
-            {
-                reloadsAmmo -= (maxAmmo - ammo);
-            }
-            ammo = maxAmmo;
-        }
-        reloading = false;
-        if (isOwner && gameMainView != null) gameMainView.UpdateAmmo(ammo, reloadsAmmo);
-    }
-
-    [ObserversRpc(runLocally: true)] // Se ejecuta al interactuar
-    public void TakeGun(PlayerCharacter playerCharacter)
-    {
-        weaponManager = playerCharacter.GetComponent<WeaponManager>(); 
-        if (weaponManager == null)
-        {
-            Debug.LogAssertionFormat("Trying to take some gun, but the weaponManager is null!");
-            return;
-        }
-
-        // Definimos los booleanos según el tipo de arma
-        bool isPrimary = (weaponType == WeaponType.Primary);
-        bool isSecondary = (weaponType == WeaponType.Secundary); // Ojo con el typo 'Secundary' en tu enum
-
-        // LÓGICA DE AUTORIDAD:
-        if (isServer)
-        {
-            // Si soy el servidor, ejecuto la lógica directamente
-            weaponManager.NewWeapon(gameObject, isPrimary, false, true);
-        }
-        else if (isOwner) // Si soy el cliente dueño del jugador
-        {
-            // PIDO al servidor que me de el arma
-            // Pasamos el gameObject del arma (PurrNet enviará la referencia de red)
-            weaponManager.RequestPickupGunServerRpc(gameObject, isPrimary, false);
-        }
-    }
-
-
 }

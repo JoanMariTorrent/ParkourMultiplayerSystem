@@ -130,7 +130,7 @@ public class WeaponManager : NetworkBehaviour
         }
     }
 
-    // --- SWITCH WEAPON (Aquí estaba el problema) ---
+    // --- SWITCH WEAPON ---
 
     [ObserversRpc(requireServer: false)]
     public void SwitchWeapon(int index, GameObject forcedWeapon = null) 
@@ -146,18 +146,14 @@ public class WeaponManager : NetworkBehaviour
         if (weaponToSwitch == null) return;
         if (_currentGun != null && weaponToSwitch == _currentGun.gameObject) return;
 
-        // 1. Ocultar anteriores
         for (int i = 0; i < _ownedWeapons.Count; i++)
         {
             if (_ownedWeapons[i] != null) _ownedWeapons[i].SetActive(false);
         }
 
-        // 2. Activar nueva
         weaponToSwitch.SetActive(true);
         _currentGun = weaponToSwitch.GetComponent<Gun>();
         
-        // <--- CAMBIO CRÍTICO: Asegurar físicas desactivadas en el CLIENTE ---
-        // Aunque AddGunFromGround lo haga en el server, el cliente necesita ejecutar esto también.
         if (_currentGun.rb != null)
         {
             _currentGun.rb.isKinematic = true;
@@ -165,18 +161,15 @@ public class WeaponManager : NetworkBehaviour
         }
         Collider col = _currentGun.GetComponent<Collider>();
         if (col != null) col.enabled = false;
-        // ------------------------------------------------------------------
 
         _currentGun.GiveOwnership(owner.Value);
         
-        // 3. Emparentar
         weaponToSwitch.transform.SetParent(_handTransform);
         weaponToSwitch.transform.localPosition = Vector3.zero;
         weaponToSwitch.transform.localRotation = Quaternion.identity;
 
         if(player == null) GetPlayerScript();
         
-        // 4. Setup lógico
         _currentGun.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this);
 
         Debug.Log($"Cambio de arma a {_currentGun.name} en el slot {index}");
@@ -205,7 +198,6 @@ public class WeaponManager : NetworkBehaviour
         Gun gunScript = weaponObject.GetComponent<Gun>();
         if (gunScript == null) return;
         
-        // Configuración lógica para el Servidor
         gunScript.transform.SetParent(_handTransform);
         gunScript.transform.localPosition = Vector3.zero;
         gunScript.transform.localRotation = Quaternion.identity;
@@ -246,10 +238,6 @@ public class WeaponManager : NetworkBehaviour
         if (_currentGun == gunScript) _currentGun = null;
     }
 
-    // ... (El resto de funciones: GetWeaponIndex, EnsureWeaponSlots, Utility, DoDrop, DeathDrop, etc. siguen igual) ...
-    // Copia las funciones auxiliares de abajo de la respuesta anterior si las necesitas, no han cambiado.
-    
-    // --- PEQUEÑO RECORDATORIO DEL RESTO PARA QUE NO DE ERROR AL COPIAR ---
     private void EquipUtility(GameObject utilityPrefab) 
     { 
         InstantiateGun(utilityPrefab); 

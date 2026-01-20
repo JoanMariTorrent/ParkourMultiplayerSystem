@@ -1,11 +1,7 @@
 using PurrNet;
 using PurrNet.StateMachine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor.Timeline.Actions;
 using UnityEngine;
-using UnityEngine.ProBuilder;
 
 public enum randomType
 {
