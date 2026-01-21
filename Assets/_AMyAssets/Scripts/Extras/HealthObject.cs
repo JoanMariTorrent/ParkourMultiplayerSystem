@@ -5,8 +5,10 @@ public class HealthObject : NetworkBehaviour
 {
     public int health = 100;
     [SerializeField] private GameObject deathVFX;
+    [SerializeField] private ParticleSystem deathParticles;
     [SerializeField] private GameObject floatingDamage;
     [SerializeField] private MeshRenderer mesh;
+    [SerializeField] private SphereCollider collider;
 
     private int maxHealth;
     private bool death;
@@ -31,10 +33,12 @@ public class HealthObject : NetworkBehaviour
         Instantiate(floatingDamage, transform.position, Quaternion.LookRotation(playerPos - transform.position));
         if (health <= 0)
         {
+            mesh.enabled = false;
+            collider.enabled = false;
             Vector3 spawnVFX = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
             Instantiate(deathVFX, spawnVFX, Quaternion.identity);
+            deathParticles.Play();
             death = true;
-            mesh.enabled = false;
         }
     }
 
@@ -43,6 +47,7 @@ public class HealthObject : NetworkBehaviour
         health = maxHealth;
         death = false;
         mesh.enabled = true;
+        collider.enabled = true;
         counter = 0;
     }
 }

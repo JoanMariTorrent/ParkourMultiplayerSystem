@@ -56,6 +56,8 @@ public class Gun : NetworkBehaviour, ITakeGun
     public float snappiness = 10f;
     public float returnSpeed = 20f;
 
+    
+
     // Estado Interno
     protected PlayerCharacter playerCharacter;
     protected Player player;
