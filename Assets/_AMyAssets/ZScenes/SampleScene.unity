@@ -19853,6 +19853,8 @@ MonoBehaviour:
   weapons:
   - {fileID: 11400000, guid: daa99adb72bf97a43a90b95a167883a1, type: 2}
   - {fileID: 11400000, guid: d51b72bfb57cea343906c734750492b9, type: 2}
+  - {fileID: 11400000, guid: b986c19a4ba1acd488d2dc8e5e2f5ff1, type: 2}
+  - {fileID: 11400000, guid: ca38fd879137b154f9f793d8a2f81076, type: 2}
   filteredWeapons: []
   weaponDataBase: {fileID: 11400000, guid: 345f17e1d2874594c8099d43d12a2912, type: 2}
   selectedWeapon: {fileID: 0}
@@ -60396,6 +60398,7 @@ MonoBehaviour:
   primaryWeapons:
   - {fileID: 11400000, guid: d51b72bfb57cea343906c734750492b9, type: 2}
   - {fileID: 11400000, guid: b986c19a4ba1acd488d2dc8e5e2f5ff1, type: 2}
+  - {fileID: 11400000, guid: ca38fd879137b154f9f793d8a2f81076, type: 2}
   secondaryWeapons:
   - {fileID: 11400000, guid: daa99adb72bf97a43a90b95a167883a1, type: 2}
   _primaryWeaponData:
@@ -61175,19 +61178,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.89707893
+      value: -0.7705912
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.011526171
+      value: -0.048551656
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.4416836
+      value: 0.6342202
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0056749983
+      value: -0.039959505
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -63453,6 +63456,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: daa99adb72bf97a43a90b95a167883a1, type: 2}
   - {fileID: 11400000, guid: d51b72bfb57cea343906c734750492b9, type: 2}
   - {fileID: 11400000, guid: b986c19a4ba1acd488d2dc8e5e2f5ff1, type: 2}
+  - {fileID: 11400000, guid: ca38fd879137b154f9f793d8a2f81076, type: 2}
   filteredWeapons: []
   weaponDataBase: {fileID: 11400000, guid: 345f17e1d2874594c8099d43d12a2912, type: 2}
   selectedWeapon: {fileID: 0}

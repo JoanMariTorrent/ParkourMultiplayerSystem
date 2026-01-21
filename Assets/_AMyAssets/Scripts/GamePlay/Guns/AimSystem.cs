@@ -19,10 +19,6 @@ public class AimSystem : MonoBehaviour
     public PlayerCharacter playerCharacter;
     public WeaponManager weaponManager;
 
-
-    float targetPlayerFOV;
-    float targetGunFOV;
-
     float currentAimProgress = 0f;
 
 

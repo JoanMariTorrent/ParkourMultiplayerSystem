@@ -4,7 +4,7 @@ using Interfaces;
 using PurrNet;
 using UnityEngine;
 
-public enum WeaponID { None, PistolaSimple, RifleMalPorro, Ojo, LanzaCigarros, FlameThrower }
+public enum WeaponID { None, PistolaSimple, RifleMalPorro, Ojo, LanzaCigarros, FlameThrower, Railgun }
 public enum WeaponType { None, Primary, Secundary } 
 
 public class Gun : NetworkBehaviour, ITakeGun
