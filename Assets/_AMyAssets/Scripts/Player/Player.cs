@@ -122,7 +122,6 @@ public class Player : NetworkBehaviour
     }
 
 
-
     private void HandleInputs()
     {
         if (playerHealth.health <= 0) return;
