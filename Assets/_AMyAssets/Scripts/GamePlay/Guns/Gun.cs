@@ -175,14 +175,20 @@ public class Gun : NetworkBehaviour, ITakeGun
 
     // --- RED Y DISPARO ---
 
-    [ServerRpc(requireOwnership: false)] // AQUI DEBERIA DE IR EL ServerRPC PERO SI LO PONGO EL JUGADOR 2 NO LE PUEDE DISPARAR AL JUGADOR 1, ASI QUE DE MOMENTO LO QUITO PERO SE TIENE QUE ARREGLAR.
+    // AQUI DEBERIA DE IR EL ServerRPC PERO SI LO PONGO EL JUGADOR 2 NO LE PUEDE DISPARAR AL JUGADOR 1, ASI QUE DE MOMENTO LO QUITO PERO SE TIENE QUE ARREGLAR.
     private void RequestShootServerRpc(Vector3 pos, Vector3 dir)
+    {
+        changeAmmo();
+        PlayEffectsObserversRpc(); 
+        ExecuteShootingLogic(pos, dir); 
+    }
+
+    [ServerRpc(requireOwnership: false)] 
+    private void changeAmmo()
     {
         if (_ammo.value <= 0) return;
 
         _ammo.value--;
-        PlayEffectsObserversRpc(); 
-        ExecuteShootingLogic(pos, dir); 
     }
 
     protected virtual void ExecuteShootingLogic(Vector3 position, Vector3 direction) { }

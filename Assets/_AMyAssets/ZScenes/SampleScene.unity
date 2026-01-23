@@ -10355,7 +10355,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 1
+  _minPlayers: 2
   testingStart: 1
 --- !u!1001 &525913456
 PrefabInstance:
@@ -61061,19 +61061,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.5857542
+      value: -0.546013
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.1048408
+      value: -0.13696626
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7911074
+      value: 0.8016672
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.14159581
+      value: -0.20109665
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
