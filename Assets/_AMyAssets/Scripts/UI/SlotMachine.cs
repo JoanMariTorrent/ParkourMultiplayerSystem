@@ -28,6 +28,12 @@ public class SlotMachine : View
     [Tooltip("Tipo de curva que seguira el spin.")]
     [SerializeField] private AnimationCurve spinCurve;
     [Tooltip("Decide de que tipo se hara el random.")]
+
+    [Space] [Header("Audios")]
+    [SerializeField] private AudioClip tickSound;
+    [SerializeField] private float minPitch = 0.9f;
+    [SerializeField] private float maxPitch = 1.1f;
+
     private List<RectTransform> slotList = new List<RectTransform>();
     private bool isSpinning = false;
     public WeaponScripteableObject finalWeapon;
@@ -104,12 +110,34 @@ public class SlotMachine : View
 
         // Animar el movimiento con la curva
         yield return new WaitForSeconds(0.3f);
+
+        float lastY = startPos.y;
+        float distanceAccumulator = 0f;
+
         float elapsed = 0f;
         while (elapsed < spinDuration)
         {
             float t = Mathf.Clamp01(elapsed / spinDuration);
             float curveT = spinCurve != null ? spinCurve.Evaluate(t) : t; // Valor modificado por la curva
             itemsContainer.anchoredPosition = Vector2.Lerp(startPos, endPos, curveT);
+
+            float currentY = itemsContainer.anchoredPosition.y;
+            float deltaMove = Mathf.Abs(currentY - lastY);
+
+            distanceAccumulator += deltaMove;
+
+            if (distanceAccumulator >= slotSpacing)
+            {
+                PlayTickSound();
+
+                while(distanceAccumulator >= slotSpacing)
+                {
+                    distanceAccumulator -= slotSpacing;
+                }
+            }
+
+            lastY = currentY;
+
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -120,6 +148,20 @@ public class SlotMachine : View
         finalWeapon = selectedWeapon;
         Debug.Log($"🎯 Ganador: {selectedWeapon.weaponName}(intex {winnerIndex})");
         isSpinning = false;
+    }
+
+    private void PlayTickSound()
+    {
+        if (tickSound != null && AudioManager.Instance != null)
+        {
+            float randomPitch = Random.Range(minPitch, maxPitch);
+
+            AudioManager.Instance.PlaySound2D(
+                tickSound, 
+                .25f,            // Volumen
+                randomPitch    // Pitch
+            );
+        }
     }
 
     // Elegir un arma segun sus posibilidades

@@ -49,6 +49,23 @@ public class AudioManager : MonoBehaviour
         return audiosList[audiosList.Count - 1]; 
     }
 
+    public void PlaySound2D(AudioClip clip, float volume = 1f, float pitch = 1f)
+    {
+        AudioSource source = RequestedAudio();
+
+        source.spatialBlend = 0f; 
+        
+        source.transform.parent = this.transform;
+        source.clip = clip;
+        source.volume = volume;
+        source.pitch = pitch;
+
+        source.gameObject.SetActive(true);
+        source.Play();
+
+        StartCoroutine(DisableAudioDelayed(source, clip.length + 0.05f));
+    }
+
 
     public void PlaySound(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, Transform parent = null)
     {

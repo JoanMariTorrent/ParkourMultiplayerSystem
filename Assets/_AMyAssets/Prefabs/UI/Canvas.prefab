@@ -15213,6 +15213,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  tickSound: {fileID: 8300000, guid: d93ceb87ba83f8747a45f48f5100c62e, type: 3}
+  minPitch: 0.9
+  maxPitch: 1.1
   finalWeapon: {fileID: 0}
 --- !u!225 &6131570212369344903
 CanvasGroup:

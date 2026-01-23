@@ -145,7 +145,7 @@ public class SettingsSystem : MonoBehaviour
 
     public void OnNormalSensibilityChange(float newValue)
     {
-        float realValue = Mathf.Lerp(0.05f, 5f, newValue);
+        float realValue = Mathf.Lerp(0.05f, 10f, newValue);
 
         settings.sensitivity = realValue;
         settings.OnSensitivityChanged?.Invoke();
@@ -153,7 +153,7 @@ public class SettingsSystem : MonoBehaviour
 
     public void OnAimingSensibilityChange(float newValue)
     {
-        float realValue = Mathf.Lerp(0.05f, 5f, newValue);
+        float realValue = Mathf.Lerp(0.05f, 10f, newValue);
 
         settings.aimingSensitivity = realValue;
         settings.OnSensitivityChanged?.Invoke();
@@ -161,7 +161,7 @@ public class SettingsSystem : MonoBehaviour
 
     public void OnSniperSensibilityChange(float newValue)
     {
-        float realValue = Mathf.Lerp(0.05f, 5f, newValue);
+        float realValue = Mathf.Lerp(0.05f, 10f, newValue);
 
         settings.sniperSensitivity = realValue;
         settings.OnSensitivityChanged?.Invoke();

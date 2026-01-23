@@ -564,8 +564,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   footStepSounds:
-  - {fileID: 8300000, guid: b7ab99481a6acc544b76016dfb7aa26e, type: 3}
-  - {fileID: 8300000, guid: f9ffd8adc375a0649a6ed5bbdaa998bd, type: 3}
+  - {fileID: 8300000, guid: c8f7175f70d18604698f840a617b1d48, type: 3}
+  - {fileID: 8300000, guid: c2c202a62017712489301189fe3a1f46, type: 3}
   stepDistance: 9.6
   volume: 0.5
   minPitch: 0.95
@@ -1984,6 +1984,18 @@ PrefabInstance:
     - target: {fileID: 2054686592154129205, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2177215246087136748, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: audioPos
+      value: 
+      objectReference: {fileID: 270216168120174895}
+    - target: {fileID: 2177215246087136748, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: totalSlots
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2177215246087136748, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: spinDuration
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2468577410818646419, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_Alpha
