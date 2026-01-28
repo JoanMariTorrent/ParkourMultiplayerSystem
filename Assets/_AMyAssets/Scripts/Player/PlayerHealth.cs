@@ -96,23 +96,26 @@ public class PlayerHealth : NetworkBehaviour
 
         if(_health.value > 0)
         {
-            if (damageClips.Length > 0)
+            if (damageClips.Length > 0 && isOwner)
             {
                 AudioClip damageClip = damageClips[UnityEngine.Random.Range(0, damageClips.Length)];
-                AudioManager.Instance.PlaySound(damageClip, transform.position, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f));
+                AudioManager.Instance.PlaySound2D(damageClip, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f));
             }
         }
 
         if (IsDead)
         {
-            AudioClip deathClip = deathClips[UnityEngine.Random.Range(0, deathClips.Length)];
-            AudioManager.Instance.PlaySound(deathClip, transform.position, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f));
+            if(isOwner)
+            {
+                AudioClip deathClip = deathClips[UnityEngine.Random.Range(0, deathClips.Length)];
+                AudioManager.Instance.PlaySound(deathClip, transform.position, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f), parent: null);
+            }
 
             if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
             {
                 if(attackerID != null || attackerID.HasValue) scoreManager.Addkills(attackerID.Value);
                 if(owner.HasValue)
-                scoreManager.AddDeath(owner.Value);
+                    scoreManager.AddDeath(owner.Value);
             }
 
             if (weaponManager != null)

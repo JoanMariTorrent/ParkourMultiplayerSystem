@@ -1,13 +1,24 @@
 using PurrNet.StateMachine;
 using PurrNet; 
 using UnityEngine;
+using System.Collections.Generic;
 
-public class GameEndStateDM : StateNode 
+public class GameEndStateDM : StateNode<List<PlayerHealth>>
 {
-    public override void Enter(bool asServer)
+    public override void Enter(List<PlayerHealth> data, bool asServer)
     {
-        base.Enter(asServer);
+        base.Enter(data, asServer);
         if(!asServer) return;
+
+
+        foreach(var player in data)
+        {
+            Player p = player.GetComponent<Player>();
+            p.canMove = false;
+            
+            player.SetImmunityRpc(true);
+        }
+
 
         InstanceHandler.TryGetInstance(out ScoreManager scoreManager);
         

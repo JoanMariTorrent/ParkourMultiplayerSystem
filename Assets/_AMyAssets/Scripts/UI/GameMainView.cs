@@ -6,6 +6,7 @@ public class GameMainView : View
 {
     [SerializeField] private TMP_Text _healthText;
     [SerializeField] private TMP_Text _ammoText;
+    [SerializeField] private TMP_Text _timerText, _bckgTimerText;
 
 
     private void Awake()
@@ -43,5 +44,23 @@ public class GameMainView : View
         else
             _ammoText.enabled = false;
             
+    }
+
+    void Update()
+    {
+        if(!InstanceHandler.TryGetInstance(out RoundRunningStateDM roundRunningStateDM)) return;
+        if(_timerText == null || _bckgTimerText == null) return;
+
+        float timeInSeconds = roundRunningStateDM.timerReference;
+        if(timeInSeconds < 0) timeInSeconds = 0;
+
+
+        int minutes = Mathf.FloorToInt(timeInSeconds / 60);
+        int seconds = Mathf.FloorToInt(timeInSeconds % 60);
+
+        string finalStringFormat = string.Format("{0:00}:{1:00}", minutes, seconds);
+        
+        _timerText.text = finalStringFormat;
+        _bckgTimerText.text = finalStringFormat;
     }
 }

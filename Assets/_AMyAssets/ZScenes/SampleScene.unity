@@ -26462,12 +26462,15 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  matchDuration: 120
+  matchDuration: 180
   timer: 0
   respawnDelay: 3
   _spawnPoints:
   - {fileID: 4968686437031759553}
   - {fileID: 278023948605504118}
+  - {fileID: 1032193979}
+  - {fileID: 385747182}
+  - {fileID: 1773029404}
 --- !u!4 &1032208030
 Transform:
   m_ObjectHideFlags: 0
@@ -61061,19 +61064,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.6999886
+      value: -0.79189193
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.107889496
+      value: -0.16133532
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.6977185
+      value: 0.57710814
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.107539654
+      value: -0.11757658
       objectReference: {fileID: 0}
     - target: {fileID: 8031957361476134678, guid: e877abd6bf155ee4aa080f9286a6e8be, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

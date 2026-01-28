@@ -9,14 +9,27 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
     [Header("Ajustes de Partida")]
     [SerializeField] private float matchDuration = 120f;
     [SerializeField] private float timer;
+    
     [SerializeField] private float respawnDelay = 3f;
 
     [Header("Referencias")]
     [SerializeField] private List<Transform> _spawnPoints = new();
 
-    // Lista de jugadores activos (para gestionar eventos y respawns)
     private List<PlayerHealth> _activePlayers = new(); 
     private bool gameEnded = false;
+
+    [HideInInspector] public float timerReference => timer;
+
+
+    void Awake()
+    {
+        InstanceHandler.RegisterInstance(this);
+    }
+
+    void OnDestroy()
+    {
+        InstanceHandler.UnregisterInstance<RoundRunningStateDM>();
+    }
 
     public override void Enter(List<PlayerHealth> data, bool asServer)
     {
@@ -25,7 +38,7 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
 
         // 1. Guardamos la lista de jugadores que vienen del SpawningState
         _activePlayers = data;
-        _activePlayers.RemoveAll(x => x == null); // Limpieza de seguridad
+        _activePlayers.RemoveAll(x => x == null);
 
         timer = matchDuration;
         gameEnded = false;
@@ -33,8 +46,6 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
         // 2. Nos suscribimos al evento de muerte
         foreach (var player in _activePlayers)
         { 
-            // Como usamos "Reciclaje" (no destruimos el objeto), 
-            // nos suscribimos una vez aquí y sirve para toda la ronda.
             player.OnDeath_Server += OnPlayerDeath;
         }
     }
@@ -58,25 +69,23 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
     { 
         if (gameEnded) return;
 
-        // Buscamos el script PlayerHealth correspondiente al ID del muerto
         var playerScript = _activePlayers.Find(p => p.owner == deadPlayerID);
         
         if (playerScript != null)
         {
-            // Iniciamos la rutina de Respawn
             StartCoroutine(RespawnRoutine(playerScript));
         }
     }
 
     private IEnumerator RespawnRoutine(PlayerHealth player)
     {
-        // 1. Esperamos el tiempo de respawn (mientras el jugador ve la killcam o pantalla negra)
+        // 1. Esperamos el tiempo de respawn 
         yield return new WaitForSeconds(respawnDelay);
 
         if (gameEnded) yield break;
 
         // 2. Elegimos un punto de spawn aleatorio
-        Transform spawnPoint = transform; // Fallback por seguridad
+        Transform spawnPoint = transform; 
         if (_spawnPoints.Count > 0)
             spawnPoint = _spawnPoints[Random.Range(0, _spawnPoints.Count)];
 
@@ -89,14 +98,13 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
     private void EndRound()
     {
         gameEnded = true;
-        machine.Next();
+        machine.Next(_activePlayers);
     }
 
     public override void Exit(bool asServer)
     {
         base.Exit(asServer);
         
-        // Limpieza: Nos desuscribimos de los eventos al terminar la ronda
         if (asServer && _activePlayers != null)
         {
             foreach (var player in _activePlayers)

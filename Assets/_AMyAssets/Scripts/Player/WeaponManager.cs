@@ -322,8 +322,14 @@ public class WeaponManager : NetworkBehaviour
     }
     [ObserversRpc(runLocally: true)] private void PlayEquipSoundObserversRpc() 
     { 
-        if (takeGunSound.Length > 0) 
-            AudioManager.Instance.PlaySound(takeGunSound[Random.Range(0, takeGunSound.Length)], transform.position, pitch: Random.Range(0.98f, 1.02f)); 
+        if (takeGunSound.Length <= 0) return; 
+        
+        
+        if(isOwner)
+            AudioManager.Instance.PlaySound2D(takeGunSound[Random.Range(0, takeGunSound.Length)], pitch: Random.Range(0.98f, 1.02f));
+
+        else
+            AudioManager.Instance.PlaySound(takeGunSound[Random.Range(0, takeGunSound.Length)], transform.position , pitch: Random.Range(0.98f, 1.02f));
     }
     [ObserversRpc(runLocally: true)] public void DropAllWeaponsOnDeath() 
     { 

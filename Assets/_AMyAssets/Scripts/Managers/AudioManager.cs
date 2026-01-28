@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using PurrNet;
 
 public class AudioManager : MonoBehaviour
 {
@@ -56,6 +57,9 @@ public class AudioManager : MonoBehaviour
         source.spatialBlend = 0f; 
         
         source.transform.parent = this.transform;
+
+        source.spatialBlend = 0f;
+
         source.clip = clip;
         source.volume = volume;
         source.pitch = pitch;
@@ -70,6 +74,8 @@ public class AudioManager : MonoBehaviour
     public void PlaySound(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, Transform parent = null)
     {
         AudioSource source = RequestedAudio();
+
+        source.spatialBlend = 1f;
 
         source.transform.position = position;
         source.clip = clip;
