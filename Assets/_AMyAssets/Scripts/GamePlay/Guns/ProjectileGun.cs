@@ -6,7 +6,7 @@ public class ProjectileGun : Gun
     [Header("Projectile Settings")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private LayerMask aimLayerMask;
-    protected override void ExecuteShootingLogic(Vector3 cameraPosition, Vector3 cameraForward)
+    protected override void ExecuteShootingLogic(Vector3 cameraPosition, Vector3 cameraForward, double tick)
     {
         if (!isServer) return;
 

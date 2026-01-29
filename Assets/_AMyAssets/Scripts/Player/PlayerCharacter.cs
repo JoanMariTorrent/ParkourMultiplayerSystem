@@ -23,6 +23,7 @@ public struct CharacterInput
     public bool Reload;
     public bool DropGun;
     public bool Emote;
+    public bool MovementBlocked;
 }
 
 public enum LastGunEquiped { None, Primary, Secondary, Utility }
@@ -207,7 +208,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateInput(CharacterInput input)
     {
-        if(playerHealth != null && (playerHealth.IsDead || playerHealth.health <= 0))
+        if(playerHealth != null && (playerHealth.IsDead || playerHealth.health <= 0) || !input.MovementBlocked)
         {
             _requestedMovement = Vector3.zero;
             _requestedJump = false;

@@ -170,17 +170,21 @@ public class Gun : NetworkBehaviour, ITakeGun
         }
 
         _lastFireTime = Time.unscaledTime;
-        RequestShootServerRpc(_cameraTransform.position, _cameraTransform.forward);
+
+        // Rollback collider
+        double tick = InstanceHandler.NetworkManager.tickModule.rollbackTick;
+
+        RequestShootServerRpc(_cameraTransform.position, _cameraTransform.forward, tick);
     }
 
     // --- RED Y DISPARO ---
 
     // AQUI DEBERIA DE IR EL ServerRPC PERO SI LO PONGO EL JUGADOR 2 NO LE PUEDE DISPARAR AL JUGADOR 1, ASI QUE DE MOMENTO LO QUITO PERO SE TIENE QUE ARREGLAR.
-    private void RequestShootServerRpc(Vector3 pos, Vector3 dir)
+    private void RequestShootServerRpc(Vector3 pos, Vector3 dir, double tick)
     {
         changeAmmo();
         PlayEffectsObserversRpc(); 
-        ExecuteShootingLogic(pos, dir); 
+        ExecuteShootingLogic(pos, dir, tick); 
     }
 
     [ServerRpc(requireOwnership: false)] 
@@ -191,7 +195,7 @@ public class Gun : NetworkBehaviour, ITakeGun
         _ammo.value--;
     }
 
-    protected virtual void ExecuteShootingLogic(Vector3 position, Vector3 direction) { }
+    protected virtual void ExecuteShootingLogic(Vector3 position, Vector3 direction, double tick) { }
 
     // --- EFECTOS ---
 

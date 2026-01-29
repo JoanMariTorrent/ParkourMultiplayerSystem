@@ -138,7 +138,7 @@ public class Player : NetworkBehaviour
         }
         var input = _inputActions.GamePlay;
 
-        if (!canMove) return;
+        //if (!canMove) return;
 
         // Pilla camera input y actualiza su rotacion
         var cameraInput = new CameraInput { Look = input.Look.ReadValue<Vector2>() };
@@ -177,6 +177,7 @@ public class Player : NetworkBehaviour
             Reload = input.Reload.WasPressedThisFrame(),
             DropGun = input.DropGun.WasPressedThisFrame(),
             Emote = input.Emote.WasPressedThisFrame(),
+            MovementBlocked = !canMove,
         };
 
         if(cameraActive) playerCharacter.UpdateInput(characterInput);

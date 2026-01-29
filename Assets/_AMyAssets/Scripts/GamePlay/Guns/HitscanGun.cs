@@ -9,7 +9,7 @@ public class HitscanGun : Gun
     [SerializeField] private ParticleSystem _enviormentHit; 
     [SerializeField] private ParticleSystem _playerHitEffect; 
 
-    protected override void ExecuteShootingLogic(Vector3 position, Vector3 direction)
+    protected override void ExecuteShootingLogic(Vector3 position, Vector3 direction, double tick)
     {
         Debug.DrawRay(position, direction * range, Color.red, 2f);
 

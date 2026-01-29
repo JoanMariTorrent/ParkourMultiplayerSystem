@@ -40,7 +40,7 @@ public class FlameThrowerGun : Gun
     }
 
 
-    protected override void ExecuteShootingLogic(Vector3 position, Vector3 direction)
+    protected override void ExecuteShootingLogic(Vector3 position, Vector3 direction, double tick)
     {
         UpdateFlameStateObserversRpc(true);
 
