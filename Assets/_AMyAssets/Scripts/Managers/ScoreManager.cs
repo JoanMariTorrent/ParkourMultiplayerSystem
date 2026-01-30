@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class ScoreManager : NetworkBehaviour
 {
@@ -94,6 +95,7 @@ public class ScoreManager : NetworkBehaviour
     
 
 
+    // Deuelve las stats  de un juegador
     public ScoreData GetPlayerStats(PlayerID playerID)
     {
         if(_scores.ContainsKey(playerID))
@@ -103,6 +105,8 @@ public class ScoreManager : NetworkBehaviour
 
         return new ScoreData();
     }
+
+
 
 
     public PlayerID GetWinner()
