@@ -10355,7 +10355,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 2
+  _minPlayers: 1
   testingStart: 1
 --- !u!1 &537394649
 GameObject:
@@ -26166,6 +26166,7 @@ MonoBehaviour:
   - {fileID: 1032193979}
   - {fileID: 385747182}
   - {fileID: 1773029404}
+  timerReference: 0
 --- !u!4 &1032208030
 Transform:
   m_ObjectHideFlags: 0
