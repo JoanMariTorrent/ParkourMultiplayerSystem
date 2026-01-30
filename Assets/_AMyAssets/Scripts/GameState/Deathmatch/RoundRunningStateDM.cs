@@ -18,7 +18,7 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
     private List<PlayerHealth> _activePlayers = new(); 
     private bool gameEnded = false;
 
-    [HideInInspector] public float timerReference => timer;
+    [HideInInspector] public float timerReference;
 
 
     void Awake()
@@ -56,7 +56,11 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
         if(!asServer) return;
         
         // 3. Lógica del tiempo
-        if (timer > 0) timer -= Time.deltaTime;
+        if (timer > 0) 
+        {
+            timer -= Time.deltaTime;
+            TimerToObservers(timer);
+        }
         
         // 4. Fin de la ronda
         if (timer <= 0 && !gameEnded)
@@ -113,5 +117,10 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
                 if (player != null) player.OnDeath_Server -= OnPlayerDeath;
             }
         }
+    }
+
+    [ObserversRpc] public void TimerToObservers(float _timer)
+    {
+        timerReference = _timer;
     }
 }

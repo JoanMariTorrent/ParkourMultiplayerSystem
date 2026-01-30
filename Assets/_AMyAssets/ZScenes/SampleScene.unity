@@ -10355,7 +10355,7 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 1
+  _minPlayers: 2
   testingStart: 1
 --- !u!1 &537394649
 GameObject:
