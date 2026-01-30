@@ -208,7 +208,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateInput(CharacterInput input)
     {
-        if(playerHealth != null && (playerHealth.IsDead || playerHealth.health <= 0) || !input.MovementBlocked)
+        if(playerHealth != null && (playerHealth.IsDead || playerHealth.health <= 0) || input.MovementBlocked)
         {
             _requestedMovement = Vector3.zero;
             _requestedJump = false;

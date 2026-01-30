@@ -94,6 +94,17 @@ public class ScoreManager : NetworkBehaviour
     
 
 
+    public ScoreData GetPlayerStats(PlayerID playerID)
+    {
+        if(_scores.ContainsKey(playerID))
+        {
+            return _scores[playerID];
+        }
+
+        return new ScoreData();
+    }
+
+
     public PlayerID GetWinner()
     {
         PlayerID winner = default;
@@ -149,9 +160,9 @@ public class ScoreManager : NetworkBehaviour
         // 1. Convertimos el SyncDictionary a un Diccionario normal para poder operar con LINQ
         var sortedPlayers = _scores.ToDictionary()
             // ORDENAMIENTO:
-            .OrderByDescending(x => x.Value._kills)   // 1º Prioridad: Más Kills
-            .ThenBy(x => x.Value._deaths)             // 2º Desempate: Menos Muertes es mejor
-            .ThenByDescending(x => x.Value._damage)   // 3º Desempate: Más Daño es mejor
+            .OrderByDescending(x => x.Value._kills)   // 1 Prioridad: Más Kills
+            .ThenBy(x => x.Value._deaths)             // 2 Desempate: Menos Muertes es mejor
+            .ThenByDescending(x => x.Value._damage)   // 3 Desempate: Más Daño es mejor
             .Take(topCount)                           // Cogemos solo los 'topCount' (3)
             .ToList();
 

@@ -70,6 +70,7 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
         if (gameEnded) return;
 
         var playerScript = _activePlayers.Find(p => p.owner == deadPlayerID);
+        Debug.Log("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         
         if (playerScript != null)
         {

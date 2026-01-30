@@ -14,12 +14,13 @@ public class Player : NetworkBehaviour
     [SerializeField] private CameraSpring cameraSpring;
     [SerializeField] private CameraLean cameraLean;
     [SerializeField] private PlayerInputsAction _inputActions;
-    [SerializeField] private string playerName;
+    public string playerName;
     [SerializeField] private GameObject canvasPrefab;
     [SerializeField] private bool isSpinning = false;
     public Canvas canvas;
     public SlotMachine slotMachine;
     public bool canMove; 
+    public bool cameraBlocked;
     public bool prueba = false;
     [SerializeField] private PruebasRPC pruebasRPC;
     [SerializeField] private WeaponDatabase weaponDataBase;
@@ -142,7 +143,7 @@ public class Player : NetworkBehaviour
 
         // Pilla camera input y actualiza su rotacion
         var cameraInput = new CameraInput { Look = input.Look.ReadValue<Vector2>() };
-        if(cameraActive) playerCamera.UpdateRotation(cameraInput);
+        if(cameraActive && !cameraBlocked) playerCamera.UpdateRotation(cameraInput);
 
 
 

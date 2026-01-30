@@ -42,7 +42,7 @@ public class PlayerSpawningState : StateNode
             // 3. Obtenemos ese punto
             Transform _spawnPoint = _availablePoints[_randomIndex];
 
-            // 4. Lo borramos de la lista provisional para que nadie más lo use
+            // 4. Lo borramos de la lista provisional 
             _availablePoints.RemoveAt(_randomIndex);
 
             // 5. Instanciar el jugador 
