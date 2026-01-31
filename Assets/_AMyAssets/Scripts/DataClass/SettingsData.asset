@@ -12,8 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e52a931e1acde9e46a1d9e3e699ef6b6, type: 3}
   m_Name: SettingsData
   m_EditorClassIdentifier: 
-  sensitivity: 0.1
-  crosshairColor: {r: 0.72751284, g: 0, b: 0, a: 1}
+  sensitivity: 7
+  aimingSensitivity: 4
+  sniperSensitivity: 3
+  resolutionIndex: 5
+  qualityIndex: 3
+  isFullscreen: 0
+  gamma: 0.32276437
+  masterVolume: 0.8
+  ambientVolume: 0.8
+  vfxVolume: 0.8
+  sfxVolume: 0.8
+  crosshairColor: {r: 1, g: 0, b: 0, a: 1}
   useCenterDot: 1
   centerDotSize: 18
   centerDotOpacity: 0.71853095

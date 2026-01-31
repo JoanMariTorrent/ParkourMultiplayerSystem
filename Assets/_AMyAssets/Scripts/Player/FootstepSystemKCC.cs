@@ -59,7 +59,7 @@ public class FootstepSystemKCC : MonoBehaviour
         if(footStepSounds.Length > 0 && AudioManager.Instance != null)
         {
             AudioClip clip = footStepSounds[Random.Range(0, footStepSounds.Length)];
-            AudioManager.Instance.PlaySound(clip, transform.position, volume, pitch: Random.Range(minPitch, maxPitch));
+            AudioManager.Instance.PlaySound(clip, transform.position, AudioType.SFX ,volume, pitch: Random.Range(minPitch, maxPitch));
         }
     }
 

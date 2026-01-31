@@ -157,7 +157,8 @@ public class SlotMachine : View
             float randomPitch = Random.Range(minPitch, maxPitch);
 
             AudioManager.Instance.PlaySound2D(
-                tickSound, 
+                tickSound,
+                AudioType.UI, 
                 .25f,            // Volumen
                 randomPitch    // Pitch
             );

@@ -6,10 +6,24 @@ public class SettingsData : ScriptableObject
 {
 
     [Header("General Settings")]
-    public float sensitivity = 0.1f;
-    public float aimingSensitivity = 0.05f;
-    public float sniperSensitivity = 0.2f;
+    // Sensibilidad
+    public float sensitivity = 7f;
+    public float aimingSensitivity = 4f;
+    public float sniperSensitivity = 3f;
     public Action OnSensitivityChanged;
+
+    // Configuracion de pantalla / video
+    public int resolutionIndex;
+    public int qualityIndex = 2;
+    public bool isFullscreen = true;
+    public float gamma = 1f;
+
+    // Configuracion de audio
+    public float masterVolume = 0.8f;
+    public float musicVolume = 0.8f;
+    public float sfxVolume = 0.8f;
+    public float uiVolume = 0.8f;
+
 
     [Space][Header("Crosshair Settings")]
     public Color crosshairColor = Color.white;

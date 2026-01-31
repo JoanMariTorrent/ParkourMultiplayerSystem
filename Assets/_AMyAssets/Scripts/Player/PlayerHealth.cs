@@ -55,7 +55,7 @@ public class PlayerHealth : NetworkBehaviour
         {
             _health.onChanged += OnHealthChanged;
             if(canvas != null && canvas.gameMainView != null)
-                canvas.gameMainView.UpdateHealth(_health.value);
+                canvas.gameMainView.UpdateHealth(_health.value, _maxHealth);
             
         }
     }
@@ -70,7 +70,7 @@ public class PlayerHealth : NetworkBehaviour
 
     private void OnHealthChanged(int _newHealth)
     {
-        canvas.gameMainView.UpdateHealth(_newHealth);
+        canvas.gameMainView.UpdateHealth(_newHealth, _maxHealth);
     }
 
     private void SetLayerRecursive(GameObject _obj, int _layer)
@@ -99,7 +99,7 @@ public class PlayerHealth : NetworkBehaviour
             if (damageClips.Length > 0 && isOwner)
             {
                 AudioClip damageClip = damageClips[UnityEngine.Random.Range(0, damageClips.Length)];
-                AudioManager.Instance.PlaySound2D(damageClip, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f));
+                AudioManager.Instance.PlaySound2D(damageClip, AudioType.SFX , 1.2f, UnityEngine.Random.Range(0.95f, 1.05f));
             }
         }
 
@@ -108,7 +108,9 @@ public class PlayerHealth : NetworkBehaviour
             if(isOwner)
             {
                 AudioClip deathClip = deathClips[UnityEngine.Random.Range(0, deathClips.Length)];
-                AudioManager.Instance.PlaySound(deathClip, transform.position, 1.2f, UnityEngine.Random.Range(0.95f, 1.05f), parent: null);
+                AudioManager.Instance.PlaySound(deathClip, transform.position, AudioType.SFX ,1.2f, UnityEngine.Random.Range(0.95f, 1.05f), parent: null);
+                player.canMove = false;
+                player.cameraBlocked = true;
             }
 
             if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
@@ -153,6 +155,12 @@ public class PlayerHealth : NetworkBehaviour
     public void ReviveObserversRpc(Vector3 spawnPos, Quaternion spawnRot, bool giveGuns = true)
     {
         if (isServer) _health.value = _maxHealth;
+
+        if(isOwner)
+        {
+            player.canMove = false;
+            player.cameraBlocked = false;
+        }
 
         if (playerCharacter != null)
         {

@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/PurrLobby/LobbyScenes/LobbySample.unity
     guid: 163ab76a47bff6646b7627336bc33bdf
   - enabled: 0

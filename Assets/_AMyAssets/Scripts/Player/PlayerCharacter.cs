@@ -275,7 +275,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         if(_requestedEmote && !cantEmote)
         {
-            AudioManager.Instance.PlaySound(dontShoot, transform.position, 1, pitch: Random.Range(0.95f, 1.1f), parent: transform);
+            AudioManager.Instance.PlaySound(dontShoot,transform.position, AudioType.SFX, 1, pitch: Random.Range(0.95f, 1.1f), parent: transform);
             cantEmote = true;
             StartCoroutine(Emote());
         }

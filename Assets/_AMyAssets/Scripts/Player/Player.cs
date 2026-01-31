@@ -4,6 +4,7 @@ using Steamworks;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.Rendering;
 
 public class Player : NetworkBehaviour
 {
@@ -18,6 +19,7 @@ public class Player : NetworkBehaviour
     [SerializeField] private GameObject canvasPrefab;
     [SerializeField] private bool isSpinning = false;
     public Canvas canvas;
+    public SettingsSystem settingsSystem;
     public SlotMachine slotMachine;
     public bool canMove; 
     public bool cameraBlocked;
@@ -27,6 +29,7 @@ public class Player : NetworkBehaviour
 
     [Space][Header("Settings")]
     [SerializeField] private SettingsData settings;
+    [SerializeField] private Volume globalVolume;
 
     public bool cameraActive = true;
 
@@ -89,6 +92,8 @@ public class Player : NetworkBehaviour
                 _inputActions = new PlayerInputsAction();
                 _inputActions.Enable();
             }
+
+            settingsSystem.Intialize(globalVolume);
         }
     }
     void Update()
@@ -125,7 +130,7 @@ public class Player : NetworkBehaviour
 
     private void HandleInputs()
     {
-        if (playerHealth.health <= 0) return;
+        //if (playerHealth.health <= 0) return;
 
         if (_inputActions == null)
         {

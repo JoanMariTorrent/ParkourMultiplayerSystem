@@ -1,12 +1,28 @@
 using UnityEngine;
 using System.Collections.Generic;
-using PurrNet;
+using UnityEngine.Audio;
+using System.Collections;
+
+
+public enum AudioType
+{
+    SFX,
+    Music,
+    UI,
+}
 
 public class AudioManager : MonoBehaviour
 {
+    [Header("Configuración")]
     [SerializeField] private GameObject audioPrefab;
     [SerializeField] private List<AudioSource> audiosList;
     [SerializeField] private int audioAmmount;
+
+    [Header("Mixer Groups")]
+    // Arrastra aquí los grupos desde tu AudioMixer asset
+    [SerializeField] private AudioMixerGroup sfxGroup;
+    [SerializeField] private AudioMixerGroup musicGroup;
+    [SerializeField] private AudioMixerGroup uiGroup;
 
     private static AudioManager instance;
     public static AudioManager Instance{get {return instance;}}
@@ -50,15 +66,25 @@ public class AudioManager : MonoBehaviour
         return audiosList[audiosList.Count - 1]; 
     }
 
-    public void PlaySound2D(AudioClip clip, float volume = 1f, float pitch = 1f)
+    private AudioMixerGroup GetMixerGroup(AudioType type)
+    {
+        switch (type)
+        {
+            case AudioType.SFX: return sfxGroup;
+            case AudioType.Music: return musicGroup;
+            case AudioType.UI: return uiGroup;
+            default: return sfxGroup;
+        }
+    }
+
+    public void PlaySound2D(AudioClip clip, AudioType type = AudioType.SFX, float volume = 1f, float pitch = 1f)
     {
         AudioSource source = RequestedAudio();
 
-        source.spatialBlend = 0f; 
+        source.outputAudioMixerGroup = GetMixerGroup(type);
         
+        source.spatialBlend = 0f; 
         source.transform.parent = this.transform;
-
-        source.spatialBlend = 0f;
 
         source.clip = clip;
         source.volume = volume;
@@ -71,13 +97,15 @@ public class AudioManager : MonoBehaviour
     }
 
 
-    public void PlaySound(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, Transform parent = null)
+    public void PlaySound(AudioClip clip, Vector3 position, AudioType type = AudioType.SFX, float volume = 1f, float pitch = 1f, Transform parent = null)
     {
         AudioSource source = RequestedAudio();
 
-        source.spatialBlend = 1f;
+        source.outputAudioMixerGroup = GetMixerGroup(type);
 
+        source.spatialBlend = 1f;
         source.transform.position = position;
+        
         source.clip = clip;
         source.volume = volume;
         source.pitch = pitch;
@@ -93,7 +121,7 @@ public class AudioManager : MonoBehaviour
     private System.Collections.IEnumerator DisableAudioDelayed(AudioSource source, float duration, Transform parent = null)
     {
         yield return new WaitForSeconds(duration);
-        if(parent != null) source.gameObject.transform.parent = this.transform;
+        if(parent != null) source.transform.parent = transform;
         source.gameObject.SetActive(false);
     }
 }

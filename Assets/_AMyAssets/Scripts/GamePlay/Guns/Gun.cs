@@ -202,7 +202,7 @@ public class Gun : NetworkBehaviour, ITakeGun
     [ObserversRpc(runLocally: true)]
     protected void PlayEffectsObserversRpc()
     {
-        if (shootSound) AudioManager.Instance.PlaySound(shootSound, transform.position, 0.2f, pitch: Random.Range(minPitch, maxPitch));
+        if (shootSound) AudioManager.Instance.PlaySound(shootSound, transform.position, AudioType.SFX ,0.2f, pitch: Random.Range(minPitch, maxPitch));
         if (_muzzleFlash) _muzzleFlash.Play();
         if (isOwner && recoilCamera) recoilCamera.RecoilFire();
 
