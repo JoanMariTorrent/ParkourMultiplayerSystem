@@ -292,7 +292,8 @@ public class WeaponManager : NetworkBehaviour
         if(isServer) 
             DoDropGunLogic(); 
         else 
-            RequestDropGunServerRpc(); }
+            RequestDropGunServerRpc(); 
+    }
     [ServerRpc(requireOwnership: true)] private void RequestDropGunServerRpc() { DoDropGunLogic(); }
     [ObserversRpc(runLocally: true)] private void DoDropGunLogic() 
     { 

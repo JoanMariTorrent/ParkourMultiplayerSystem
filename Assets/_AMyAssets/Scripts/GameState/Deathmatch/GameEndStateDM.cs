@@ -12,14 +12,7 @@ public class GameEndStateDM : StateNode<List<PlayerHealth>>
         if(!asServer) return;
 
 
-        foreach(var player in data)
-        {
-            Player p = player.GetComponent<Player>();
-            p.canMove = false;
-            p.cameraBlocked = true;
-            
-            player.SetImmunityRpc(true);
-        }
+        BlockPlayers(data);
 
 
         InstanceHandler.TryGetInstance(out ScoreManager scoreManager);
@@ -44,8 +37,7 @@ public class GameEndStateDM : StateNode<List<PlayerHealth>>
             foreach(var p in data)
             {
                 Player player = p.GetComponent<Player>();
-
-                player.canvas.ShowView<EndGameView>(true);
+                ShowFinalScreen(player);
                 
                 // pillar el endgameview del player de la lista de allviews
                 EndGameView endGameView = player.canvas._allViews.OfType<EndGameView>().FirstOrDefault();
@@ -63,7 +55,8 @@ public class GameEndStateDM : StateNode<List<PlayerHealth>>
                         ? statsPlayer.owner.Value.ToString() 
                         : statsPlayer.playerName;
 
-                        endGameView.AddPlayerToScore(playerName, stats._kills, stats._deaths, stats._damage);
+                        //endGameView.AddPlayerToScore(playerName, stats._kills, stats._deaths, stats._damage);
+                        AddPlayerToScoreObserverRPC(player, playerName, stats._kills, stats._deaths, stats._damage);
                     }
                 }
                 
@@ -86,5 +79,29 @@ public class GameEndStateDM : StateNode<List<PlayerHealth>>
             }
             */
         }
+    }
+
+    [ObserversRpc(runLocally: true)] private void BlockPlayers(List<PlayerHealth> data)
+    {
+        foreach(var player in data)
+        {
+            Player p = player.GetComponent<Player>();
+            p.canMove = false;
+            p.cameraBlocked = true;
+            
+            player.SetImmunityRpc(true);
+        }
+    }
+
+    [ObserversRpc(runLocally: true)] private void ShowFinalScreen(Player player)
+    {
+        player.canvas.ShowView<EndGameView>(true);        
+    }
+
+    [ObserversRpc (runLocally: true)] private void AddPlayerToScoreObserverRPC(Player player, string PlayerName, int kills, int deaths, int damage)
+    {
+        EndGameView endGameView = player.canvas._allViews.OfType<EndGameView>().FirstOrDefault();
+
+        endGameView.AddPlayerToScore(PlayerName, kills, deaths, damage);
     }
 }

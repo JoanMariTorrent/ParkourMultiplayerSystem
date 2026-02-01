@@ -131,13 +131,15 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  health: 50
+  health:
+    _value: 50
+    _ownerAuth: 0
+    _sendIntervalInSeconds: 0
   deathVFX: {fileID: 5094046088325549080, guid: 5193592141f1fad4eba8dbe541335509, type: 3}
   deathParticles: {fileID: 7285314228872773944}
   floatingDamage: {fileID: 596690940493612128, guid: 4e46d9d3583d53b4ab24700bbaef7ef1, type: 3}
   mesh: {fileID: 7062145405675273534}
-  collider: {fileID: 1850238457497974180}
-  counter: 0
+  col: {fileID: 1850238457497974180}
 --- !u!1001 &5166474089441126532
 PrefabInstance:
   m_ObjectHideFlags: 0

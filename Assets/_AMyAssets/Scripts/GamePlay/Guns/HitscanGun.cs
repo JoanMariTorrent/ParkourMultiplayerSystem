@@ -1,4 +1,5 @@
 using PurrNet;
+using PurrNet.Modules;
 using UnityEngine;
 
 public class HitscanGun : Gun
@@ -11,62 +12,71 @@ public class HitscanGun : Gun
 
     protected override void ExecuteShootingLogic(Vector3 position, Vector3 direction, double tick)
     {
-        Debug.DrawRay(position, direction * range, Color.red, 2f);
+        Debug.DrawRay(position, direction * range, Color.green, 2f);
 
-        RaycastHit[] hits = Physics.RaycastAll(position, direction, range, _hitLayer);
+        VerifyHitScanServerRpc(tick, position, direction);
+    }
 
-        System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
-
-        foreach (var hit in hits)
+    // --- 2. SERVIDOR  ---
+    //[ServerRpc(requireOwnership: false)]
+    private void VerifyHitScanServerRpc(double tick, Vector3 position, Vector3 direction)
+    {
+        // Seguridad: Si no hay módulo, usamos física normal del server
+        if (rollbackModule == null)
         {
-            if (hit.transform.TryGetComponent(out PlayerHealth victim))
-            {
-                if (victim.owner.Value == this.owner.Value)
-                {
-                    continue; 
-                }
+            if (Physics.Raycast(position, direction, out RaycastHit hitNormal, range, _hitLayer))
+                HandleHitServer(hitNormal);
+            return;
+        }
 
-                ApplyDamageServerRpc(victim, _gunDamage);
-                SpawnHitEffectObserversRpc(true, hit.point, hit.normal, victim.transform);
-                return; 
-            }
+        Ray ray = new Ray(position, direction);
+        RaycastHit hit;
 
-            else if (hit.transform.TryGetComponent(out HealthObject objVictim))
-            {
-                ApplyDamageObjectServerRpc(objVictim, _gunDamage);
-                SpawnHitEffectObserversRpc(false, hit.point, hit.normal, null);
-                return;
-            }
-
-            else
-            {
-                SpawnHitEffectObserversRpc(false, hit.point, hit.normal, null);
-                return;
-            }
+        // ROLLBACK: El servidor rebobina al 'tick' que envió el cliente
+        if (rollbackModule.Raycast(tick, ray, out hit, range, _hitLayer))
+        {
+            HandleHitServer(hit);
         }
     }
 
-    [ServerRpc]
-    private void ApplyDamageServerRpc(PlayerHealth victim, int dmg)
+    private void HandleHitServer(RaycastHit hit)
     {
-        victim.ChangeHealth(-dmg, owner.Value);
-        
-        if (InstanceHandler.TryGetInstance(out ScoreManager sm)) 
-            sm.AddDamageServerRpc(victim.PlayerID, owner.Value, dmg);
+        // 1. Evitar dispararse a uno mismo
+        if (playerCharacter != null && hit.collider.gameObject == playerCharacter.gameObject) return;
+
+        // A. JUGADOR
+        if (hit.transform.TryGetComponent(out PlayerHealth victim))
+        {
+            if (victim.owner.Value == this.owner.Value) return;
+
+            victim.ChangeHealth(-_gunDamage, owner.Value);
+            
+            if (InstanceHandler.TryGetInstance(out ScoreManager sm)) 
+                sm.AddDamageServerRpc(victim.PlayerID, owner.Value, _gunDamage);
+
+            SpawnHitEffectObserversRpc(true, hit.point, hit.normal, victim.transform);
+        }
+        // B. OBJETO
+        else if (hit.transform.TryGetComponent(out HealthObject objVictim))
+        {
+            objVictim.ChangeHealth(-_gunDamage, hit.point);
+            SpawnHitEffectObserversRpc(true, hit.point, hit.normal, objVictim.transform);
+        }
+        // C. ENTORNO
+        else
+        {
+            SpawnHitEffectObserversRpc(false, hit.point, hit.normal, null);
+        }
     }
 
-    [ServerRpc]
-    private void ApplyDamageObjectServerRpc(HealthObject obj, int dmg)
-    {
-        obj.ChangeHealth(-dmg, transform.position);
-    }
-
+    // --- EFECTOS VISUALES ---
     [ObserversRpc]
     private void SpawnHitEffectObserversRpc(bool isPlayer, Vector3 pos, Vector3 normal, Transform parent)
     {
         if (isPlayer && _playerHitEffect && parent)
         {
-            Instantiate(_playerHitEffect, parent.TransformPoint(parent.InverseTransformPoint(pos)), Quaternion.LookRotation(normal));
+            var effect = Instantiate(_playerHitEffect, pos, Quaternion.LookRotation(normal));
+            effect.transform.SetParent(parent);
         }
         else if (!isPlayer && _enviormentHit)
         {

@@ -131,12 +131,31 @@ public class Gun : NetworkBehaviour, ITakeGun
             gameMainView = p.canvas.GetComponentInChildren<GameMainView>();
             UpdateAmmoUI(); 
         }
+        else
+        {
+            gameMainView = null; 
+        }
+
         
         Collider col = GetComponent<Collider>();
         if (col) col.enabled = false;
 
         int targetLayer = (p != null && p.isOwner) ? ownerGunTag : otherPlayerGunTag;
         SetLayerRecursive(gameObject, targetLayer);
+    }
+
+    public void SetDown()
+    {
+        equipedGun = false;
+        reloading = false;
+
+        gameMainView = null;
+
+        transform.SetParent(null);
+        var col = GetComponent<Collider>();
+        if (col) col.enabled = true;
+        enabled = false;
+        SetLayerRecursive(gameObject, 12); 
     }
 
     // --- UPDATE & INPUT ---
@@ -276,17 +295,6 @@ public class Gun : NetworkBehaviour, ITakeGun
         bool isPrimary = weaponType == WeaponType.Primary;
         if (isServer) wm.NewWeapon(gameObject, isPrimary, false, true);
         else if (isOwner) wm.RequestPickupGunServerRpc(gameObject, isPrimary, false);
-    }
-
-    public void SetDown()
-    {
-        equipedGun = false;
-        reloading = false;
-        transform.SetParent(null);
-        var col = GetComponent<Collider>();
-        if (col) col.enabled = true;
-        enabled = false;
-        SetLayerRecursive(gameObject, 12); 
     }
 
     protected void UpdateAmmoUI()

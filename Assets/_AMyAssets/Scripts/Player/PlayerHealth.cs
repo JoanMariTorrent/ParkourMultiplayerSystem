@@ -111,6 +111,7 @@ public class PlayerHealth : NetworkBehaviour
                 AudioManager.Instance.PlaySound(deathClip, transform.position, AudioType.SFX ,1.2f, UnityEngine.Random.Range(0.95f, 1.05f), parent: null);
                 player.canMove = false;
                 player.cameraBlocked = true;
+                
             }
 
             if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
@@ -123,6 +124,7 @@ public class PlayerHealth : NetworkBehaviour
             if (weaponManager != null)
             {
                 weaponManager.DropAllWeaponsOnDeath();
+                if(isOwner) weaponManager._currentGun = null;
             }
 
             

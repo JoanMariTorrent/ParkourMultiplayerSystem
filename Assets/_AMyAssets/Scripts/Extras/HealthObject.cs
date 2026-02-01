@@ -3,51 +3,114 @@ using UnityEngine;
 
 public class HealthObject : NetworkBehaviour
 {
-    public int health = 100;
+    [Header("Stats")]
+    public SyncVar<int> health = new SyncVar<int>(100);
+    
+    [Header("Visuals")]
     [SerializeField] private GameObject deathVFX;
     [SerializeField] private ParticleSystem deathParticles;
     [SerializeField] private GameObject floatingDamage;
     [SerializeField] private MeshRenderer mesh;
-    [SerializeField] private SphereCollider collider;
+    [SerializeField] private SphereCollider col;
 
     private int maxHealth;
-    private bool death;
-    public float counter;
+    private bool isDead = false;
+    private float counter;
 
-    void Start()
+    protected override void OnSpawned()
     {
-        maxHealth = health;
+        base.OnSpawned();
+        maxHealth = health.value;
+        
+        if (health.value <= 0) 
+        {
+            SetDeadState(true);
+        }
     }
 
     void Update()
     {
-        if(!death) return;
+        if (!isServer || !isDead) return;
+
         counter += Time.deltaTime;
-        if(counter >= 3) Restart();
+        if (counter >= 3)
+        {
+            Restart();
+        }
     }
 
-    public void ChangeHealth(int _amount,Vector3 playerPos, RPCInfo _info = default)
+    // --- LÓGICA DE SERVIDOR ---
+    [ServerRpc(runLocally: false)]
+    public void ChangeHealth(int _amount, Vector3 hitPoint)
     {
-        health += _amount;
-        floatingDamage.GetComponent<TextMesh>().text = (_amount * -1).ToString("f0");
-        Instantiate(floatingDamage, transform.position, Quaternion.LookRotation(playerPos - transform.position));
-        if (health <= 0)
+        if (!isServer) return;
+
+        health.value += _amount;
+
+        //SpawnDamageTextObserversRpc(_amount, hitPoint);
+
+        if (health.value <= 0 && !isDead)
         {
-            mesh.enabled = false;
-            collider.enabled = false;
-            Vector3 spawnVFX = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
-            Instantiate(deathVFX, spawnVFX, Quaternion.identity);
-            deathParticles.Play();
-            death = true;
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        PlayDeathEffectsObserversRpc();
+        
+        SetStateObserversRpc(false); 
     }
 
     private void Restart()
     {
-        health = maxHealth;
-        death = false;
-        mesh.enabled = true;
-        collider.enabled = true;
+        health.value = maxHealth;
+        isDead = false;
         counter = 0;
+        
+        SetStateObserversRpc(true);
+    }
+
+    // --- LÓGICA VISUAL ---
+
+    [ObserversRpc]
+    private void SpawnDamageTextObserversRpc(int amount, Vector3 pos)
+    {
+        if (floatingDamage)
+        {
+            GameObject floatTxt = Instantiate(floatingDamage, pos, Quaternion.identity);
+            
+            floatTxt.transform.LookAt(Camera.main.transform);
+            floatTxt.transform.Rotate(0, 180, 0); 
+            
+            if(floatTxt.TryGetComponent(out TextMesh tm))
+            {
+                tm.text = (amount * -1).ToString("f0");
+            }
+        }
+    }
+
+    [ObserversRpc]
+    private void PlayDeathEffectsObserversRpc()
+    {
+        if (deathVFX) Instantiate(deathVFX, transform.position + Vector3.up, Quaternion.identity);
+        if (deathParticles) deathParticles.Play();
+    }
+
+    [ObserversRpc]
+    private void SetStateObserversRpc(bool active)
+    {
+        if (mesh) mesh.enabled = active;
+        if (col) col.enabled = active;
+        
+        isDead = !active; 
+    }
+    
+    private void SetDeadState(bool dead)
+    {
+        isDead = dead;
+        if (mesh) mesh.enabled = !dead;
+        if (col) col.enabled = !dead;
     }
 }

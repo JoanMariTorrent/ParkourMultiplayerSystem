@@ -1,6 +1,5 @@
-using PurrNet;
 using UnityEngine;
-
+using PurrNet;
 public class BallisticProjectile : NetworkBehaviour
 {
     [Header("Balística")]
@@ -9,89 +8,70 @@ public class BallisticProjectile : NetworkBehaviour
     [SerializeField] private float maxLifetime = 5f;
     [SerializeField] private LayerMask hitLayers;
 
+    private Collider ownCollider;
+
     private Vector3 _velocity;
     private int _damage;
-    private PlayerID _ownerID;
+    private ProjectileGun _ownerGun;
     private bool _isActive = false;
 
-    public void Initialize(int damage, PlayerID ownerID, Vector3 direction)
+    // Inicializamos pasando la referencia del ProjectileGun
+    public void Initialize(int damage, Vector3 direction, ProjectileGun gunScript, Collider ownCollider)
     {
         _damage = damage;
-        _ownerID = ownerID;
         _velocity = direction * speed;
+        _ownerGun = gunScript; 
         _isActive = true;
+        this.ownCollider = ownCollider;
         
-        if (isServer) Invoke(nameof(Despawn), maxLifetime);
+        // Destrucción local por tiempo
+        Destroy(gameObject, maxLifetime);
     }
 
     private void Update()
     {
-        if (!isServer || !_isActive) return;
-
+        if (!_isActive) return;
         MoveBullet(Time.deltaTime);
     }
 
     private void MoveBullet(float deltaTime)
     {
-        // 1. Calcular donde estara la bala en este frame
         Vector3 currentPos = transform.position;
-        
-        // 2. gravedad
         _velocity += Physics.gravity * gravityScale * deltaTime;
-        
-        // 3. Calculamos el desplazamiento
         Vector3 displacement = _velocity * deltaTime;
         Vector3 nextPos = currentPos + displacement;
 
-        // 4. Comprobar si chocamos con algo en ese trayecto
         if (Physics.Linecast(currentPos, nextPos, out RaycastHit hit, hitLayers))
         {
-            // --- IMPACTO ---
             HandleImpact(hit);
         }
         else
         {
-            // --- SIN IMPACTO: Mover la bala ---
             transform.position = nextPos;
-            
-            // Rotar la bala para que mire hacia donde cae
             if (_velocity != Vector3.zero) transform.forward = _velocity.normalized;
         }
     }
 
     private void HandleImpact(RaycastHit hit)
     {
-        // Ignorar colisión con el dueño 
+        // Ignorar colisión con el dueño del arma
+        if (hit.collider == ownCollider) return;
+
+        // --- LÓGICA DE IMPACTO ---
+        
+        // 1. Si golpeamos a un jugador
         if (hit.collider.TryGetComponent(out PlayerHealth ph))
         {
-            if (ph.owner.Value == _ownerID) return;
+            _ownerGun.ReportPlayerHit(ph, _damage);
         }
-
-        if(hit.collider.TryGetComponent(out HealthObject oh))
-        {
-            oh.ChangeHealth(-_damage, transform.position);
-        }
-
-        // Lógica de Daño
-        if (ph != null)
-        {
-            ph.ChangeHealth(-_damage, _ownerID);
-            if(InstanceHandler.TryGetInstance(out ScoreManager sm))
-                sm.AddDamageServerRpc(ph.PlayerID, _ownerID, _damage);
-        }
+        // 2. Si golpeamos un objeto destructible
         else if (hit.collider.TryGetComponent(out HealthObject obj))
         {
-            obj.ChangeHealth(-_damage, hit.point);
+            _ownerGun.ReportObjectHit(obj, _damage, hit.point);
         }
 
         // Efectos visuales
-
-        Despawn();
-    }
-
-    private void Despawn()
-    {
-        _isActive = false;
-        if (gameObject != null) Destroy(gameObject);
+        
+        Destroy(gameObject);
     }
 }

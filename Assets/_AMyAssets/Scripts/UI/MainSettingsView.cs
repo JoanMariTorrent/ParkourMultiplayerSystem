@@ -97,14 +97,11 @@ public class MainSettingsView : View
 
     public override void OnShow()
     {
-        // Aseguramos que al abrirse, se vea el panel principal
         ChangeView((int)Views.Panel);
     }
 
     public override void OnHide()
     {
-        // Opcional: Aqu� podr�as pausar el juego si quisieras, 
-        // o resetear algo visual.
     }
 
     public void PlaySound(AudioClip audio)
