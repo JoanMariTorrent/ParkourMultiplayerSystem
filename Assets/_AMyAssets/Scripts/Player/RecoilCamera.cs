@@ -41,7 +41,6 @@ public class RecoilCamera : NetworkBehaviour
 
         if (weaponManager._currentGun != null)
         {
-            Debug.Log("Arma encontrada en recoil Camera !!!!!");
             gunScript = weaponManager._currentGun.GetComponent<Gun>();
         }
 
@@ -64,7 +63,7 @@ public class RecoilCamera : NetworkBehaviour
     public void RecoilFire()
     {
         if(!isOwner) return;
-        if (!isAiming) targetRotation += new Vector3(gunScript.recoilX, Random.Range(-gunScript.recoilY, gunScript.recoilY), Random.Range(-gunScript.recoilZ, gunScript.recoilZ));
+        if (!gunScript.isAiming) targetRotation += new Vector3(gunScript.recoilX, Random.Range(-gunScript.recoilY, gunScript.recoilY), Random.Range(-gunScript.recoilZ, gunScript.recoilZ));
         else targetRotation += new Vector3(gunScript.aimRecoilX, Random.Range(-gunScript.aimRecoilY, gunScript.aimRecoilY), Random.Range(-gunScript.aimRecoilZ, gunScript.aimRecoilZ));
     }
 

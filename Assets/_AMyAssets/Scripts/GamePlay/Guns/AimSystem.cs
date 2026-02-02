@@ -22,7 +22,10 @@ public class AimSystem : MonoBehaviour
 
     void Update()
     {
-        if(weaponManager == null || weaponManager._currentGun == null || !weaponManager._currentGun.canAim) 
+        if (weaponManager._currentGun == null) cameraPlayer.Lens.FieldOfView = normalFOV;
+
+
+        if(weaponManager == null || !weaponManager._currentGun.canAim) 
         {
              if(playerCamera != null) playerCamera.SetSensitivityMode(AimType.Normal);
              return;

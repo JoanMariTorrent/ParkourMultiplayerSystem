@@ -62,6 +62,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [SerializeField] private float walkSpeed = 12f;
     [SerializeField] private float runSpeed = 20f;
     [SerializeField] private float crouchSpeed = 7f;
+    [SerializeField] private float aimWalkSpeed = 6f;
     [SerializeField] private float walkResponse = 20f;
     [SerializeField] private float crouchResponse = 20f;
     [Space]
@@ -552,10 +553,54 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             // Move
             if (_state.Stance == Stance.Stand || _state.Stance == Stance.Crouch)
             {
-                float speed = _state.Stance == Stance.Stand ? (_requestedRun ? runSpeed : walkSpeed) : crouchSpeed;
-                float response = _state.Stance == Stance.Stand ? walkResponse : crouchResponse;
+                // 1. Validar si estamos apuntando realmente
+                // Verificamos: Input de aim + WeaponManager existe + Hay arma + El arma permite Aim
+                bool canGunAim = weaponManager != null && 
+                                 weaponManager._currentGun != null && 
+                                 weaponManager._currentGun.canAim;
 
-                var targetVelocity = groundedMovement * speed;
+                bool isAiming = _requestedAim && canGunAim;
+
+                // 2. Lógica: ¿Está disparando?
+                bool isShooting = _requestedShoot || _requestedShootThisFrame;
+
+                // 3. Lógica: ¿Se mueve hacia adelante?
+                bool isMovingForward = Vector3.Dot(_requestedMovement.normalized, motor.CharacterForward) > 0.3f;
+
+                // 4. Determinar si podemos correr
+                // Debe querer correr + moverse hacia adelante + NO disparar + NO estar apuntando
+                bool canSprint = _requestedRun && isMovingForward && !isShooting && !isAiming;
+
+                // 5. Calcular velocidad final
+                float targetSpeed;
+                float response;
+
+                if (_state.Stance == Stance.Stand)
+                {
+                    if (canSprint)
+                    {
+                        targetSpeed = runSpeed;
+                    }
+                    else if (isAiming)
+                    {
+                        targetSpeed = aimWalkSpeed; // <--- Velocidad reducida al apuntar
+                    }
+                    else
+                    {
+                        targetSpeed = walkSpeed;
+                    }
+                    
+                    response = walkResponse;
+                }
+                else // Crouch
+                {
+                    // Nota: Normalmente agachado vas igual de lento apuntando o no, 
+                    // pero si quieres que sea aún más lento, puedes añadir un if(isAiming) aquí también.
+                    targetSpeed = crouchSpeed;
+                    response = crouchResponse;
+                }
+
+                var targetVelocity = groundedMovement * targetSpeed;
                 var moveVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 1f - Mathf.Exp(-response * deltaTime));
                 _state.Acceleration = moveVelocity - currentVelocity;
                 currentVelocity = moveVelocity;

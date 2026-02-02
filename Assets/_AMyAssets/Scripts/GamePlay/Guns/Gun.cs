@@ -26,6 +26,10 @@ public class Gun : NetworkBehaviour, ITakeGun
     [SerializeField] protected float timeToReload = 3f;
     [SerializeField] protected int _gunDamage = 10;
 
+    [Header("Spread System")]
+    [SerializeField] protected float spreadX = 0.05f; 
+    [SerializeField] protected float spreadY = 0.05f;
+
     [Header("Aiming system")]
     public bool canAim = true;
     public AnimationCurve aimCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
@@ -164,7 +168,36 @@ public class Gun : NetworkBehaviour, ITakeGun
     {
         if (!isOwner || !equipedGun || reloading) return;
         HandleInput();
+
+        if(Input.GetKeyDown(KeyCode.J))
+                weaponManager._currentGun.GetAmmo(50);
     }
+
+    /// <summary>
+    /// Calcula la dirección del disparo aplicando dispersión si no se está apuntando.
+    /// </summary>
+    protected Vector3 GetShootingDirection()
+    {
+        Vector3 targetDir = _cameraTransform.forward;
+
+        if (!isAiming)
+        {
+            // CAMBIO: En vez de un círculo, calculamos X e Y por separado.
+            // Esto crea una "caja" de dispersión en lugar de un círculo.
+            
+            float randomX = Random.Range(-spreadX, spreadX);
+            float randomY = Random.Range(-spreadY, spreadY);
+
+            // Aplicamos el desvío a la dirección
+            targetDir += _cameraTransform.right * randomX + _cameraTransform.up * randomY;
+            
+            // Normalizamos para asegurar que la velocidad de la bala sea consistente
+            targetDir.Normalize();
+        }
+
+        return targetDir;
+    }
+
 
     protected virtual void HandleInput()
     {
@@ -193,7 +226,9 @@ public class Gun : NetworkBehaviour, ITakeGun
         // Rollback collider
         double tick = InstanceHandler.NetworkManager.tickModule.rollbackTick;
 
-        RequestShootServerRpc(_cameraTransform.position, _cameraTransform.forward, tick);
+        Vector3 finalDirection = GetShootingDirection();
+
+        RequestShootServerRpc(_cameraTransform.position, finalDirection, tick);
     }
 
     // --- RED Y DISPARO ---
@@ -317,5 +352,11 @@ public class Gun : NetworkBehaviour, ITakeGun
         base.OnSpawned(); 
         _ammo.onChanged += (v) => UpdateAmmoUI(); 
         _reloadsAmmo.onChanged += (v) => UpdateAmmoUI(); 
+    }
+
+
+    [ServerRpc] public void GetAmmo(int ammo)
+    {
+        _ammo.value += ammo;
     }
 }

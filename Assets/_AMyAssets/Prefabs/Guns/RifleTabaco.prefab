@@ -152,6 +152,8 @@ MonoBehaviour:
   _fireRate: 0.14
   timeToReload: 1
   _gunDamage: 8
+  spreadX: 0.02
+  spreadY: 0.01
   canAim: 1
   aimCurve:
     serializedVersion: 2
@@ -266,11 +268,11 @@ MonoBehaviour:
   _rotationAmount: -2
   ownerGunTag: 7
   otherPlayerGunTag: 8
-  recoilX: -8
-  recoilY: 1
+  recoilX: -5
+  recoilY: -8
   recoilZ: 0.1
-  aimRecoilX: 0
-  aimRecoilY: 0
+  aimRecoilX: -1.2
+  aimRecoilY: -3
   aimRecoilZ: 0
   snappiness: 2
   returnSpeed: 8
