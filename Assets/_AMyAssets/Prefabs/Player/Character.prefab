@@ -504,6 +504,7 @@ MonoBehaviour:
   walkSpeed: 12
   runSpeed: 20
   crouchSpeed: 7
+  aimWalkSpeed: 6
   walkResponse: 9
   crouchResponse: 9
   airSpeed: 12
