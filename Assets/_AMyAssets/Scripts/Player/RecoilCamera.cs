@@ -63,8 +63,18 @@ public class RecoilCamera : NetworkBehaviour
     public void RecoilFire()
     {
         if(!isOwner) return;
-        if (!gunScript.isAiming) targetRotation += new Vector3(gunScript.recoilX, Random.Range(-gunScript.recoilY, gunScript.recoilY), Random.Range(-gunScript.recoilZ, gunScript.recoilZ));
-        else targetRotation += new Vector3(gunScript.aimRecoilX, Random.Range(-gunScript.aimRecoilY, gunScript.aimRecoilY), Random.Range(-gunScript.aimRecoilZ, gunScript.aimRecoilZ));
+        bool isMoving = false;
+        if(gunScript.playerCharacter != null)
+        {
+            Vector3 velocity = gunScript.playerCharacter._state.Velocity;
+
+            velocity.y = 0;
+
+            isMoving = velocity.magnitude > 0.4f;
+        }
+        if (gunScript.isAiming) targetRotation += new Vector3(gunScript.aimRecoilX, Random.Range(-gunScript.aimRecoilY, gunScript.aimRecoilY), Random.Range(-gunScript.aimRecoilZ, gunScript.aimRecoilZ));
+        else if (isMoving) targetRotation += new Vector3(gunScript.movingRecoilX, Random.Range(-gunScript.movingRecoilY, gunScript.movingRecoilY), Random.Range(-gunScript.movingRecoilZ, gunScript.movingRecoilZ));
+        else targetRotation += new Vector3(gunScript.recoilX, Random.Range(-gunScript.recoilY, gunScript.recoilY), Random.Range(-gunScript.recoilZ, gunScript.recoilZ));
     }
 
 

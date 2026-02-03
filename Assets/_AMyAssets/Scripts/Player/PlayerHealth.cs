@@ -105,15 +105,6 @@ public class PlayerHealth : NetworkBehaviour
 
         if (IsDead)
         {
-            if(isOwner)
-            {
-                AudioClip deathClip = deathClips[UnityEngine.Random.Range(0, deathClips.Length)];
-                AudioManager.Instance.PlaySound(deathClip, transform.position, AudioType.SFX ,1.2f, UnityEngine.Random.Range(0.95f, 1.05f), parent: null);
-                player.canMove = false;
-                player.cameraBlocked = true;
-                
-            }
-
             if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
             {
                 if(attackerID != null || attackerID.HasValue) scoreManager.Addkills(attackerID.Value);
@@ -138,6 +129,14 @@ public class PlayerHealth : NetworkBehaviour
     [ObserversRpc(runLocally: true)]
     public void DieVisualsObserversRpc()
     {
+        if(isOwner)
+        {
+            AudioClip deathClip = deathClips[UnityEngine.Random.Range(0, deathClips.Length)];
+            AudioManager.Instance.PlaySound(deathClip, transform.position, AudioType.SFX ,1.2f, UnityEngine.Random.Range(0.95f, 1.05f), parent: null);
+            player.canMove = false;
+            player.cameraBlocked = true;
+        }
+
         if (deathVFX)
         {
             Vector3 spawnVFX = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);

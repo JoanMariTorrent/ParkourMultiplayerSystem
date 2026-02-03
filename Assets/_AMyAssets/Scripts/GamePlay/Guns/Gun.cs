@@ -26,10 +26,6 @@ public class Gun : NetworkBehaviour, ITakeGun
     [SerializeField] protected float timeToReload = 3f;
     [SerializeField] protected int _gunDamage = 10;
 
-    [Header("Spread System")]
-    [SerializeField] protected float spreadX = 0.05f; 
-    [SerializeField] protected float spreadY = 0.05f;
-
     [Header("Aiming system")]
     public bool canAim = true;
     public AnimationCurve aimCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
@@ -59,10 +55,20 @@ public class Gun : NetworkBehaviour, ITakeGun
     [SerializeField] protected int ownerGunTag = 9;
     [SerializeField] protected int otherPlayerGunTag = 10;
 
+    [Header("Spread System")]
+    [SerializeField] protected float spreadX = 0.05f; 
+    [SerializeField] protected float spreadY = 0.05f;
+    [SerializeField] protected float movingSpreadX = 0.05f;
+    [SerializeField] protected float movingSpreadY = 0.05f;
+
     [Header("Camera Recoil Stats")]
     public float recoilX;
     public float recoilY;
     public float recoilZ;
+    [Space]
+    public float movingRecoilX;
+    public float movingRecoilY;
+    public float movingRecoilZ;
     [Space]
     public float aimRecoilX;
     public float aimRecoilY;
@@ -74,7 +80,7 @@ public class Gun : NetworkBehaviour, ITakeGun
     
 
     // Estado Interno
-    protected PlayerCharacter playerCharacter;
+    public PlayerCharacter playerCharacter;
     protected Player player;
     protected WeaponManager weaponManager;
     protected GameMainView gameMainView;
@@ -168,9 +174,6 @@ public class Gun : NetworkBehaviour, ITakeGun
     {
         if (!isOwner || !equipedGun || reloading) return;
         HandleInput();
-
-        if(Input.GetKeyDown(KeyCode.J))
-                weaponManager._currentGun.GetAmmo(50);
     }
 
     /// <summary>
@@ -182,16 +185,33 @@ public class Gun : NetworkBehaviour, ITakeGun
 
         if (!isAiming)
         {
-            // CAMBIO: En vez de un círculo, calculamos X e Y por separado.
-            // Esto crea una "caja" de dispersión en lugar de un círculo.
-            
-            float randomX = Random.Range(-spreadX, spreadX);
-            float randomY = Random.Range(-spreadY, spreadY);
+            bool isMoving = false;
+            if(playerCharacter != null)
+            {
+                Vector3 velocity = playerCharacter._state.Velocity;
 
-            // Aplicamos el desvío a la dirección
+                velocity.y = 0;
+
+                isMoving = velocity.magnitude > 0.4f;
+            }
+
+
+            float randomX;
+            float randomY;
+            if(!isMoving)
+            {
+                randomX = Random.Range(-spreadX, spreadX);
+                randomY = Random.Range(-spreadY, spreadY);
+            }
+            else
+            {
+                randomX = Random.Range(-movingSpreadX, movingSpreadX);
+                randomY = Random.Range(-movingSpreadY, movingSpreadY);
+            }
+            
+
             targetDir += _cameraTransform.right * randomX + _cameraTransform.up * randomY;
             
-            // Normalizamos para asegurar que la velocidad de la bala sea consistente
             targetDir.Normalize();
         }
 
