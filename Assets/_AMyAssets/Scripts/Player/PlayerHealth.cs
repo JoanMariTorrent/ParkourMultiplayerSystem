@@ -21,7 +21,8 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private WeaponDatabase _weaponDatabase;
 
     [Header("Componentes para Desactivar/Activar")]
-    [SerializeField] private List<GameObject> visualObjectsList;
+    [SerializeField] private List<GameObject> othersPlayersVisuals;
+    [SerializeField] private List<GameObject> selfPlayerVisuals;
     [SerializeField] private Collider colliderToDisable;
     [SerializeField] private Rigidbody _rb;
     public bool IsDead => _health.value <= 0;
@@ -129,6 +130,7 @@ public class PlayerHealth : NetworkBehaviour
     [ObserversRpc(runLocally: true)]
     public void DieVisualsObserversRpc()
     {
+
         if(isOwner)
         {
             AudioClip deathClip = deathClips[UnityEngine.Random.Range(0, deathClips.Length)];
@@ -145,7 +147,7 @@ public class PlayerHealth : NetworkBehaviour
 
         if (colliderToDisable) colliderToDisable.enabled = false;
 
-        foreach(var obj in visualObjectsList)
+        foreach(var obj in othersPlayersVisuals)
         {
             if(obj != null) obj.SetActive(false);
         }
@@ -175,10 +177,13 @@ public class PlayerHealth : NetworkBehaviour
 
         if (colliderToDisable) colliderToDisable.enabled = true;
 
-        foreach(var obj in visualObjectsList)
+        foreach(var obj in othersPlayersVisuals)
         {
             if(obj != null) obj.SetActive(true);
         }
+
+        foreach(var obj in selfPlayerVisuals)
+            obj.SetActive(isOwner);
 
         if (isServer && giveGuns) CastToSpinFromServer();
 

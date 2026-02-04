@@ -1,10 +1,12 @@
 ﻿using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
+using UnityEngine.Rendering;
 
 public class WeaponManager : NetworkBehaviour
 {
     [SerializeField] private Transform _handTransform;
+    [SerializeField] private Transform _handTransformWithoutAnim;
     [SerializeField] private CinemachineCamera _playerCamera;
     [SerializeField] private LayerMask _hitLayer;
     [SerializeField] private RecoilCamera recoil;
@@ -25,6 +27,7 @@ public class WeaponManager : NetworkBehaviour
     {
         GetPlayerScript();
         if(isServer) EnsureWeaponSlots();
+        
     }
 
     void Update()
@@ -167,7 +170,8 @@ public class WeaponManager : NetworkBehaviour
 
         _currentGun.GiveOwnership(owner.Value);
         
-        weaponToSwitch.transform.SetParent(_handTransform);
+        if(_currentGun.gunAnimHandler != null) weaponToSwitch.transform.SetParent(_handTransform);
+        else weaponToSwitch.transform.SetParent(_handTransformWithoutAnim);
         weaponToSwitch.transform.localPosition = Vector3.zero;
         weaponToSwitch.transform.localRotation = Quaternion.identity;
 
@@ -185,7 +189,13 @@ public class WeaponManager : NetworkBehaviour
     private void InstantiateGun(GameObject weaponPrefab)
     {
         if (_currentGun != null) _currentGun.gameObject.SetActive(false);
-        weaponInstance = Instantiate(weaponPrefab, _handTransform);
+
+        Gun gun = weaponPrefab.GetComponent<Gun>();
+
+        if(gun != null && gun.gunAnimHandler != null) weaponInstance = Instantiate(weaponPrefab, _handTransform);
+        else weaponInstance = Instantiate(weaponPrefab, _handTransformWithoutAnim);
+
+        
         weaponInstance.SetActive(true);
         weaponInstance.transform.localPosition = Vector3.zero;
         weaponInstance.transform.localRotation = Quaternion.identity;
@@ -201,7 +211,10 @@ public class WeaponManager : NetworkBehaviour
         Gun gunScript = weaponObject.GetComponent<Gun>();
         if (gunScript == null) return;
         
-        gunScript.transform.SetParent(_handTransform);
+        if(gunScript.gunAnimHandler != null) gunScript.transform.SetParent(_handTransform);
+        else gunScript.transform.SetParent(_handTransformWithoutAnim);
+        
+        
         gunScript.transform.localPosition = Vector3.zero;
         gunScript.transform.localRotation = Quaternion.identity;
         

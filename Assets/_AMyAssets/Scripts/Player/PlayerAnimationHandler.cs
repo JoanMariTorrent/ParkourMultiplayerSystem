@@ -1,7 +1,7 @@
 using PurrNet;
 using UnityEngine;
 
-public class PlayerAnimationHandler : MonoBehaviour
+public class PlayerAnimationHandler : NetworkBehaviour
 {
     [Header("Referencias")]
     [SerializeField] private Animator armsAnimator;
@@ -39,6 +39,7 @@ public class PlayerAnimationHandler : MonoBehaviour
 
     void Update()
     {
+        if(!isOwner) return;
         if(weaponAnimator == null)
         {
             if(armsMesh) armsMesh.SetActive(false);

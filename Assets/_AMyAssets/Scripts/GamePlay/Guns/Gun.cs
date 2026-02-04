@@ -125,6 +125,13 @@ public class Gun : NetworkBehaviour, ITakeGun
         }
     }
 
+    void OnDisable()
+    {
+        if(!isOwner) return;
+        if(gunAnimHandler != null) gunAnimHandler.enabled = false;
+        if(gunAnimHandler != null) animHandler.UnRegisterWeaponAnimator();
+    }
+
     public virtual void Setup(Transform cam, LayerMask mask, RecoilCamera rec, PlayerCharacter pc, Player p, WeaponManager wm, PlayerAnimationHandler _animHandler)
     {
         transform.localScale = equippedScale;
@@ -191,6 +198,7 @@ public class Gun : NetworkBehaviour, ITakeGun
     {
         if (!isOwner || !equipedGun || reloading) return;
         HandleInput();
+
 
         if(Input.GetKeyDown(KeyCode.J))
             _ammo.value += 20;
