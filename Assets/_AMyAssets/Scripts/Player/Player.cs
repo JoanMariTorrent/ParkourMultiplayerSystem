@@ -112,10 +112,6 @@ public class Player : NetworkBehaviour
                 animHandler.UpdateMovementValues(currentVelocity, isCrouching);
             }
 
-            var cameraInput = new CameraInput { Look = _inputActions.GamePlay.Look.ReadValue<Vector2>() };
-            if(cameraActive && !cameraBlocked) 
-                playerCamera.UpdateRotation(cameraInput);
-
             playerCharacter.UpdateBody(Time.deltaTime);
         }
     }
@@ -125,6 +121,13 @@ public class Player : NetworkBehaviour
         if (isOwner)
         {
             var cameraTarget = playerCharacter.GetCameraTarget();
+            var cameraInput = new CameraInput { Look = _inputActions.GamePlay.Look.ReadValue<Vector2>() };
+            
+
+            
+            if(cameraActive && !cameraBlocked) 
+                playerCamera.UpdateRotation(cameraInput);
+
             playerCamera.UpdatePosition(cameraTarget);
 
 
