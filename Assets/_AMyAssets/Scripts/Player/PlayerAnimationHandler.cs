@@ -10,11 +10,17 @@ public class PlayerAnimationHandler : NetworkBehaviour
 
     [Header("Configuración")]
     [SerializeField] private float dampTime = 0.1f;
+    [SerializeField] private float crouchTransitionSpeed = 10f;
+    [SerializeField] private string crouchLayerName = "Crouch Layer";
+    [SerializeField] private int crouchLayerIndex = 1;
 
     // IDs de los parámetros para que sea más rápido que usar strings
     private int speedHash = Animator.StringToHash("Speed");
     private int reloadHash = Animator.StringToHash("Reload");
     private int shootHash = Animator.StringToHash("Shoot");
+
+
+
 
 
 
@@ -95,5 +101,13 @@ public class PlayerAnimationHandler : NetworkBehaviour
         {
             weaponAnimator.SetFloat("Speed", normalizedSpeed, dampTime, Time.deltaTime);
         }
+
+        float targetWeight = isCrouching? 1 : 0;
+
+        float currentWeight = armsAnimator.GetLayerWeight(crouchLayerIndex);
+
+        float newWeight = Mathf.Lerp(currentWeight, targetWeight, Time.deltaTime * crouchTransitionSpeed);
+
+        armsAnimator.SetLayerWeight(crouchLayerIndex, newWeight);
     }
 }
