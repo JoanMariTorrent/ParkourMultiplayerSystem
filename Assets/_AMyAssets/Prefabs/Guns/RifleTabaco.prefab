@@ -178,8 +178,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   timeToAim: 0.15
-  aimingFOV: 45
-  gunAimingFOV: 40
+  aimingFOV: 55
+  gunAimingFOV: 50
   isAiming: 0
   _cameraTransform: {fileID: 0}
   shootTransform: {fileID: 8772015516634861983}

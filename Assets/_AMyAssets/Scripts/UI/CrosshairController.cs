@@ -43,19 +43,19 @@ public class CrosshairController : MonoBehaviour
 
         centerDot.color = dotFinalColor;
 
-        // L�nea Superior (Top)
+        // Linea Superior (Top)
         innerLines[0].sizeDelta = new Vector2(settings.innerThickness, settings.innerLenght);
         innerLines[0].anchoredPosition = new Vector2(0, settings.innerOffset + (settings.innerLenght / 2));
 
-        // L�nea Inferior (Bottom)
+        // Linea Inferior (Bottom)
         innerLines[1].sizeDelta = new Vector2(settings.innerThickness, settings.innerLenght);
         innerLines[1].anchoredPosition = new Vector2(0, -settings.innerOffset - (settings.innerLenght / 2));
 
-        // L�nea Izquierda (Left)
+        // Linea Izquierda (Left)
         innerLines[2].sizeDelta = new Vector2(settings.innerLenght, settings.innerThickness);
         innerLines[2].anchoredPosition = new Vector2(-settings.innerOffset - (settings.innerLenght / 2), 0);
 
-        // L�nea Derecha (Right)
+        // Linea Derecha (Right)
         innerLines[3].sizeDelta = new Vector2(settings.innerLenght, settings.innerThickness);
         innerLines[3].anchoredPosition = new Vector2(settings.innerOffset + (settings.innerLenght / 2), 0);
     }

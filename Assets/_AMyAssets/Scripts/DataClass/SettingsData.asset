@@ -20,15 +20,15 @@ MonoBehaviour:
   isFullscreen: 0
   gamma: 0.32276437
   masterVolume: 0.8
-  ambientVolume: 0.8
-  vfxVolume: 0.8
+  musicVolume: 0.8
   sfxVolume: 0.8
-  crosshairColor: {r: 1, g: 0, b: 0, a: 1}
-  useCenterDot: 1
-  centerDotSize: 18
-  centerDotOpacity: 0.71853095
+  uiVolume: 0.8
+  crosshairColor: {r: 1, g: 1, b: 1, a: 1}
+  useCenterDot: 0
+  centerDotSize: 4.8478136
+  centerDotOpacity: 1
   showInnerLines: 1
   innerOpacity: 1
-  innerLenght: 50
-  innerThickness: 60
-  innerOffset: 65
+  innerLenght: 11.046843
+  innerThickness: 2.6664083
+  innerOffset: 8.407792

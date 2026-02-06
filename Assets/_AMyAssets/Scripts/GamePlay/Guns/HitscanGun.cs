@@ -65,12 +65,16 @@ public class HitscanGun : Gun
             if(hitMarker != null)
                 AudioManager.Instance.PlaySound2D(hitMarker, AudioType.SFX, 0.22f, Random.Range(minPitch, maxPitch));
 
-            SpawnHitEffectObserversRpc(true, hit.point, hit.normal, victim.transform, true);
+
+            bool playerdeath = victim.health <= 0 ? true : false;
+            SpawnHitEffectObserversRpc(true, hit.point, hit.normal, victim.transform, true, playerdeath);
         }
         else if (hit.transform.TryGetComponent(out HealthObject objVictim))
         {
             objVictim.ChangeHealth(-_gunDamage, hit.point);
-            SpawnHitEffectObserversRpc(true, hit.point, hit.normal, objVictim.transform, true);
+
+            bool objDeath = objVictim.healthRef <= 0 ? true : false;
+            SpawnHitEffectObserversRpc(true, hit.point, hit.normal, objVictim.transform, true, objDeath);
 
             if(hitMarker != null)
                 AudioManager.Instance.PlaySound2D(hitMarker, AudioType.SFX, 0.22f, Random.Range(minPitch, maxPitch));
@@ -83,7 +87,7 @@ public class HitscanGun : Gun
 
     // --- EFECTOS VISUALES ---
     [ObserversRpc]
-    private void SpawnHitEffectObserversRpc(bool isPlayer, Vector3 pos, Vector3 normal, Transform parent, bool hit)
+    private void SpawnHitEffectObserversRpc(bool isPlayer, Vector3 pos, Vector3 normal, Transform parent, bool hit, bool lastHit = false)
     {
 
         SpawnTracer(pos);
@@ -96,6 +100,9 @@ public class HitscanGun : Gun
             
             tracerObj.Init(shootTransform.position, pos);
         }
+
+        if(isPlayer)
+            HitMarker(lastHit);
 
         if (isPlayer && _playerHitEffect && parent)
         {

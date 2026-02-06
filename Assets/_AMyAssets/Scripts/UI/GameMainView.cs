@@ -6,6 +6,11 @@ using System.Collections;
 
 public class GameMainView : View
 {
+    [Header("Hit Marker")]
+    [SerializeField] private Image hitMarkerImage;
+    [SerializeField] private float startFadeCooldow;
+    [SerializeField] private float hitMarkerFadeSpeed;
+
     [Header("Referencias UI")]
     [SerializeField] private TMP_Text _healthText, bckHealthText;
     [SerializeField] private TMP_Text _ammoText, bckAmmoText;
@@ -24,7 +29,7 @@ public class GameMainView : View
     [SerializeField] private float mainBarSpeed = 10f;
     [SerializeField] private float ghostSpeed = 5f; 
     [SerializeField] private float ghostDelay = 0.3f;
-    private Coroutine healthCoroutine, ghostCoroutine;
+    private Coroutine healthCoroutine, ghostCoroutine, hitMarkerCoroutine;
 
 
     private void Awake()
@@ -154,5 +159,36 @@ public class GameMainView : View
         {
             Destroy(enemyDowTranform.GetChild(0).gameObject);
         }
+    }
+
+    public void HitMarker(bool lastHit)
+    {
+        if(hitMarkerImage == null) return;
+        if(hitMarkerCoroutine != null) StopCoroutine(hitMarkerCoroutine);  
+        hitMarkerCoroutine = StartCoroutine(HitMarkerCoroutine(lastHit));
+    }
+
+    private IEnumerator HitMarkerCoroutine(bool lastHit)
+    {
+        Color c = lastHit ? Color.red : Color.white;
+        c.a = 1f;
+        hitMarkerImage.color = c;
+
+
+        if(startFadeCooldow > 0) yield return new WaitForSeconds(startFadeCooldow);
+
+        float x = lastHit ? hitMarkerFadeSpeed / 2 : hitMarkerFadeSpeed;
+
+
+        while (c.a > 0.01f)
+        {
+            c.a = Mathf.Lerp(c.a, 0, Time.deltaTime * x);
+            hitMarkerImage.color = c;
+            yield return null;
+        }
+
+        c.a = 0f;
+        hitMarkerImage.color = c;
+        
     }
 }

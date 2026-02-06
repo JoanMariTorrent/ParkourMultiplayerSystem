@@ -426,4 +426,10 @@ public class Gun : NetworkBehaviour, ITakeGun
         var tracerObj = Instantiate(tracerPrefab, shootTransform.position, Quaternion.identity);
         tracerObj.Init(shootTransform.position, hitPosition);
     }
+
+    protected void HitMarker(bool lastHit)
+    {
+        if(player == null) return;
+        player.canvas.gameMainView.HitMarker(lastHit);
+    }
 }

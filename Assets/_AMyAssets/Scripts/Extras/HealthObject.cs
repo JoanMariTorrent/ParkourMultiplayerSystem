@@ -16,6 +16,7 @@ public class HealthObject : NetworkBehaviour
     private int maxHealth;
     private bool isDead = false;
     private float counter;
+    public int healthRef => health.value;
 
     protected override void OnSpawned()
     {
