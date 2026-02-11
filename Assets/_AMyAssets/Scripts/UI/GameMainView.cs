@@ -210,6 +210,7 @@ public class GameMainView : View
         if (killAnimationContainer == null)
             yield break;
         
+        if(killAnimationContainer.activeSelf) killAnimationContainer.SetActive(false);
         killAnimationContainer.SetActive(true);
 
         yield return new WaitForSeconds(2);

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: RifleMalPorro
   icon: {fileID: 21300000, guid: f2827c1992b91b74dbc77608b3f585be, type: 3}
-  dropChance: 1
+  dropChance: 0
   weaponType: 0
   gunPrefab: {fileID: 1383448258628988601, guid: 47e46472208dc3e4ba0a1f9b94a96aaf, type: 3}
   animatorOverride: {fileID: 0}

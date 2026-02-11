@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: RailGun
   icon: {fileID: 21300000, guid: 46252853c21c951438f8294cb3c2415f, type: 3}
-  dropChance: 0
+  dropChance: 1
   weaponType: 0
   gunPrefab: {fileID: 1949050301496936796, guid: a5fbf5e96aa00994d92ca0950480067d, type: 3}
   animatorOverride: {fileID: 22100000, guid: 663f8e1152099694189c19d93247f8a3, type: 2}
