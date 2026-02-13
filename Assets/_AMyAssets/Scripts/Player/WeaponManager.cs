@@ -1,7 +1,7 @@
 ﻿using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
-using UnityEngine.Rendering;
+using Unity.VisualScripting;
 
 public class WeaponManager : NetworkBehaviour
 {
@@ -32,10 +32,14 @@ public class WeaponManager : NetworkBehaviour
     [Space][Header("Audios")]
     [SerializeField] private AudioClip[] takeGunSound;
 
+    [Header("TESTING")]
+    public GameObject grenade;
+
     protected override void OnSpawned()
     {
         GetPlayerScript();
         if(isServer) EnsureWeaponSlots();
+        if(isOwner) AddUtility(grenade);
     }
 
     void Update()
@@ -44,56 +48,100 @@ public class WeaponManager : NetworkBehaviour
 
         if (isOwner && _currentItem != null)
         {
-            bool down = Input.GetButtonDown("Fire1");
-            bool held = Input.GetButton("Fire1");
-            bool up = Input.GetButtonUp("Fire1");
+            bool down = playerChar._requestedShootThisFrame;
+            bool held = playerChar._requestedShoot;
+            bool up = playerChar._stopShooting;
 
             _currentItem.UseItem(down, held, up);
         }
     }
 
     // --- RPCs y LOGICA SERVER ---
-
-    [ServerRpc(requireOwnership: true)] 
-    public void RequestPickupGunServerRpc(GameObject gunObject, bool isPrimary, bool isUtility)
+    public void RequestPickupItemServerRpc(GameObject itemObject)
     {
-        NewWeapon(gunObject, isPrimary, isUtility, true);
+        PickupItem(itemObject);
+    }
+
+    public void PickupItem(GameObject itemObject)
+    {
+        if (!isServer || itemObject == null) return;
+
+        EquippableItem item = itemObject.GetComponent<EquippableItem>();
+        if (item == null) return;
+
+        // Determinar el Slot dependiendo en el tipo de item
+        int targetIndex = -1;
+        bool shouldDeleteOld = false;
+
+        if (item is Gun gun)
+        {
+            // Lógica de slots para armas (0-3)
+            bool isPrimary = gun.weaponType == WeaponType.Primary;
+            targetIndex = GetWeaponIndex(isPrimary);
+            
+            // Si no hay hueco, reemplazamos el actual del mismo tipo
+            if (targetIndex == -1)
+            {
+                // Lógica simple: Si es primaria, pisa el slot 0 (o el que estés usando
+                targetIndex = isPrimary ? 0 : 2; 
+                shouldDeleteOld = true;
+            }
+        }
+        else if (item is Utility utility)
+        {
+            // Las utilidades siempre van al Slot 4
+            targetIndex = 4;
+            if (_ownedWeapons.Count > 4 && _ownedWeapons[4] != null) shouldDeleteOld = true;
+        }
+
+        // 2. Tirar el objeto viejo si es necesario
+        if (shouldDeleteOld && _ownedWeapons[targetIndex] != null)
+        {
+            DropWeaponAtIndex(targetIndex);
+        }
+
+        // 3. Asegurar que la lista tiene tamaño suficiente
+        while (_ownedWeapons.Count <= targetIndex) _ownedWeapons.Add(null);
+
+        // 4. Asignar y Equipar
+        _ownedWeapons[targetIndex] = itemObject;
+        EquipItemFromGround(item); 
+        
+        SwitchWeapon(targetIndex, itemObject);
+        PlayEquipSoundObserversRpc();
     }
 
     public void NewWeapon(GameObject weaponPrefab, bool primary, bool utility, bool groundGun)
     {
         if (!isServer) return;
+        GameObject finalObject = groundGun ? weaponPrefab : Instantiate(weaponPrefab);
+        
+        PickupItem(finalObject);
+    }
 
+    public void AddUtility(GameObject utilityPrefab)
+    {
+        if (!isServer) return;
         EnsureWeaponSlots();
-        
-        Gun gunScript = weaponPrefab.GetComponent<Gun>();
-        
-        if(gunScript == null) return;
 
-        WeaponID newWeaponID = gunScript.weaponID;
-        bool havePrimary = _ownedWeapons[0] || _ownedWeapons[1];
-        bool haveSecondary = _ownedWeapons[2] || _ownedWeapons[3];
-        bool shouldDelete = false;
-
-        if (primary && !utility)
-        {
-            if (havePrimary)
-            {
-                if ((_ownedWeapons[0] != null && _ownedWeapons[1] != null) || HasWeaponOfType(newWeaponID))
-                    shouldDelete = true;
-            }
-        }
-        else if (!primary && !utility)
-        {
-            if (haveSecondary)
-            {
-                if ((_ownedWeapons[2] != null && _ownedWeapons[3] != null) || HasWeaponOfType(newWeaponID))
-                    shouldDelete = true;
-            }
-        }
+        GameObject instance = Instantiate(utilityPrefab, _handTransformWithoutAnim);
         
-        EquipWeapon(weaponPrefab, shouldDelete, primary, groundGun);
-        PlayEquipSoundObserversRpc();
+        instance.transform.localPosition = Vector3.zero;
+        instance.transform.localRotation = Quaternion.identity;
+        instance.SetActive(true);
+
+        Utility utilScript = instance.GetComponent<Utility>();
+        if (utilScript != null)
+        {
+            utilScript.GiveOwnership(owner.Value);
+
+            utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
+        }
+
+        if (_ownedWeapons.Count <= 4) _ownedWeapons.Add(null);
+        _ownedWeapons[4] = instance;
+
+        SwitchWeapon(4, instance);
     }
 
     private void EquipWeapon(GameObject weaponPrefab, bool deleteWeapon, bool primaryWeapon, bool groundGun)
@@ -138,7 +186,7 @@ public class WeaponManager : NetworkBehaviour
 
         if (groundGun)
         {
-            AddGunFromGround(weaponPrefab); 
+            PickupItem(weaponPrefab); 
             finalWeaponObject = weaponPrefab;
         }
         else
@@ -200,6 +248,14 @@ public class WeaponManager : NetworkBehaviour
             if(player == null) GetPlayerScript();
             gunScript.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this, animHandler);
         }
+        else if (_currentItem is Utility utilScript)
+        {
+            weaponToSwitch.transform.SetParent(_handTransformWithoutAnim);
+
+            if(player == null) GetPlayerScript();
+
+            utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
+        }
         else
         {
             weaponToSwitch.transform.SetParent(_handTransformWithoutAnim);
@@ -245,37 +301,53 @@ public class WeaponManager : NetworkBehaviour
         }
     }
 
-    public void AddGunFromGround(GameObject weaponObject)
+    private void EquipItemFromGround(EquippableItem item)
     {
-        EquippableItem itemScript = weaponObject.GetComponent<EquippableItem>();
-        if (itemScript == null) return;
+        GameObject itemObj = item.gameObject;
         
-        // Parent logic
-        if (itemScript is Gun g && g.gunAnimHandler != null) itemScript.transform.SetParent(_handTransform);
-        else itemScript.transform.SetParent(_handTransformWithoutAnim);
+        // 1. Configuración de Físicas (Común para todos)
+        itemObj.SetActive(true);
         
-        itemScript.transform.localPosition = Vector3.zero;
-        itemScript.transform.localRotation = Quaternion.identity;
-        
-        Rigidbody rb = itemScript.GetComponent<Rigidbody>();
+        Rigidbody rb = itemObj.GetComponent<Rigidbody>();
         if (rb) 
         {
             rb.isKinematic = true;
             rb.useGravity = false;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
         
-        Collider col = itemScript.GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        Collider col = itemObj.GetComponent<Collider>();
+        if (col) col.enabled = false;
 
-        itemScript.GiveOwnership(owner.Value);
-        
-        if (itemScript is Gun gunScript)
+        // 2. Parenting Inteligente
+        // Decidimos dónde va según si tiene animaciones o no
+        Transform parentTarget = _handTransformWithoutAnim;
+
+        if (item is Gun g && g.gunAnimHandler != null) 
+        {
+            parentTarget = _handTransform;
+        }
+        // Si tienes utilidades con animaciones en el futuro, añade aquí el 'else if'
+
+        itemObj.transform.SetParent(parentTarget);
+        itemObj.transform.localPosition = Vector3.zero;
+        itemObj.transform.localRotation = Quaternion.identity;
+
+        // 3. Ownership (Común)
+        item.GiveOwnership(owner.Value);
+
+        // 4. Setup Específico (Aquí es donde separamos la lógica única)
+        if (item is Gun gunScript)
         {
             if(player == null) GetPlayerScript();
             gunScript.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this, animHandler);
         }
-        
-        itemScript.gameObject.SetActive(true);
+        else if (item is Utility utilScript)
+        {
+            // Usamos el Setup de la utilidad
+            utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
+        }
     }
  
     [ObserversRpc(runLocally: true)]
@@ -387,7 +459,8 @@ public class WeaponManager : NetworkBehaviour
         _currentItem.isEquipped = false; 
         GameObject dropped = _currentItem.gameObject; 
 
-        if (_currentItem is Gun g) g.SetDown(); // Específico
+        if (_currentItem is Gun g) g.SetDown();
+        else if (_currentItem is Utility u) u.SetDown();
 
         dropped.transform.SetParent(null); 
         
@@ -456,6 +529,30 @@ public class WeaponManager : NetworkBehaviour
         if (isServer) 
         for (int i = 0; i < _ownedWeapons.Count; i++) 
             _ownedWeapons[i] = null; 
+    }
+
+
+    // Añade esto en WeaponManager.cs
+
+    public void RemoveUtility(GameObject utilityObj)
+    {
+        // Solo el servidor puede modificar la SyncList y Despawnear
+        if (!isServer) return;
+
+        // 1. Buscamos en qué hueco está (normalmente el 4)
+        int index = _ownedWeapons.IndexOf(utilityObj);
+
+        if (index != -1)
+        {
+            _ownedWeapons[index] = null;
+
+            int next = -1; 
+            if (_ownedWeapons[0]) next = 0; 
+            else if (_ownedWeapons[1]) next = 1; 
+            else if (_ownedWeapons[2]) next = 2; 
+            else if (_ownedWeapons[3]) next = 3; 
+            if (next != -1) SwitchWeapon(next);
+        }
     }
 
     private void GetPlayerScript() { player = GetComponent<Player>(); }

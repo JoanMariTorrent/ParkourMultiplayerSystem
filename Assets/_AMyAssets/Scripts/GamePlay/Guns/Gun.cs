@@ -54,8 +54,8 @@ public class Gun : EquippableItem, ITakeGun
     [SerializeField] protected float _rotationAmount = 25f;
 
     [Header("Layers")]
-    [SerializeField] protected int ownerGunTag = 9;
-    [SerializeField] protected int otherPlayerGunTag = 10;
+    [SerializeField] protected int ownerGunTag = 7;
+    [SerializeField] protected int otherPlayerGunTag = 8;
 
     [Header("Spread System")]
     [SerializeField] protected float spreadX = 0.05f; 
@@ -159,7 +159,7 @@ public class Gun : EquippableItem, ITakeGun
         // --- ARREGLO DE LA UI ---
         if (p != null && p.isOwner && p.canvas != null)
         {
-            gameMainView = p.canvas.GetComponentInChildren<GameMainView>();
+            gameMainView = p.canvas.gameMainView;
             UpdateAmmoUI(); 
         }
         else
@@ -381,9 +381,8 @@ public class Gun : EquippableItem, ITakeGun
     public void TakeGun(PlayerCharacter pc)
     {
         var wm = pc.GetComponent<WeaponManager>();
-        bool isPrimary = weaponType == WeaponType.Primary;
-        if (isServer) wm.NewWeapon(gameObject, isPrimary, false, true);
-        else if (isOwner) wm.RequestPickupGunServerRpc(gameObject, isPrimary, false);
+        if (isServer) wm.PickupItem(gameObject);
+        else if (isOwner) wm.RequestPickupItemServerRpc(gameObject);
     }
 
     protected void UpdateAmmoUI()

@@ -193,6 +193,7 @@ public class Player : NetworkBehaviour
                 : CrouchInput.None,
             Shoot = input.Shoot.IsPressed(),
             ShootThisFrame = input.Shoot.triggered,
+            StopShooting = input.Shoot.WasReleasedThisFrame(),
             Aim = input.Aim.IsPressed(),
             ChangeGun = requestedGun > 0,
             RequestedGunIndex = requestedGun,

@@ -17,7 +17,7 @@ public class UtilityDatabase : ScriptableObject
         return allUtilities[id];
     }
 
-    // --- LÓGICA DE PROBABILIDAD (Idéntica a WeaponDatabase) ---
+    // --- LÓGICA DE PROBABILIDAD ---
 
     public UtilityScriptableObject GetRandomUtilityWeighted(List<UtilityScriptableObject> subset = null)
     {
@@ -27,7 +27,7 @@ public class UtilityDatabase : ScriptableObject
         // 2. SEGURIDAD
         if (listToUse == null || listToUse.Count == 0)
         {
-            Debug.LogError("❌ UtilityDatabase: ¡La lista de utilidades está vacía!");
+            Debug.LogError("UtilityDatabase: ¡La lista de utilidades está vacía!");
             return null;
         }
 

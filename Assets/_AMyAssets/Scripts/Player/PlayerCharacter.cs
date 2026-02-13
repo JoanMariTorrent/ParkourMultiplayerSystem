@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine.Rendering;
 using Interfaces;
+using System.Linq.Expressions;
 
 public struct CharacterInput
 {
@@ -16,6 +17,7 @@ public struct CharacterInput
     public CrouchInput Crouch;
     public bool Shoot;
     public bool ShootThisFrame;
+    public bool StopShooting;
     public bool Aim;
     public bool ChangeGun;
     public int RequestedGunIndex;
@@ -28,7 +30,7 @@ public struct CharacterInput
 
 public enum LastGunEquiped { None, Primary, Secondary, Utility }
 public enum CrouchInput { None, Toggle }
-public enum Stance { Stand, Crouch, Slide, Wall, Climb }
+public enum Stance { Stand, Crouch, Slide, Wall, Climb, Grapple }
 public enum WallSide { Left, Right, None }
 
 public struct CharacterState
@@ -107,6 +109,12 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [Tooltip("Tiempo de espera en segundos antes de poder deslizarse de nuevo")]
     [SerializeField] private float slideCooldown = 1.0f; 
 
+    [Header("Grapple Settings")]
+    public Vector3 _grapplePoint; 
+    [SerializeField] private float grapplePullSpeed = 25f; 
+    [SerializeField] private float grappleAirControl = 40f; 
+    [SerializeField] private float maxGrappleSpeed = 50f;
+
     [Space]
     [SerializeField] private float standheight = 2f;
     [SerializeField] private float crouchHeight = 1f;
@@ -139,6 +147,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     
     public bool _requestedShoot;
     public bool _requestedShootThisFrame;
+    public bool _stopShooting;
     public bool _requestedAim;
     public bool _requestedRun;
     public bool _requestedInteract;
@@ -224,6 +233,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
         _requestedShoot = input.Shoot;
         _requestedShootThisFrame = input.ShootThisFrame;
+        _stopShooting = input.StopShooting;
         _requestedAim = input.Aim;
         _requestedRun = input.Running;
         _requestedReload = input.Reload;
@@ -447,7 +457,12 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void AfterCharacterUpdate(float deltaTime)
     {
-        if (!_requestedCrouch && _state.Stance is not Stance.Stand && _state.Stance is not Stance.Wall && _state.Stance is not Stance.Climb)
+        // CORRECCIÓN AQUÍ: Añadimos la excepción del Grapple
+        if (!_requestedCrouch && 
+            _state.Stance is not Stance.Stand && 
+            _state.Stance is not Stance.Wall && 
+            _state.Stance is not Stance.Climb &&
+            _state.Stance is not Stance.Grapple) // <--- ¡ESTO FALTABA!
         {
             _state.Stance = Stance.Stand;
             motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
@@ -455,6 +470,8 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             var pos = motor.TransientPosition;
             var rot = motor.TransientRotation;
             var mask = motor.CollidableLayers;
+            
+            // Check para ver si nos podemos levantar (por si había techo)
             if (motor.CharacterOverlap(pos, rot, _unCrouchOverlapResults, mask, QueryTriggerInteraction.Ignore) > 0)
             {
                 _requestedCrouch = true;
@@ -517,6 +534,58 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
         _state.Acceleration = Vector3.zero;
+
+        // --- LÓGICA DE GANCHO (GRAPPLE) ---
+            if (_state.Stance == Stance.Grapple)
+            {
+                // 1. Vectores
+                Vector3 toHookVector = _grapplePoint - transform.position;
+                Vector3 directionToHook = toHookVector.normalized;
+                float distanceToHook = toHookVector.magnitude;
+
+                // Si estás lejos, tiramos fuerte. Si estás cerca, suave.
+                float currentPull = grapplePullSpeed;
+                
+                // Boost de subida
+                if (transform.position.y < _grapplePoint.y)
+                {
+                    currentPull *= 1.5f; 
+                }
+
+                // Sumamos la velocidad hacia el gancho
+                currentVelocity += directionToHook * currentPull * deltaTime;
+
+                // LA CUERDA 
+                float dot = Vector3.Dot(currentVelocity, directionToHook);
+                
+                if (dot < 0) // Si la velocidad es negativa (nos alejamos)
+                {
+                    // Anulamos SOLO la velocidad que nos aleja
+                    currentVelocity = Vector3.ProjectOnPlane(currentVelocity, directionToHook);
+                }
+
+                // Balanceo
+                if (_requestedMovement.sqrMagnitude > 0f)
+                {
+                    var planarInput = Vector3.ProjectOnPlane(_requestedMovement, motor.CharacterUp).normalized;
+                    currentVelocity += planarInput * grappleAirControl * deltaTime;
+                }
+
+                // Si estás muy cerca del punto, evita que vibres u orbitres locamente
+                if (distanceToHook < 1.5f)
+                {
+                    // Frenado suave al llegar
+                    currentVelocity *= 0.9f; 
+                }
+
+                // limitar velocidad
+                if (currentVelocity.magnitude > maxGrappleSpeed)
+                {
+                    currentVelocity = currentVelocity.normalized * maxGrappleSpeed;
+                }
+
+                return; 
+            }
 
         if (motor.GroundingStatus.IsStableOnGround)
         {
@@ -736,9 +805,10 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 float speedFactor = horizontalSpeed * 0.5f; 
                 currentVelocity += -_wallNormal * (2f + speedFactor); 
             }
+            
             // AIRE NORMAL
             else
-            {
+            {   
                 if (_requestedMovement.sqrMagnitude > 0f)
                 {
                     var planarMovement = Vector3.zero;
@@ -953,6 +1023,37 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         
         transform.position = position;
         transform.rotation = rotation;
+    }
+
+
+
+    public void StartGrapple(Vector3 point)
+    {
+        _grapplePoint = point;
+        _state.Stance = Stance.Grapple;
+        
+        // Un pequeño impulso inicial hacia arriba ayuda a que el balanceo se sienta mejor
+        // Si estabas en el suelo, esto te levanta
+        if (_state.Grounded)
+        {
+             _state.Velocity += Vector3.up * 5f;
+             motor.ForceUnground();
+        }
+    }
+
+    public void StopGrapple()
+    {
+        if (_state.Stance == Stance.Grapple)
+        {
+            _state.Stance = Stance.Stand;
+            
+            // Titanfall Trick: Al soltar, mantienes tu momento y ganas un mini salto
+            // para salir disparado (Slingshot)
+            _state.Velocity += Vector3.up * 3f;
+            
+            // Reseteamos saltos para permitir doble salto tras el gancho
+            jumps = 1; 
+        }
     }
     
 }

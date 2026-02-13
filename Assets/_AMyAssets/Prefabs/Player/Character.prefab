@@ -1586,6 +1586,7 @@ MonoBehaviour:
   player: {fileID: 0}
   takeGunSound:
   - {fileID: 8300000, guid: f00ca6ce013c4234ab2ccf6ffcb4b101, type: 3}
+  grenade: {fileID: 1884191687319604300, guid: bfe831e609236e746bb248905bb65add, type: 3}
 --- !u!114 &7636289352493295535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1700,6 +1701,10 @@ MonoBehaviour:
   slideSteerAcceleration: 5
   slideGravity: -70
   slideCooldown: 1
+  _grapplePoint: {x: 0, y: 0, z: 0}
+  grapplePullSpeed: 22
+  grappleAirControl: 40
+  maxGrappleSpeed: 35
   standheight: 3
   crouchHeight: 1.4
   crouchHeightResponse: 15
@@ -1711,6 +1716,7 @@ MonoBehaviour:
   _lastGunEquiped: 0
   _requestedShoot: 0
   _requestedShootThisFrame: 0
+  _stopShooting: 0
   _requestedAim: 0
   _requestedRun: 0
   _requestedInteract: 0

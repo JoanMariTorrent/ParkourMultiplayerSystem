@@ -18,6 +18,10 @@ public class UtilityScriptableObject : ScriptableObject
     public bool isInfinite = false;
     [Range(0f, 1f)]
     public float dropChance;
+
+    [Header("Throw Settings")]
+    public float chargeTime = 0.5f; 
+    public bool throwOnRelease = true;
 }
 
 public enum UtilityType
