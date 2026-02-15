@@ -155,6 +155,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public bool _requestedDropGun;
     public bool _requestedEmote;
     public int gunToSwitchIndex;
+    public bool isAiming;
 
 
     private Collider[] _unCrouchOverlapResults;
@@ -240,6 +241,12 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _requestedDropGun = input.DropGun;
         _requestedInteract = input.Interact;
         _requestedEmote = input.Emote;
+
+        bool canGunAim = weaponManager != null && 
+                weaponManager._currentGun != null && 
+                weaponManager._currentGun.canAim;
+
+        isAiming = _requestedAim && canGunAim;
 
         if (_requestedInteract)
         {
@@ -622,13 +629,6 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             // Move
             if (_state.Stance == Stance.Stand || _state.Stance == Stance.Crouch)
             {
-                // 1. Validar si estamos apuntando realmente
-                // Verificamos: Input de aim + WeaponManager existe + Hay arma + El arma permite Aim
-                bool canGunAim = weaponManager != null && 
-                                 weaponManager._currentGun != null && 
-                                 weaponManager._currentGun.canAim;
-
-                bool isAiming = _requestedAim && canGunAim;
 
                 // 2. Lógica: ¿Está disparando?
                 bool isShooting = _requestedShoot || _requestedShootThisFrame;

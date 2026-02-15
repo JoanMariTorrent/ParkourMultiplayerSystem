@@ -205,8 +205,9 @@ public class PlayerHealth : NetworkBehaviour
             if(obj != null) obj.SetActive(true);
         }
 
-        foreach(var obj in selfPlayerVisuals)
-            obj.SetActive(isOwner);
+        if (selfPlayerVisuals.Count > 0) 
+            foreach(var obj in selfPlayerVisuals)
+                obj.SetActive(isOwner);
 
         if (isServer && giveGuns) CastToSpinFromServer();
 

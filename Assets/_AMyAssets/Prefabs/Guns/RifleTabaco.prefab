@@ -1,5 +1,53 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &361513634172093007
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5798351051176531658}
+  - component: {fileID: 5122195592266795223}
+  m_Layer: 0
+  m_Name: RightHand_Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5798351051176531658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361513634172093007}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.023646435, y: -0.70386416, z: -0.7095194, w: -0.024462631}
+  m_LocalPosition: {x: 0.23, y: -0.311, z: 0.154}
+  m_LocalScale: {x: 1.1764706, y: 1.1764704, z: 1.1764706}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8464588387490248032}
+  m_LocalEulerAnglesHint: {x: -89.537, y: 6.263, z: -190.162}
+--- !u!114 &5122195592266795223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361513634172093007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4f522679a652741bc5b7c8b73522fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shape: 2
+  color: {r: 1, g: 0.9128059, b: 0, a: 0.5}
+  size: 0.077
+  alwaysShow: 1
 --- !u!1 &1383448258628988601
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,7 +79,7 @@ Transform:
   m_GameObject: {fileID: 1383448258628988601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.55, y: -0.6, z: 0.86}
+  m_LocalPosition: {x: 0.155, y: -0.217, z: 0.242}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -141,6 +189,8 @@ MonoBehaviour:
   weaponType: 1
   aimType: 1
   displayName: RifleMalporro
+  leftHandGrip: {fileID: 2228129610992446001}
+  rightHandGrip: {fileID: 5798351051176531658}
   _ammo:
     _value: 30
     _ownerAuth: 0
@@ -199,7 +249,7 @@ MonoBehaviour:
   - {fileID: 4816463109332044606}
   - {fileID: 3344481571925020234}
   recoilCamera: {fileID: 0}
-  _recoilStrenght: 0.2
+  _recoilStrenght: 0.075
   _recoilDuration: 0.2
   _recoilCurve:
     serializedVersion: 2
@@ -285,10 +335,11 @@ MonoBehaviour:
   aimRecoilZ: 0
   snappiness: 2
   returnSpeed: 8
-  equippedScale: {x: 1, y: 1, z: 1}
+  initPos: {x: 0.155, y: -0.217, z: 0.242}
+  equippedScale: {x: 0.4, y: 0.4, z: 0.4}
   droppedScale: {x: 1, y: 1, z: 1}
   playerCharacter: {fileID: 0}
-  gunAnimHandler: {fileID: 0}
+  gunAnimHandler: {fileID: 7395755334323144997}
   rb: {fileID: 6277897153711423526}
   equipedGun: 0
   range: 50
@@ -356,6 +407,54 @@ MonoBehaviour:
   _characterControllerPatch: 0
   _ownerAuth: 1
   _interpolationTiming: 0
+--- !u!1 &2325616505664395069
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2228129610992446001}
+  - component: {fileID: 7607560407299819858}
+  m_Layer: 0
+  m_Name: LeftHand_Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2228129610992446001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2325616505664395069}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.34587607, y: -0.358137, z: -0.6167198, w: 0.60972476}
+  m_LocalPosition: {x: -0.19, y: -0.66, z: 0.939}
+  m_LocalScale: {x: 1.1764705, y: 1.1764706, z: 1.1764705}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8464588387490248032}
+  m_LocalEulerAnglesHint: {x: -59.714, y: -1.149, z: -89.994}
+--- !u!114 &7607560407299819858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2325616505664395069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4f522679a652741bc5b7c8b73522fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shape: 2
+  color: {r: 0.036265016, g: 1, b: 0, a: 0.5}
+  size: 0.077
+  alwaysShow: 1
 --- !u!1 &4936639041461952105
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,8 +613,17 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 9217234437682292332, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2228129610992446001}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5798351051176531658}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7395755334323144997}
   m_SourcePrefab: {fileID: 100100000, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
 --- !u!1 &877280577884044701 stripped
 GameObject:
@@ -547,6 +655,28 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 52c66e9bd61a247439f9707422c4a138, type: 3}
   m_PrefabInstance: {fileID: 8282958882506920587}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &7395755334323144997
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9093773589616848858}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3d3da99c128a17441b3fe5d27858582d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &8878853583527599028
 PrefabInstance:
   m_ObjectHideFlags: 0

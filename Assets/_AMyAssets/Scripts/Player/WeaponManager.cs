@@ -1,7 +1,6 @@
 ﻿using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 
 public class WeaponManager : NetworkBehaviour
 {
@@ -31,6 +30,8 @@ public class WeaponManager : NetworkBehaviour
     [SerializeField] private Player player;
     [Space][Header("Audios")]
     [SerializeField] private AudioClip[] takeGunSound;
+    [SerializeField] private IKFollower leftIKFollower;
+    [SerializeField] private IKFollower rightIKFollower;
 
     [Header("TESTING")]
     public GameObject grenade;
@@ -247,6 +248,12 @@ public class WeaponManager : NetworkBehaviour
             // Setup de Arma
             if(player == null) GetPlayerScript();
             gunScript.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this, animHandler);
+
+            if(leftIKFollower != null) leftIKFollower.SetTarget(gunScript.leftHandGrip);
+            if(rightIKFollower != null) rightIKFollower.SetTarget(gunScript.rightHandGrip);
+
+            weaponToSwitch.transform.localPosition = gunScript.initPos;
+
         }
         else if (_currentItem is Utility utilScript)
         {
@@ -255,13 +262,15 @@ public class WeaponManager : NetworkBehaviour
             if(player == null) GetPlayerScript();
 
             utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
+            weaponToSwitch.transform.localPosition = Vector3.zero;
         }
         else
         {
             weaponToSwitch.transform.SetParent(_handTransformWithoutAnim);
+            weaponToSwitch.transform.localPosition = Vector3.zero;
         }
 
-        weaponToSwitch.transform.localPosition = Vector3.zero;
+        
         weaponToSwitch.transform.localRotation = Quaternion.identity;
 
         // Llamamos al OnEquip del padre
@@ -284,7 +293,7 @@ public class WeaponManager : NetworkBehaviour
         else weaponInstance = Instantiate(weaponPrefab, _handTransformWithoutAnim);
         
         weaponInstance.SetActive(true);
-        weaponInstance.transform.localPosition = Vector3.zero;
+        //weaponInstance.transform.localPosition = Vector3.zero;
         weaponInstance.transform.localRotation = Quaternion.identity;
 
         // Obtenemos el item
@@ -331,7 +340,6 @@ public class WeaponManager : NetworkBehaviour
         // Si tienes utilidades con animaciones en el futuro, añade aquí el 'else if'
 
         itemObj.transform.SetParent(parentTarget);
-        itemObj.transform.localPosition = Vector3.zero;
         itemObj.transform.localRotation = Quaternion.identity;
 
         // 3. Ownership (Común)
@@ -342,11 +350,13 @@ public class WeaponManager : NetworkBehaviour
         {
             if(player == null) GetPlayerScript();
             gunScript.Setup(_playerCamera.transform, _hitLayer, recoil, playerChar, player, this, animHandler);
+            itemObj.transform.localPosition = gunScript.initPos;
         }
         else if (item is Utility utilScript)
         {
             // Usamos el Setup de la utilidad
             utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
+            itemObj.transform.localPosition = Vector3.zero;
         }
     }
  

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Arms_CigarGun_OverrideAnim
+  m_Controller: {fileID: 9100000, guid: e2b03b5701f63c841880c7a0f1a6216f, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -5327321974438243347, guid: bdeb19f8d1e834e4091a6dd8dd2e321e, type: 3}
+    m_OverrideClip: {fileID: -5327321974438243347, guid: 49a2f6f5d0c99484f8861f7b7f90efcd, type: 3}
+  - m_OriginalClip: {fileID: -2855275306226348272, guid: bdeb19f8d1e834e4091a6dd8dd2e321e, type: 3}
+    m_OverrideClip: {fileID: -2855275306226348272, guid: 49a2f6f5d0c99484f8861f7b7f90efcd, type: 3}
+  - m_OriginalClip: {fileID: -7446620163731711109, guid: bdeb19f8d1e834e4091a6dd8dd2e321e, type: 3}
+    m_OverrideClip: {fileID: -7446620163731711109, guid: 49a2f6f5d0c99484f8861f7b7f90efcd, type: 3}
+  - m_OriginalClip: {fileID: 876027059383857960, guid: 49a2f6f5d0c99484f8861f7b7f90efcd, type: 3}
+    m_OverrideClip: {fileID: 4324073721196431371, guid: 49a2f6f5d0c99484f8861f7b7f90efcd, type: 3}
+  - m_OriginalClip: {fileID: -8742213893148599785, guid: bdeb19f8d1e834e4091a6dd8dd2e321e, type: 3}
+    m_OverrideClip: {fileID: 4324073721196431371, guid: 49a2f6f5d0c99484f8861f7b7f90efcd, type: 3}
+  - m_OriginalClip: {fileID: -7859195170405250320, guid: bdeb19f8d1e834e4091a6dd8dd2e321e, type: 3}
+    m_OverrideClip: {fileID: -5327321974438243347, guid: 49a2f6f5d0c99484f8861f7b7f90efcd, type: 3}

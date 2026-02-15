@@ -103,15 +103,6 @@ public class Player : NetworkBehaviour
         {
             HandleInputs(); 
 
-            if (animHandler != null && playerCharacter != null)
-            {
-                Vector3 currentVelocity = playerCharacter._state.Velocity;
-                
-                bool isCrouching = playerCharacter._state.Stance == Stance.Crouch;
-
-                animHandler.UpdateMovementValues(currentVelocity, isCrouching);
-            }
-
             playerCharacter.UpdateBody(Time.deltaTime);
         }
     }
@@ -328,7 +319,7 @@ public class Player : NetworkBehaviour
 
         if (animHandler != null && selectedWeapon.animatorOverride != null)
         {
-            animHandler.SetWeaponAnimator(selectedWeapon.animatorOverride);
+            //animHandler.SetWeaponAnimator(selectedWeapon.animatorOverride);
             Debug.Log("<color=blue>AISJDBIAJSOBDBIJASDIBJASIDJBASIJBDIJASBDIJABNSDIJNBIAJSDNIJANSIJDNIAJSDNIJ</color>");
         }
 

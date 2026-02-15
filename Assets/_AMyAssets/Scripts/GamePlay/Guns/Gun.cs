@@ -15,6 +15,8 @@ public class Gun : EquippableItem, ITakeGun
     public WeaponType weaponType;
     public AimType aimType;
     public string displayName;
+    public Transform leftHandGrip;
+    public Transform rightHandGrip;
 
     [Header("Stats")]
     [SerializeField] protected SyncVar<int> _ammo = new SyncVar<int>(30);
@@ -80,6 +82,7 @@ public class Gun : EquippableItem, ITakeGun
     public float returnSpeed = 20f;
 
     [Header("World settings")]
+    public Vector3 initPos = Vector3.zero;
     [SerializeField] private Vector3 equippedScale = Vector3.one; 
     [SerializeField] private Vector3 droppedScale = new Vector3(1, 1, 1);
 
@@ -111,7 +114,7 @@ public class Gun : EquippableItem, ITakeGun
         rb.isKinematic = true;
         rb.useGravity = false;
 
-        _originalPosition = transform.localPosition;
+        _originalPosition = initPos;
         _originalRotation = transform.localRotation;
 
         if (!isOwner)
@@ -151,9 +154,9 @@ public class Gun : EquippableItem, ITakeGun
         
 
         // Reset de posición
-        transform.localPosition = Vector3.zero;
+        transform.localPosition = initPos;
         transform.localRotation = Quaternion.identity;
-        _originalPosition = transform.localPosition;
+        _originalPosition = initPos;
         _originalRotation = transform.localRotation;
 
         // --- ARREGLO DE LA UI ---

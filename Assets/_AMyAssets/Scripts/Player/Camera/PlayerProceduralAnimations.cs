@@ -1,5 +1,4 @@
 using UnityEngine;
-using Unity.Cinemachine;
 
 public class PlayerProceduralAnimations : MonoBehaviour
 {
@@ -11,18 +10,7 @@ public class PlayerProceduralAnimations : MonoBehaviour
     [SerializeField] private float tiltAngle = 2f; 
     [SerializeField] private float tiltSpeed = 6f;
 
-    [Header("2. Weapon Sway (Peso del arma)")]
-    [SerializeField] private float swayAmount = 0.02f;
-    [SerializeField] private float maxSwayAmount = 0.05f;
-    [SerializeField] private float swaySmooth = 8f;
-
-    [Header("3. Head Bob (Caminar - Suavizado)")]
-    [SerializeField] private float bobFrequency = 8f; 
-    [SerializeField] private float bobAmplitude = 0.005f; 
-    [SerializeField] private float bobSwayAmplitude = 0.01f; 
-    [SerializeField] private float bobSmooth = 12f; 
-
-    [Header("5. Landing Impact")]
+    [Header("2. Landing Impact")]
     [SerializeField] private float landDipAmount = 0.3f;
     [SerializeField] private float landRecoverSpeed = 5f;
     [SerializeField] private float landThreshold = -4f; // Velocidad mínima para activar el golpe
@@ -59,8 +47,6 @@ public class PlayerProceduralAnimations : MonoBehaviour
         bool isGrounded = _playerCharacter._state.Grounded; 
 
         float inputX = Input.GetAxisRaw("Horizontal");
-        float mouseX = Input.GetAxisRaw("Mouse X");
-        float mouseY = Input.GetAxisRaw("Mouse Y");
 
         
         if (!isGrounded)
@@ -100,30 +86,6 @@ public class PlayerProceduralAnimations : MonoBehaviour
         Quaternion targetRot = Quaternion.Euler(0, 0, _targetTilt);
         transform.localRotation = Quaternion.Slerp(transform.localRotation, _initialRotation * targetRot, Time.deltaTime * tiltSpeed);
 
-        // --- 3. WEAPON SWAY & BOB ---
-        if (_weaponHolder)
-        {
-            float moveX = Mathf.Clamp(-mouseX * swayAmount, -maxSwayAmount, maxSwayAmount);
-            float moveY = Mathf.Clamp(-mouseY * swayAmount, -maxSwayAmount, maxSwayAmount);
-            Vector3 targetSway = new Vector3(moveX, moveY, 0);
 
-            Vector3 targetBob = Vector3.zero;
-            
-            if (isGrounded && speed > 0.1f)
-            {
-                _timer += Time.deltaTime * bobFrequency * (speed * 0.35f); 
-                targetBob.y = Mathf.Sin(_timer) * bobAmplitude;
-                targetBob.x = Mathf.Cos(_timer / 2) * bobSwayAmplitude; 
-            }
-            else
-            {
-                _timer = 0; 
-                targetBob = Vector3.zero;
-            }
-
-            _currentBobPos = Vector3.Lerp(_currentBobPos, targetBob, Time.deltaTime * bobSmooth);
-            Vector3 finalPos = _initialWeaponPos + targetSway + _currentBobPos;
-            _weaponHolder.localPosition = Vector3.Lerp(_weaponHolder.localPosition, finalPos, Time.deltaTime * swaySmooth);
-        }
     }
 }
