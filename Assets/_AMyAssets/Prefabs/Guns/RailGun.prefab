@@ -506,6 +506,7 @@ MonoBehaviour:
   displayName: railgun
   leftHandGrip: {fileID: 3969601786270794546}
   rightHandGrip: {fileID: 1154107378303749599}
+  animData: {fileID: 11400000, guid: 256574d0fb3082e4790feabe1aaa55d4, type: 2}
   _ammo:
     _value: 1
     _ownerAuth: 0
@@ -835,7 +836,7 @@ Transform:
   m_GameObject: {fileID: 2296983518541656200}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0.000000008552527, z: 0.000000008552526, w: 0.7071067}
-  m_LocalPosition: {x: 0.27000004, y: -0.026200002, z: 0.5101}
+  m_LocalPosition: {x: 0.267, y: -0.026200002, z: 0.5101}
   m_LocalScale: {x: 0.08, y: 0.08, z: 0.08}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3140,7 +3141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 20d1c56f3cdffd24c9b34bf5cf18a385, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.27
+      value: 0.26699996
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 20d1c56f3cdffd24c9b34bf5cf18a385, type: 3}
       propertyPath: m_LocalPosition.y

@@ -191,6 +191,7 @@ MonoBehaviour:
   displayName: RifleMalporro
   leftHandGrip: {fileID: 2228129610992446001}
   rightHandGrip: {fileID: 5798351051176531658}
+  animData: {fileID: 11400000, guid: a351c77eb554ba348a713028ec461896, type: 2}
   _ammo:
     _value: 30
     _ownerAuth: 0
@@ -211,25 +212,25 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0.0019226074
       value: 0
-      inSlope: 3.384072
-      outSlope: 3.384072
+      inSlope: 2.595186
+      outSlope: 2.595186
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.028902192
+      outWeight: 0.04615384
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 0.21323802
+      outSlope: 0.21323802
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.10384629
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  timeToAim: 0.15
+  timeToAim: 0.25
   aimingFOV: 55
   gunAimingFOV: 45
   isAiming: 0

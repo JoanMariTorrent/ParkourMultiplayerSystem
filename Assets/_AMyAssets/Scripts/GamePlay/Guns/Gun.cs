@@ -17,6 +17,7 @@ public class Gun : EquippableItem, ITakeGun
     public string displayName;
     public Transform leftHandGrip;
     public Transform rightHandGrip;
+    public WeaponAnimationData animData;
 
     [Header("Stats")]
     [SerializeField] protected SyncVar<int> _ammo = new SyncVar<int>(30);
@@ -149,7 +150,7 @@ public class Gun : EquippableItem, ITakeGun
         this.weaponManager = wm;
         this.reloading = false;
         this.animHandler = _animHandler;
-        if(gunAnimHandler != null) animHandler.RegisterWeaponAnimator(gunAnimHandler);
+        if(gunAnimHandler != null) animHandler.RegisterWeaponAnimator(gunAnimHandler, animData);
         if(gunAnimHandler != null) gunAnimHandler.enabled = true;
         
 

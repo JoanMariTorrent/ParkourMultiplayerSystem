@@ -44,9 +44,7 @@ public class ScoreboardView : View
         foreach (var playerscore in data)
         {
             var entry = Instantiate(scoreboardEntryPrefab, scoreboardEntriesParent);
-            entry.SetData(playerscore.Key.id.ToString(), playerscore.Value._kills, playerscore.Value._deaths, playerscore.Value._damage);
-
-            
+            entry.SetData(playerscore.Key.id.ToString(), playerscore.Value._kills, playerscore.Value._deaths, playerscore.Value._damage);         
         }
     }
 

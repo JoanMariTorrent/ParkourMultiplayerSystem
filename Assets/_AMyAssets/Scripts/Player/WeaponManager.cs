@@ -127,9 +127,7 @@ public class WeaponManager : NetworkBehaviour
 
         GameObject instance = Instantiate(utilityPrefab, _handTransformWithoutAnim);
         
-        instance.transform.localPosition = Vector3.zero;
-        instance.transform.localRotation = Quaternion.identity;
-        instance.SetActive(true);
+        
 
         Utility utilScript = instance.GetComponent<Utility>();
         if (utilScript != null)
@@ -137,6 +135,16 @@ public class WeaponManager : NetworkBehaviour
             utilScript.GiveOwnership(owner.Value);
 
             utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
+
+            instance.transform.localPosition = utilScript.initPos;
+            instance.transform.localRotation = Quaternion.identity;
+            instance.SetActive(true);
+        }
+        else
+        {
+            instance.transform.localPosition = Vector3.zero;
+            instance.transform.localRotation = Quaternion.identity;
+            instance.SetActive(true);
         }
 
         if (_ownedWeapons.Count <= 4) _ownedWeapons.Add(null);
@@ -262,7 +270,7 @@ public class WeaponManager : NetworkBehaviour
             if(player == null) GetPlayerScript();
 
             utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
-            weaponToSwitch.transform.localPosition = Vector3.zero;
+            weaponToSwitch.transform.localPosition = utilScript.initPos;
         }
         else
         {
@@ -356,7 +364,7 @@ public class WeaponManager : NetworkBehaviour
         {
             // Usamos el Setup de la utilidad
             utilScript.SetUp(_playerCamera.transform, playerChar, player, this, animHandler);
-            itemObj.transform.localPosition = Vector3.zero;
+            itemObj.transform.localPosition = utilScript.initPos;
         }
     }
  

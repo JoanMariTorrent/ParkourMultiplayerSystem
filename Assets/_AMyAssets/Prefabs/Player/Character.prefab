@@ -1274,26 +1274,9 @@ MonoBehaviour:
   armsMesh: {fileID: 1672782070578881568}
   weaponHolder: {fileID: 5478939256714205654}
   playerCharacter: {fileID: 8159890137296869839}
-  idleAmount: 0.02
-  idleSpeed: 1
-  walkBobAmount: 0.02
-  walkBobSpeed: 10
-  startWalkSpeedVel: 1
-  runningTilt: {x: 15, y: -45, z: 0}
-  runTransitionSpeed: 6
-  startRunSpeedVel: 11
-  runBobMultiplier: 5
-  slideDropAmount: -0.15
-  slideKickRotation: -10
-  slideRecoverySpeed: 8
-  strafeTiltAmount: 4
-  forwardTiltAmount: 3
-  strafeTiltSpeed: 5
-  swayAmount: 0.02
-  maxSway: 0.06
-  swaySmooth: 4
-  aimPosition: {x: -0.266, y: 0.03, z: 0}
-  aimSpeed: 12.5
+  startWalkSpeedVel: 0.75
+  startRunSpeedVel: 12
+  defaultStats: {fileID: 11400000, guid: 71ea5de62fd22ec4f889ae12b674d50e, type: 2}
 --- !u!1 &3784153320970718965
 GameObject:
   m_ObjectHideFlags: 0

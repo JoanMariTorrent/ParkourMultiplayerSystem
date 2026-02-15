@@ -35,6 +35,7 @@ public abstract class Utility : EquippableItem, ITakeGun
     [Header("World settings")]
     [SerializeField] private Vector3 equippedScale = Vector3.one;
     [SerializeField] private Vector3 droppedScale = Vector3.one;
+    public Vector3 initPos = Vector3.zero;
 
 
 
@@ -61,6 +62,7 @@ public abstract class Utility : EquippableItem, ITakeGun
 
         // Escalas y posiciones
         transform.localScale = equippedScale;
+        transform.localPosition = initPos;
         this.cameraTransform = cam;
         if (_spawnPoint == null) _spawnPoint = cam;
 
@@ -91,6 +93,7 @@ public abstract class Utility : EquippableItem, ITakeGun
     public void SetDown()
     {
         transform.localScale = droppedScale;
+        transform.localPosition = Vector3.zero;
 
         gameMainView = null;
 

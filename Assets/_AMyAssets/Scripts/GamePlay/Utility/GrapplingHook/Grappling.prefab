@@ -71,7 +71,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0c9011c025b8a284094a0c3b81562be9, type: 2}
+  - {fileID: 2100000, guid: 18bc27b172e32a8498d6c3813ff9304f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -132,6 +132,7 @@ MonoBehaviour:
   otherPlayerLayer: 8
   equippedScale: {x: 0.4, y: 0.4, z: 0.4}
   droppedScale: {x: 1, y: 1, z: 1}
+  initPos: {x: 0, y: 0.25, z: 0}
   maxDistance: 40
   maxGrappleDuration: 3
   hookLayer:

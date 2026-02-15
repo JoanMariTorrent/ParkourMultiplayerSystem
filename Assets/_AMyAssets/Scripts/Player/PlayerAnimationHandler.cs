@@ -10,40 +10,15 @@ public class PlayerAnimationHandler : NetworkBehaviour
     [Header("---- Motor procedural ----")]
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private PlayerCharacter playerCharacter;
-
-    [Header("1. Configuracion IDLE")]
-    public float idleAmount = 0.005f;
-    public float idleSpeed = 1f;
-
-    [Header("2. Configuracion WALK")]
-    public float walkBobAmount = 0.02f;
-    public float walkBobSpeed = 10f;
-    public float startWalkSpeedVel = 1f;
-
-    [Header("3. Configuracion RUN / SLIDE")]
-    public Vector3 runningTilt = new Vector3(15f, 15f, 15f);
-    public float runTransitionSpeed = 6f;
-    public float startRunSpeedVel = 12f;
-    public float runBobMultiplier = 1.5f;
-
-    [Header("4. Configuracion SLIDE IMPACT")]
-    public float slideDropAmount = -0.15f;
-    public float slideKickRotation = -10f;
-    public float slideRecoverySpeed = 8f;
-
-    [Header("5. Configuracion STRAFE")]
-    public float strafeTiltAmount = 5f;
-    public float forwardTiltAmount = 5f;
-    public float strafeTiltSpeed = 5f;
-
-    [Header("6. Configuracion SWAY")]
-    public float swayAmount = 0.02f;
-    public float maxSway = 0.06f;
-    public float swaySmooth = 4f;
     
-    [Header("7. Configuracion AIM")]
-    public Vector3 aimPosition = new Vector3(0,0,0);
-    public float aimSpeed = 10f;
+    [Header("Player Settings")]
+    public float startWalkSpeedVel = 0.75f;
+    public float startRunSpeedVel = 11f;
+
+
+    [Tooltip("Esto de aqui solo sirve si el arma no lleva su propio animation data")]
+    [SerializeField] private WeaponAnimationData defaultStats;
+    private WeaponAnimationData _stats;
     
 
 
@@ -72,17 +47,23 @@ public class PlayerAnimationHandler : NetworkBehaviour
         }
 
         if(playerCharacter == null) playerCharacter = GetComponentInParent<PlayerCharacter>();
+
+        if(defaultStats != null) _stats = defaultStats;
     }
 
 
-    public void RegisterWeaponAnimator(Animator newWeaponAnim)
+    public void RegisterWeaponAnimator(Animator newWeaponAnim, WeaponAnimationData newData)
     {
         weaponAnimator = newWeaponAnim;
+
+        _stats = newData != null ? newData : defaultStats;
     }
 
     public void UnRegisterWeaponAnimator()
     {
         weaponAnimator = null;
+
+        _stats = defaultStats;
     }
 
     void Update()
@@ -124,14 +105,14 @@ public class PlayerAnimationHandler : NetworkBehaviour
 
         if (isSliding && !_wasSliding)
         {
-            _currentSlideDrop = slideDropAmount;
-            _currentSlideKick = slideKickRotation;
+            _currentSlideDrop = _stats.slideDropAmount;
+            _currentSlideKick = _stats.slideKickRotation;
         }
         _wasSliding = isSliding;
 
         // recuperacion del golpe
-        _currentSlideDrop = Mathf.Lerp(_currentSlideDrop, 0f, dt * slideRecoverySpeed);
-        _currentSlideKick = Mathf.Lerp(_currentSlideKick, 0f, dt * slideRecoverySpeed);
+        _currentSlideDrop = Mathf.Lerp(_currentSlideDrop, 0f, dt * _stats.slideRecoverySpeed);
+        _currentSlideKick = Mathf.Lerp(_currentSlideKick, 0f, dt * _stats.slideRecoverySpeed);
 
         // 2. Inputs (cambiar por el input action)
         float mouseX = Input.GetAxisRaw("Mouse X");
@@ -139,8 +120,8 @@ public class PlayerAnimationHandler : NetworkBehaviour
         float inputX = Input.GetAxisRaw("Horizontal");
         float inputY = Input.GetAxisRaw("Vertical");
 
-        float currentSwayAmount = swayAmount * aimReduction;
-        float currentMaxSway = maxSway * aimReduction;
+        float currentSwayAmount = _stats.swayAmount * aimReduction;
+        float currentMaxSway = _stats.maxSway * aimReduction;
 
         // 3. SWAY
         // hay que invertir el raton para que de el efecto contrario
@@ -151,10 +132,10 @@ public class PlayerAnimationHandler : NetworkBehaviour
         // 4. Movimiento
         Vector3 finalBob = Vector3.zero;
 
-        if(isWalking || isSliding || isOnWall)
+        if(isWalking || isSliding || (isOnWall && !isAiming))
         {
-            float currentBobSpeed = isRunning || isOnWall ? walkBobSpeed * 1.3f : walkBobSpeed;
-            float currentBobAmp = isRunning || isOnWall ? walkBobAmount * runBobMultiplier : walkBobAmount;
+            float currentBobSpeed = isRunning || isOnWall ? _stats.walkBobSpeed * 1.3f : _stats.walkBobSpeed;
+            float currentBobAmp = isRunning || isOnWall ? _stats.walkBobAmount * _stats.runBobMultiplier : _stats.walkBobAmount;
 
             currentBobAmp *= aimReduction;
 
@@ -179,26 +160,26 @@ public class PlayerAnimationHandler : NetworkBehaviour
         {
             _bobTimer = 0f;
             // IDLE
-            float idleY = Mathf.Sin(Time.time * idleSpeed) * (idleAmount * aimReduction);
+            float idleY = Mathf.Sin(Time.time * _stats.idleSpeed) * (_stats.idleAmount * aimReduction);
             finalBob = new Vector3(0, idleY, 0);
         }
 
         // 5. Run tilt
         Quaternion targetRot = _initialRot;
 
-        if(useRunTilt || isOnWall)
+        if(useRunTilt || (isOnWall && !isAiming))
         {
-            Quaternion runRot = Quaternion.Euler(runningTilt) * _initialRot;
+            Quaternion runRot = Quaternion.Euler(_stats.runningTilt) * _initialRot;
             targetRot = runRot;
         }
 
 
         // TILT (inclinacion del arma depende para donde estes caminando)
-        float targetTiltZ = -inputX * strafeTiltAmount * aimReduction;
-        _currentStrafeTilt = Mathf.Lerp(_currentStrafeTilt, targetTiltZ, dt * strafeTiltSpeed);
+        float targetTiltZ = -inputX * _stats.strafeTiltAmount * aimReduction;
+        _currentStrafeTilt = Mathf.Lerp(_currentStrafeTilt, targetTiltZ, dt * _stats.tiltSpeed);
 
-        float targetTiltX = -inputY * forwardTiltAmount * aimReduction;
-        _currentForwardTilt = Mathf.Lerp(_currentForwardTilt, targetTiltX, dt * strafeTiltSpeed);
+        float targetTiltX = -inputY * _stats.forwardTiltAmount * aimReduction;
+        _currentForwardTilt = Mathf.Lerp(_currentForwardTilt, targetTiltX, dt * _stats.tiltSpeed);
 
         Quaternion moveTiltRot = Quaternion.Euler(_currentForwardTilt, 0, _currentStrafeTilt);
 
@@ -206,11 +187,11 @@ public class PlayerAnimationHandler : NetworkBehaviour
 
         // 6. Aplicarlo
         Vector3 slideImpactPos = new Vector3(0, _currentSlideDrop, 0);
-        Vector3 basePos = isAiming ? aimPosition : _initialPos;
+        Vector3 basePos = isAiming ? _stats.aimPosition : _initialPos;
         Vector3 targetPos = basePos + finalSway + finalBob + slideImpactPos;
 
-        float currentPosSpeed = isAiming ? aimSpeed : swaySmooth;
-        float currentRotSpeed = isAiming ? aimSpeed : runTransitionSpeed; 
+        float currentPosSpeed = isAiming ? _stats.aimSpeed : _stats.swaySmooth;
+        float currentRotSpeed = isAiming ? _stats.aimSpeed : _stats.runTransitionSpeed; 
         
         weaponHolder.localPosition = Vector3.Lerp(weaponHolder.localPosition, targetPos, dt * currentPosSpeed);
         weaponHolder.localRotation = Quaternion.Lerp(weaponHolder.localRotation, targetRot * slideKickRot * moveTiltRot, dt * currentRotSpeed);
