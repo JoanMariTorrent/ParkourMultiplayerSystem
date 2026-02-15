@@ -90,20 +90,30 @@ public class RoundRunningStateDM : StateNode<List<PlayerHealth>>
 
     private IEnumerator RespawnRoutine(PlayerHealth player)
     {
-        // 1. Esperamos el tiempo de respawn 
         yield return new WaitForSeconds(respawnDelay);
-
-        if (gameEnded) yield break;
-
-        // 2. Elegimos un punto de spawn aleatorio
-        Transform spawnPoint = transform; 
-        if (_spawnPoints.Count > 0)
-            spawnPoint = _spawnPoints[Random.Range(0, _spawnPoints.Count)];
-
-        // 3. REVIVIR Y TELETRANSPORTAR
-        player.ReviveObserversRpc(spawnPoint.position, spawnPoint.rotation);
-
-        Debug.Log($"<color=green>Jugador {player.owner} reciclado y respawneado en {spawnPoint.position}.</color>");
+        if (gameEnded || player == null) yield break;
+    
+        // Si la lista está vacía por error, usamos la posición del script como emergencia
+        Vector3 targetPos = transform.position;
+        Quaternion targetRot = transform.rotation;
+    
+        if (_spawnPoints != null && _spawnPoints.Count > 0)
+        {
+            // Limpiamos nulos por si acaso algún spawnpoint se destruyó
+            var validSpawns = _spawnPoints.Where(s => s != null).ToList();
+            if (validSpawns.Count > 0)
+            {
+                Transform selected = validSpawns[Random.Range(0, validSpawns.Count)];
+                targetPos = selected.position;
+                targetRot = selected.rotation;
+            }
+        }
+        else 
+        {
+            Debug.LogError($"[RoundRunningStateDM] ¡No hay spawnpoints asignados en {gameObject.name}!");
+        }
+    
+        player.ReviveObserversRpc(targetPos, targetRot);
     }
 
     private void EndRound()

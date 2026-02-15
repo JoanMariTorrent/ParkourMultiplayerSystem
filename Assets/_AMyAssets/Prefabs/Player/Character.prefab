@@ -1275,7 +1275,7 @@ MonoBehaviour:
   weaponHolder: {fileID: 5478939256714205654}
   playerCharacter: {fileID: 8159890137296869839}
   startWalkSpeedVel: 0.75
-  startRunSpeedVel: 12
+  startRunSpeedVel: 11
   defaultStats: {fileID: 11400000, guid: 71ea5de62fd22ec4f889ae12b674d50e, type: 2}
 --- !u!1 &3784153320970718965
 GameObject:
