@@ -2298,7 +2298,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 196115120}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0017177763, y: 0.0099641, z: 0.000017116969, w: 0.9999489}
+  m_LocalRotation: {x: -0.0017177761, y: 0.009964277, z: 0.00001711727, w: 0.9999489}
   m_LocalPosition: {x: 12.899997, y: 13.3, z: -70.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6928,9 +6928,9 @@ MonoBehaviour:
       Rotation:
         value:
           x: 0.059579965
-          y: 0.9831427
-          z: -0.008714994
-          w: -0.17264089
+          y: 0.98314255
+          z: -0.008714997
+          w: -0.1726409
     - Position:
         x: 1.3114457
         y: -4.200001
@@ -8567,14 +8567,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feda12ed2394ca84a9d4f51559c38bf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
   lobbyManager: {fileID: 1097043115}
-  playerPrefab: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
   players:
   - {fileID: 1706480697}
   - {fileID: 1555242007}
   - {fileID: 688202238}
   - {fileID: 2127341819}
-  playersInLobby: 0
 --- !u!1 &1101296062
 GameObject:
   m_ObjectHideFlags: 0

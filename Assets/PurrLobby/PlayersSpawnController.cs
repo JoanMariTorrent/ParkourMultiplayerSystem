@@ -1,39 +1,54 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using PurrLobby;
+using PurrNet;
 using UnityEngine;
 
-public class PlayersSpawnController : MonoBehaviour
+public class PlayersSpawnController : NetworkBehaviour
 {
     [SerializeField] private LobbyManager lobbyManager;
-    [SerializeField] private GameObject playerPrefab;
     [SerializeField] private List<GameObject> players = new List<GameObject>();
-    [SerializeField] private int playersInLobby;
-    private Lobby lobby;
 
     void OnEnable()
     {
-        lobbyManager.OnRoomJoined.AddListener(OnJoined);
-        lobbyManager.OnRoomLeft.AddListener(OnLeft);
-
-        foreach(var p in players)
-            p.SetActive(false);
-    }
-
-
-
-    private void OnJoined(Lobby _lobby)
-    {
-        this.lobby = _lobby; 
-        Debug.Log($"La cantidad de jugadores actuales en la lobby : {lobby.Name} es de : {lobby.Members.Count}");
-        players[lobby.Members.Count - 1].SetActive(true);
+        lobbyManager.OnRoomJoined.AddListener(RefreshFromLobby);
+        lobbyManager.OnRoomUpdated.AddListener(RefreshFromLobby);
+        lobbyManager.OnRoomLeft.AddListener(ClearAllMeshes);
         
+        ClearAllMeshes();
     }
 
-    private void OnLeft()
+
+    private void OnDisable()
     {
-        Debug.Log($"Lobby: {lobby.Name} Jugadores: {lobby.Members.Count}");
-        players[lobby.Members.Count - 1].SetActive(false);
+        // Limpieza de listeners
+        lobbyManager.OnRoomJoined.RemoveListener(RefreshFromLobby);
+        lobbyManager.OnRoomUpdated.RemoveListener(RefreshFromLobby);
+        lobbyManager.OnRoomLeft.RemoveListener(ClearAllMeshes);
+    }
+
+
+    private void RefreshFromLobby(Lobby lobby)
+    {
+        if(!lobby.IsValid) return;
+
+        int currentPlayers = lobby.Members.Count;
+        
+        for (int i = 0; i < players.Count; i++)
+        {
+            // Se activa si el índice es menor que la cantidad de miembros en la lobby
+            players[i].SetActive(i < currentPlayers);
+        }
+
+        Debug.Log($"La cantidad de jugadores actuales en la lobby : {lobby.Name} es de : {lobby.Members.Count}");
+    }
+
+    private void ClearAllMeshes()
+    {
+        foreach (var mesh in players)
+        {
+            mesh.SetActive(false);
+        }
     }
 
 }
