@@ -1809,7 +1809,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 00e165fe3987cc74da88aef4d290f06a, type: 2}
     - target: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: m_Name
-      value: Character_01_UV_SinExplode (2)
+      value: Player_04
       objectReference: {fileID: 0}
     - target: {fileID: 945454400225530728, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -2298,7 +2298,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 196115120}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0017177761, y: 0.009964277, z: 0.00001711727, w: 0.9999489}
+  m_LocalRotation: {x: -0.0017177763, y: 0.0099641, z: 0.000017116969, w: 0.9999489}
   m_LocalPosition: {x: 12.899997, y: 13.3, z: -70.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5049,6 +5049,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 683053433}
   m_CullTransparentMesh: 1
+--- !u!1 &688202238 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
+  m_PrefabInstance: {fileID: 908563508}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &692140907
 GameObject:
   m_ObjectHideFlags: 0
@@ -6559,7 +6564,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 00e165fe3987cc74da88aef4d290f06a, type: 2}
     - target: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: m_Name
-      value: Character_01_UV_SinExplode (3)
+      value: Player_03
       objectReference: {fileID: 0}
     - target: {fileID: 945454400225530728, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -6922,9 +6927,9 @@ MonoBehaviour:
         z: 15.093962
       Rotation:
         value:
-          x: 0.059579972
+          x: 0.059579965
           y: 0.9831427
-          z: -0.008714995
+          z: -0.008714994
           w: -0.17264089
     - Position:
         x: 1.3114457
@@ -8323,6 +8328,7 @@ GameObject:
   - component: {fileID: 1097043114}
   - component: {fileID: 1097043116}
   - component: {fileID: 1097043117}
+  - component: {fileID: 1097043118}
   m_Layer: 0
   m_Name: LobbyManager
   m_TagString: Untagged
@@ -8549,6 +8555,26 @@ MonoBehaviour:
   CinematicCam: {fileID: 376031823}
   mainCamera: {fileID: 330585545}
   menuTimeline: {fileID: 330585549}
+--- !u!114 &1097043118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097043112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: feda12ed2394ca84a9d4f51559c38bf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lobbyManager: {fileID: 1097043115}
+  playerPrefab: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
+  players:
+  - {fileID: 1706480697}
+  - {fileID: 1555242007}
+  - {fileID: 688202238}
+  - {fileID: 2127341819}
+  playersInLobby: 0
 --- !u!1 &1101296062
 GameObject:
   m_ObjectHideFlags: 0
@@ -10481,7 +10507,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 00e165fe3987cc74da88aef4d290f06a, type: 2}
     - target: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: m_Name
-      value: Character_01_UV_SinExplode
+      value: Player_01
       objectReference: {fileID: 0}
     - target: {fileID: 945454400225530728, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -11971,6 +11997,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1542192714}
   m_CullTransparentMesh: 1
+--- !u!1 &1555242007 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
+  m_PrefabInstance: {fileID: 1576417063}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1576417063
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12437,7 +12468,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 00e165fe3987cc74da88aef4d290f06a, type: 2}
     - target: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: m_Name
-      value: Character_01_UV_SinExplode (1)
+      value: Player_02
       objectReference: {fileID: 0}
     - target: {fileID: 945454400225530728, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -13076,6 +13107,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682570840}
   m_CullTransparentMesh: 1
+--- !u!1 &1706480697 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
+  m_PrefabInstance: {fileID: 1271315397}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1724632831
 GameObject:
   m_ObjectHideFlags: 0
@@ -16275,6 +16311,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2118015730}
   m_CullTransparentMesh: 1
+--- !u!1 &2127341819 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f4e289dfed78e994a994084c09ea90f1, type: 3}
+  m_PrefabInstance: {fileID: 189969987}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2141039483
 GameObject:
   m_ObjectHideFlags: 0
@@ -16435,5 +16476,5 @@ SceneRoots:
   - {fileID: 998171793}
   - {fileID: 1271315397}
   - {fileID: 1576417063}
-  - {fileID: 189969987}
   - {fileID: 908563508}
+  - {fileID: 189969987}
