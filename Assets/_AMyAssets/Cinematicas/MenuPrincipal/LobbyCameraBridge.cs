@@ -10,7 +10,13 @@ public class LobbyCameraBridge : MonoBehaviour
     [SerializeField] private LobbyManager lobbyManager;
     [SerializeField] private CinemachineCamera lobbyCam;
     [SerializeField] private CinemachineCamera CinematicCam;
+    [SerializeField] private Camera mainCamera;
     [SerializeField] private PlayableDirector menuTimeline;
+
+    void Start()
+    {
+        menuTimeline.Play();
+    }
 
     private void OnEnable()
     {
@@ -61,7 +67,9 @@ public class LobbyCameraBridge : MonoBehaviour
     {
         var dolly = CinematicCam.GetComponent<CinemachineSplineDolly>();
         dolly.CameraPosition = 0;
-        while(lobbyCam.transform.position != CinematicCam.transform.position) yield return null;
+
+        float tolerace = 1f;
+        while(Vector3.Distance(mainCamera.transform.position, CinematicCam.transform.position) > tolerace) yield return null;
         if (menuTimeline != null)
         {
             menuTimeline.Play();
