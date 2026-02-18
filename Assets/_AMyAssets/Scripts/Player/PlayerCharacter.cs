@@ -1112,6 +1112,6 @@ namespace Interfaces
 {
     public interface ITakeGun
     {
-        void TakeGun(PlayerCharacter playerCharacter);
+        void TakeGun(PlayerCharacter playerCharacter); 
     }
 }

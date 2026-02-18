@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.Rendering;
+using UnityEngine.InputSystem;
 
 public class Player : NetworkBehaviour
 {
@@ -87,12 +88,9 @@ public class Player : NetworkBehaviour
         if (isOwner)
         {
             _inputActions = new PlayerInputsAction();
+            LoadInputOverrides();
+            
             _inputActions.Enable();
-            if (_inputActions == null)
-            {
-                _inputActions = new PlayerInputsAction();
-                _inputActions.Enable();
-            }
 
             settingsSystem.Intialize(globalVolume);
         }
@@ -104,11 +102,6 @@ public class Player : NetworkBehaviour
             HandleInputs(); 
 
             playerCharacter.UpdateBody(Time.deltaTime);
-
-            if(Input.GetKeyDown(KeyCode.H))
-                playerHealth.ChangeHealth(-5);
-            if(Input.GetKeyDown(KeyCode.J))
-                playerHealth.ChangeHealth(-70);
         }
     }
 
@@ -331,6 +324,28 @@ public class Player : NetworkBehaviour
 
         
     }
+
+    #region INPUTS
+
+    public void ApplyInputOverrides(string rebindsJson)
+    {
+        if(_inputActions == null) return;
+        
+        _inputActions.asset.LoadBindingOverridesFromJson(rebindsJson);
+
+        Debug.Log("<color=green>¡Inputs actualizados en tiempo real!</color>");
+    }
+
+    private void LoadInputOverrides()
+    {
+        string jsonFile = PlayerPrefs.GetString("rebinds", string.Empty);
+        if(!string.IsNullOrEmpty(jsonFile))
+        {
+            _inputActions.asset.LoadBindingOverridesFromJson(jsonFile);
+        }
+    }
+
+    #endregion
 
 
     public void SettingsEnabled() { cameraActive = false; }
