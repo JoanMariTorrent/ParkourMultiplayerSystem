@@ -633,10 +633,10 @@ MonoBehaviour:
   _rotationAmount: -12
   ownerGunTag: 7
   otherPlayerGunTag: 8
-  spreadX: 0.25
-  spreadY: 0.25
-  movingSpreadX: 0.4
-  movingSpreadY: 0.4
+  spreadX: 0.135
+  spreadY: 0.135
+  movingSpreadX: 0.195
+  movingSpreadY: 0.195
   recoilX: -30
   recoilY: 8
   recoilZ: 0.1

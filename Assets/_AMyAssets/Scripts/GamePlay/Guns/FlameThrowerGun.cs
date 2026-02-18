@@ -95,7 +95,7 @@ public class FlameThrowerGun : Gun
 
     // --- RPCs de daño --- 
 
-    [ServerRpc]
+    //[ServerRpc]
     private void ApplyDamageOnServerRpc(PlayerHealth victim, int dmg)
     {
         victim.ChangeHealth(-dmg, owner.Value);
@@ -103,7 +103,7 @@ public class FlameThrowerGun : Gun
             sm.AddDamageServerRpc(victim.PlayerID, owner.Value, dmg);
     }
 
-    [ServerRpc]
+    //[ServerRpc]
     private void ApplyDamageObjectServerRpc(HealthObject obj, int dmg)
     {
         obj.ChangeHealth(-dmg, transform.position);

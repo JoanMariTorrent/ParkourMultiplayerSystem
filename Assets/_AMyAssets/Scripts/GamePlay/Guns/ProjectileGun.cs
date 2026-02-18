@@ -34,6 +34,7 @@ public class ProjectileGun : Gun
     public void ReportPlayerHit(PlayerHealth victim, int dmg)
     {
         ApplyDamageServerRpc(victim, dmg);
+        
     }
 
     public void ReportObjectHit(HealthObject obj, int dmg, Vector3 point)
@@ -41,7 +42,7 @@ public class ProjectileGun : Gun
         ApplyDamageObjectServerRpc(obj, dmg, point);
     }
 
-    [ServerRpc]
+    //[ServerRpc]
     private void ApplyDamageServerRpc(PlayerHealth victim, int dmg)
     {
         victim.ChangeHealth(-dmg, owner.Value);
@@ -53,7 +54,7 @@ public class ProjectileGun : Gun
         HitMarker(lastHit);
     }
 
-    [ServerRpc]
+    //[ServerRpc]
     private void ApplyDamageObjectServerRpc(HealthObject obj, int dmg, Vector3 point)
     {
         obj.ChangeHealth(-dmg, point);

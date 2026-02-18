@@ -15,7 +15,7 @@ public class Player : NetworkBehaviour
     [Space]
     [SerializeField] private CameraSpring cameraSpring;
     [SerializeField] private CameraLean cameraLean;
-    [SerializeField] private PlayerInputsAction _inputActions;
+    public PlayerInputsAction _inputActions;
     public string playerName;
     [SerializeField] private GameObject canvasPrefab;
     [SerializeField] private bool isSpinning = false;
@@ -104,6 +104,11 @@ public class Player : NetworkBehaviour
             HandleInputs(); 
 
             playerCharacter.UpdateBody(Time.deltaTime);
+
+            if(Input.GetKeyDown(KeyCode.H))
+                playerHealth.ChangeHealth(-5);
+            if(Input.GetKeyDown(KeyCode.J))
+                playerHealth.ChangeHealth(-70);
         }
     }
 

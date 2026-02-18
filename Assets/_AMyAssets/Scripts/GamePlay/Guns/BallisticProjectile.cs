@@ -70,6 +70,8 @@ public class BallisticProjectile : NetworkBehaviour
             _ownerGun.ReportObjectHit(obj, _damage, hit.point);
         }
 
+        Debug.Log($"LA BALA HA IMPACTOADO CONTRA : {hit.transform.gameObject.name}");
+
         // Efectos visuales
         
         Destroy(gameObject);

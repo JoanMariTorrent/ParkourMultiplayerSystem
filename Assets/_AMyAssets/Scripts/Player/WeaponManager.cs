@@ -266,7 +266,7 @@ public class WeaponManager : NetworkBehaviour
             if (_ownedWeapons[i] != null) _ownedWeapons[i].SetActive(false);
         }
 
-        ToggleNetworkTransform(weaponToSwitch, false);
+        //ToggleNetworkTransform(weaponToSwitch, false);
 
         weaponToSwitch.SetActive(true);
         
@@ -516,7 +516,8 @@ public class WeaponManager : NetworkBehaviour
         else if (_currentItem is Utility u) u.SetDown();
 
         dropped.transform.SetParent(null); 
-        ToggleNetworkTransform(dropped, false);
+
+        //ToggleNetworkTransform(dropped, true);
 
         Rigidbody rb = dropped.GetComponent<Rigidbody>();
         if(rb)

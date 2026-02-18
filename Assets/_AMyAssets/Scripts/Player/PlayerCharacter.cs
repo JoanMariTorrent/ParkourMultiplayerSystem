@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine.Rendering;
 using Interfaces;
-using System.Linq.Expressions;
 
 public struct CharacterInput
 {
@@ -77,6 +76,10 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [Range(0f, 1f)]
     [SerializeField] private float jumpSustainGravity = 0.4f;
     [SerializeField] private float gravity = -90f;
+    [Header("Movement Penalties")]
+    [SerializeField] private float reloadSpeedMultiplier = 0.6f;
+    [SerializeField] private float hitSlowdownMultiplier = 0.5f;
+[SerializeField] private float hitSlowdownDuration = 1.0f;
     
     [Header("Wall Run Settings")]
     [SerializeField] private float wallRunSpeed = 18f; 
@@ -172,6 +175,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     private float _timeSinceWallJump = 10f;
     private bool _isFacingWall = false; 
     private float _currentClimbTimer = 0f;
+    private Vector3 _lastWallNormal;
 
     // Slide vars
     private float _timeSinceLastSlide = 10f; 
@@ -469,7 +473,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             _state.Stance is not Stance.Stand && 
             _state.Stance is not Stance.Wall && 
             _state.Stance is not Stance.Climb &&
-            _state.Stance is not Stance.Grapple) // <--- ¡ESTO FALTABA!
+            _state.Stance is not Stance.Grapple)
         {
             _state.Stance = Stance.Stand;
             motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
@@ -496,6 +500,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     public void BeforeCharacterUpdate(float deltaTime)
     {
         _tempState = _state;
+        _lastWallNormal = _wallNormal;
         
         if (_requestedCrouch && _state.Stance == Stance.Stand)
         {
@@ -509,7 +514,18 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         DetectWall(out _currentWallSide, out _wallNormal);
         DetectFrontWall(out _isFacingWall, out Vector3 frontWallNormal);
         
-        if (_isFacingWall) _wallNormal = frontWallNormal;
+        if (_isFacingWall)
+        {
+            float angleBetweenWalls = Vector3.Angle(_lastWallNormal, frontWallNormal);
+            if(_state.Stance != Stance.Wall || angleBetweenWalls < 70f)
+            {
+                _wallNormal = frontWallNormal;
+            }
+            else
+            {
+                _isFacingWall = false;
+            }
+        }
     }
 
     public bool IsColliderValidForCollisions(Collider coll)
@@ -540,6 +556,32 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
+        // Reduccion de velocidad global
+        float globalSlowdown = 1f;
+        
+        if(weaponManager != null && weaponManager._currentGun != null && weaponManager._currentGun.IsReloading)
+        {
+            globalSlowdown *= reloadSpeedMultiplier;
+        }
+
+        if (playerHealth != null)
+        {
+            float tiempoDesdeGolpe = Time.time - playerHealth.lastTimeTakenDamage;
+        
+            if (tiempoDesdeGolpe < hitSlowdownDuration)
+            {
+                float t = tiempoDesdeGolpe / hitSlowdownDuration;
+                
+                float targetSlowdown = Mathf.Lerp(1f, hitSlowdownMultiplier, playerHealth.lastHitIntensity);
+        
+                float factorRecuperacion = Mathf.Lerp(targetSlowdown, 1f, t);
+                
+                globalSlowdown *= factorRecuperacion;
+        
+                Debug.Log($"Intensidad: {playerHealth.lastHitIntensity} | Freno: {targetSlowdown}");
+            }
+        }
+        
         _state.Acceleration = Vector3.zero;
 
         // --- LÓGICA DE GANCHO (GRAPPLE) ---
@@ -619,6 +661,9 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         currentVelocity = Vector3.ProjectOnPlane(_lastState.Velocity, motor.GroundingStatus.GroundNormal);
 
                     var effectiveSliderStartSpeed = (!_lastState.Grounded && !_requestedCrouchInAir) ? 0f : slideStartSpeed;
+
+                    effectiveSliderStartSpeed *= globalSlowdown;
+
                     if (!_lastState.Grounded && !_requestedCrouchInAir) _requestedCrouchInAir = false;
 
                     var slideSpeed = Mathf.Max(effectiveSliderStartSpeed, currentVelocity.magnitude);
@@ -646,28 +691,19 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
                 if (_state.Stance == Stance.Stand)
                 {
-                    if (canSprint)
-                    {
-                        targetSpeed = runSpeed;
-                    }
-                    else if (isAiming)
-                    {
-                        targetSpeed = aimWalkSpeed; // <--- Velocidad reducida al apuntar
-                    }
-                    else
-                    {
-                        targetSpeed = walkSpeed;
-                    }
+                    if (canSprint) targetSpeed = runSpeed;
+                    else if (isAiming) targetSpeed = aimWalkSpeed; 
+                    else targetSpeed = walkSpeed;
                     
                     response = walkResponse;
                 }
                 else // Crouch
                 {
-                    // Nota: Normalmente agachado vas igual de lento apuntando o no, 
-                    // pero si quieres que sea aún más lento, puedes añadir un if(isAiming) aquí también.
                     targetSpeed = crouchSpeed;
                     response = crouchResponse;
                 }
+
+                targetSpeed *= globalSlowdown;
 
                 var targetVelocity = groundedMovement * targetSpeed;
                 var moveVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 1f - Mathf.Exp(-response * deltaTime));
@@ -681,14 +717,16 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 currentVelocity -= Vector3.ProjectOnPlane(-motor.CharacterUp, motor.GroundingStatus.GroundNormal) * slideGravity * deltaTime; 
 
                 var currentSpeed = currentVelocity.magnitude;
-                var targetVelocity = groundedMovement * currentSpeed;
+
+
+                var targetVelocity = groundedMovement * (currentSpeed * globalSlowdown);
                 var steerForce = (targetVelocity - currentVelocity) * slideSteerAcceleration * deltaTime;
                 var newVelocity = currentVelocity + steerForce;
                 
                 currentVelocity = Vector3.ClampMagnitude(newVelocity, currentSpeed);
                 _state.Acceleration = (currentVelocity - newVelocity) / deltaTime; 
 
-                if (currentVelocity.magnitude < slideEndSpeed) _state.Stance = Stance.Crouch;
+                if (currentVelocity.magnitude < (slideEndSpeed * globalSlowdown)) _state.Stance = Stance.Crouch;
             }
         }
         // AIR MOVEMENT / WALL MECHANICS 
@@ -717,7 +755,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
                         
                         currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
-                        currentVelocity.y = climbSpeed;
+                        currentVelocity.y = climbSpeed * globalSlowdown;
                         
                         jumps = 1; 
                     }
@@ -760,7 +798,8 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 jumps = 1;
                 _currentClimbTimer += deltaTime;
 
-                float deceleration = climbSpeed / maxClimbDuration; 
+                float effectiveClimbSpeed = climbSpeed * globalSlowdown;
+                float deceleration = effectiveClimbSpeed / maxClimbDuration; 
                 currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, 0f, deceleration * deltaTime);
                 
                 Vector3 horizontalVel = Vector3.ProjectOnPlane(currentVelocity, Vector3.up);
@@ -771,6 +810,11 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             // WALL RUN 
             else if (_state.Stance == Stance.Wall)
             {
+                if (Vector3.Dot(_lastWallNormal, _wallNormal) < 0.5f && _lastWallNormal != Vector3.zero)
+                {
+                    _state.Stance = Stance.Stand; // Rompemos el wallrun
+                    return;
+                }
                 jumps = 1;
                 _currentClimbTimer = 0f; 
 
@@ -790,10 +834,10 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
                 if (_requestedMovement.magnitude > 0)
                 {
-                   Vector3 targetVelocity = wallRunDirection * wallRunSpeed;
+                   Vector3 targetVelocity = wallRunDirection * (wallRunSpeed * globalSlowdown);
                    float currentSpeedAlongWall = Vector3.Dot(horizontalVelocity, wallRunDirection);
 
-                   if (currentSpeedAlongWall > wallRunSpeed)
+                   if (currentSpeedAlongWall > (wallRunSpeed * globalSlowdown))
                        horizontalVelocity = Vector3.Lerp(horizontalVelocity, targetVelocity, wallMomentumDecay * deltaTime);
                    else
                        horizontalVelocity = Vector3.Lerp(horizontalVelocity, targetVelocity, wallRunAcceleration * deltaTime);
@@ -811,16 +855,19 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             {   
                 if (_requestedMovement.sqrMagnitude > 0f)
                 {
+                    float effectiveAirAcceleration = airAcceleration * globalSlowdown;
+                    float effectiveAirSpeed = airSpeed * globalSlowdown;
+
                     var planarMovement = Vector3.zero;
                     var projected = Vector3.ProjectOnPlane(_requestedMovement, motor.CharacterUp);
                     if (projected.sqrMagnitude > 0) planarMovement = projected.normalized;
                     
                     var currentPlanarVelocity = Vector3.ProjectOnPlane(currentVelocity, motor.CharacterUp);
-                    var movementForce = planarMovement * airAcceleration * deltaTime;
+                    var movementForce = planarMovement * effectiveAirAcceleration * deltaTime;
 
-                    if (currentPlanarVelocity.magnitude < airSpeed)
+                    if (currentPlanarVelocity.magnitude < effectiveAirSpeed)
                     {
-                        var targetPlanarVelocity = Vector3.ClampMagnitude(currentPlanarVelocity + movementForce, airSpeed);
+                        var targetPlanarVelocity = Vector3.ClampMagnitude(currentPlanarVelocity + movementForce, effectiveAirSpeed);
                         movementForce = targetPlanarVelocity - currentPlanarVelocity;
                     }
                     else if (Vector3.Dot(currentPlanarVelocity, movementForce) > 0f)
@@ -889,7 +936,10 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     _ungroundedDueToJump = true;
 
                     float currentVerticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
-                    float targetVerticalSpeed = Mathf.Max(currentVerticalSpeed, jumpSpeed);
+
+                    float effectiveJumpSpeed = jumpSpeed * globalSlowdown;
+                    float targetVerticalSpeed = Mathf.Max(currentVerticalSpeed, effectiveJumpSpeed);
+
                     currentVelocity += motor.CharacterUp * (targetVerticalSpeed - currentVerticalSpeed);
 
                     jumps -= 1;

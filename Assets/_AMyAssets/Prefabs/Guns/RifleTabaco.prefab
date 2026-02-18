@@ -79,7 +79,7 @@ Transform:
   m_GameObject: {fileID: 1383448258628988601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.155, y: -0.217, z: 0.242}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -323,8 +323,8 @@ MonoBehaviour:
   otherPlayerGunTag: 8
   spreadX: 0.03
   spreadY: 0.01
-  movingSpreadX: 0.2
-  movingSpreadY: 0.1
+  movingSpreadX: 0.145
+  movingSpreadY: 0.145
   recoilX: -5
   recoilY: -8
   recoilZ: 0.1

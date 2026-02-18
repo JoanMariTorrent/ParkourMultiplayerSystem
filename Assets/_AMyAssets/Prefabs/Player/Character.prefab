@@ -495,7 +495,7 @@ MonoBehaviour:
   - {fileID: 5400225345847635257}
   playerCamera: {fileID: 7793214397378440027}
   rb: {fileID: 6714405065655426304}
-  playerHealth: {fileID: 0}
+  playerHealth: {fileID: 6592323882771729509}
   walkSpeed: 6.5
   runSpeed: 14.3
   crouchSpeed: 5
@@ -509,6 +509,9 @@ MonoBehaviour:
   coyoteTime: 0.1
   jumpSustainGravity: 0.846
   gravity: -87
+  reloadSpeedMultiplier: 0.6
+  hitSlowdownMultiplier: 0.25
+  hitSlowdownDuration: 0.6
   wallRunSpeed: 20
   wallGravity: -2.5
   wallCheckDistance: 0.65
@@ -523,7 +526,7 @@ MonoBehaviour:
   wallRunAcceleration: 7
   climbSpeed: 15
   maxClimbDuration: 1
-  climbJumpBackForce: 20
+  climbJumpBackForce: 14
   climbJumpUpForce: 15
   maxClimbAngle: 30
   slideStartSpeed: 22
@@ -4498,6 +4501,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7388410433800177275, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 7636289352493295535}
     - target: {fileID: 7432674931088882720, guid: 76b40ca19986d9f4eae18a8d7ae2a932, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

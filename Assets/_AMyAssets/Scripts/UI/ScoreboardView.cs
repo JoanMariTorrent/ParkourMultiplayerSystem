@@ -8,6 +8,7 @@ public class ScoreboardView : View
     [SerializeField] private ScoreboardEntry scoreboardEntryPrefab;
 
     [SerializeField] private Canvas _gameViewManager;
+    [SerializeField] private Player player;
 
     private void Awake()
     {
@@ -51,9 +52,9 @@ public class ScoreboardView : View
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (player._inputActions.GamePlay.OpenScoreBoard.IsPressed())
             _gameViewManager.ShowView<ScoreboardView>(false);
-        if (Input.GetKeyUp(KeyCode.Tab))
+        if (player._inputActions.GamePlay.OpenScoreBoard.WasReleasedThisFrame())
             _gameViewManager.HideView<ScoreboardView>();
 
 

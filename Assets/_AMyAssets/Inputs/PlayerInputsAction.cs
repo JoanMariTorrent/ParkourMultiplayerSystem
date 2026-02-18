@@ -208,6 +208,33 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""New action"",
+                    ""type"": ""Button"",
+                    ""id"": ""f1151a62-0c36-49ae-951f-ac7b5c754ba8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""f66b451f-e32c-4d19-89b5-def987c765aa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenScoreBoard"",
+                    ""type"": ""Button"",
+                    ""id"": ""0335dd15-f1fa-4e79-adc1-f76b5b7ba26b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -441,6 +468,39 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""action"": ""Emote"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f90c0237-7bcb-45ce-b6ce-30005a12b9d3"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4efb65a-e396-4c97-a9c7-ce5467e401c3"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dab33bc8-a01c-453c-b944-5466307fe3ab"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenScoreBoard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -468,6 +528,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         m_GamePlay_DropGun = m_GamePlay.FindAction("DropGun", throwIfNotFound: true);
         m_GamePlay_ChangeHand = m_GamePlay.FindAction("ChangeHand", throwIfNotFound: true);
         m_GamePlay_Emote = m_GamePlay.FindAction("Emote", throwIfNotFound: true);
+        m_GamePlay_Newaction = m_GamePlay.FindAction("New action", throwIfNotFound: true);
+        m_GamePlay_OpenInventory = m_GamePlay.FindAction("OpenInventory", throwIfNotFound: true);
+        m_GamePlay_OpenScoreBoard = m_GamePlay.FindAction("OpenScoreBoard", throwIfNotFound: true);
     }
 
     ~@PlayerInputsAction()
@@ -561,6 +624,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_DropGun;
     private readonly InputAction m_GamePlay_ChangeHand;
     private readonly InputAction m_GamePlay_Emote;
+    private readonly InputAction m_GamePlay_Newaction;
+    private readonly InputAction m_GamePlay_OpenInventory;
+    private readonly InputAction m_GamePlay_OpenScoreBoard;
     /// <summary>
     /// Provides access to input actions defined in input action map "GamePlay".
     /// </summary>
@@ -624,6 +690,18 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "GamePlay/Emote".
         /// </summary>
         public InputAction @Emote => m_Wrapper.m_GamePlay_Emote;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Newaction".
+        /// </summary>
+        public InputAction @Newaction => m_Wrapper.m_GamePlay_Newaction;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/OpenInventory".
+        /// </summary>
+        public InputAction @OpenInventory => m_Wrapper.m_GamePlay_OpenInventory;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/OpenScoreBoard".
+        /// </summary>
+        public InputAction @OpenScoreBoard => m_Wrapper.m_GamePlay_OpenScoreBoard;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -689,6 +767,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @Emote.started += instance.OnEmote;
             @Emote.performed += instance.OnEmote;
             @Emote.canceled += instance.OnEmote;
+            @Newaction.started += instance.OnNewaction;
+            @Newaction.performed += instance.OnNewaction;
+            @Newaction.canceled += instance.OnNewaction;
+            @OpenInventory.started += instance.OnOpenInventory;
+            @OpenInventory.performed += instance.OnOpenInventory;
+            @OpenInventory.canceled += instance.OnOpenInventory;
+            @OpenScoreBoard.started += instance.OnOpenScoreBoard;
+            @OpenScoreBoard.performed += instance.OnOpenScoreBoard;
+            @OpenScoreBoard.canceled += instance.OnOpenScoreBoard;
         }
 
         /// <summary>
@@ -739,6 +826,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @Emote.started -= instance.OnEmote;
             @Emote.performed -= instance.OnEmote;
             @Emote.canceled -= instance.OnEmote;
+            @Newaction.started -= instance.OnNewaction;
+            @Newaction.performed -= instance.OnNewaction;
+            @Newaction.canceled -= instance.OnNewaction;
+            @OpenInventory.started -= instance.OnOpenInventory;
+            @OpenInventory.performed -= instance.OnOpenInventory;
+            @OpenInventory.canceled -= instance.OnOpenInventory;
+            @OpenScoreBoard.started -= instance.OnOpenScoreBoard;
+            @OpenScoreBoard.performed -= instance.OnOpenScoreBoard;
+            @OpenScoreBoard.canceled -= instance.OnOpenScoreBoard;
         }
 
         /// <summary>
@@ -883,5 +979,26 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEmote(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "New action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnNewaction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenInventory(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenScoreBoard" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenScoreBoard(InputAction.CallbackContext context);
     }
 }

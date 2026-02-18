@@ -35,6 +35,10 @@ public class PlayerHealth : NetworkBehaviour
     public PlayerID PlayerID => owner.Value;
 
     public int health => _health.value;
+    public int maxHealth => _maxHealth;
+    public float lastTimeTakenDamage { get; private set; } = -10f;
+    private int _oldHealth;
+    public float lastHitIntensity { get; private set; }
 
 
     void Start()
@@ -47,6 +51,7 @@ public class PlayerHealth : NetworkBehaviour
     protected override void OnSpawned()
     {
         base.OnSpawned();
+        _oldHealth = _health.value;
 
         var _actualLayer = isOwner ? _selfLayer : _otherLayer;
         SetLayerRecursive(gameObject, _actualLayer);
@@ -71,6 +76,19 @@ public class PlayerHealth : NetworkBehaviour
 
     private void OnHealthChanged(int _newHealth)
     {
+        if (_newHealth < _oldHealth)
+        {
+            int damageTaken = _oldHealth - _newHealth;
+            lastTimeTakenDamage = Time.time;
+
+            float baseIntensity = 0.4f;
+            float damageScale = damageTaken / 25f;
+
+            lastHitIntensity = Mathf.Clamp01(baseIntensity + damageScale);
+        }
+    
+        _oldHealth = _newHealth;
+
         canvas.gameMainView.UpdateHealth(_newHealth, _maxHealth);
     }
 
@@ -93,7 +111,6 @@ public class PlayerHealth : NetworkBehaviour
         if (playerCharacter.GodMode) return;
 
         _health.value += _amount;
-        //Debug.Log(_amount);
 
         if(_health.value > 0)
         {

@@ -11,9 +11,6 @@ public class CanvasTemp : MonoBehaviour
     {
         velocityText.text = playerCharacter._state.Velocity.ToString();
 
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            SceneManager.LoadScene(0);
-        }
+        
     }
 }

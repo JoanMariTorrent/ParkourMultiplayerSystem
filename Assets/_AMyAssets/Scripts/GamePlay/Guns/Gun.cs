@@ -86,6 +86,9 @@ public class Gun : EquippableItem, ITakeGun
     public Vector3 initPos = Vector3.zero;
     [SerializeField] private Vector3 equippedScale = Vector3.one; 
     [SerializeField] private Vector3 droppedScale = new Vector3(1, 1, 1);
+    
+    [Header("Extras")]
+    public bool IsReloading => reloading;
 
     
 

@@ -43,7 +43,7 @@ public class MainSettingsView : View
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (player._inputActions.GamePlay.OpenInventory.WasPressedThisFrame())
         {
             canvas.ShowView<MainSettingsView>(true);
             canvas.HideView<GameMainView>();
