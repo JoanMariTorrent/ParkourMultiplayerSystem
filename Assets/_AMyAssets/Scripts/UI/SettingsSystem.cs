@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Audio;
-using UnityEngine.ProBuilder.MeshOperations;
+using System.IO;
 
 public class SettingsSystem : MonoBehaviour
 {
@@ -57,14 +57,21 @@ public class SettingsSystem : MonoBehaviour
     private Resolution[] filteredResolutions;
     private ColorAdjustments colorAdjustments;
 
+    // Sistema de guardado
+    private const string SettingsKey = "GameSettings";
+    private string SettingsPath => SavePathManager.GetPath("settings.json");
+
     void Awake()
     {
+        LoadSettings();
         SetupVideoSettings();
     }
 
     void Start()
     {
         LoadValuesFromSettings();
+
+        ApplyAllSettings();
 
         RegisterEvents();
     }
@@ -238,6 +245,8 @@ public class SettingsSystem : MonoBehaviour
         Screen.SetResolution(res.width, res.height, Screen.fullScreen);
         
         settings.resolutionIndex = resolutionIndex;
+
+        SaveSettings();
     }
 
     public void SetQuality(int qualityIndex)
@@ -245,12 +254,15 @@ public class SettingsSystem : MonoBehaviour
         QualitySettings.SetQualityLevel(qualityIndex);
         
         settings.qualityIndex = qualityIndex;
+
+        SaveSettings();
     }
 
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
         settings.isFullscreen = isFullscreen;
+        SaveSettings();
     }
 
     public void SetGamma(float val)
@@ -263,6 +275,8 @@ public class SettingsSystem : MonoBehaviour
             float exposureValue = Mathf.Lerp(-2f, 2f, val);
             adj.postExposure.value = exposureValue;
         }
+
+        SaveSettings();
     }
 
     public void SetMaxFPS(string inputVal)
@@ -287,7 +301,10 @@ public class SettingsSystem : MonoBehaviour
 
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = targetFPS;
+            settings.targetFPS = targetFPS;
         }
+
+        SaveSettings();
     }
 
     #endregion
@@ -301,10 +318,10 @@ public class SettingsSystem : MonoBehaviour
         mainMixer.SetFloat(paramName, dB);
     }
 
-    public void SetMasterVolume(float val) { settings.masterVolume = val; SetMixerVolume("MasterVolume", val); }
-    public void SetMusicVolume(float val) { settings.musicVolume = val; SetMixerVolume("MusicVolume", val); }
-    public void SetSFXVolume(float val) { settings.sfxVolume = val; SetMixerVolume("SFXVolume", val); }
-    public void SetUIVolume(float val) { settings.uiVolume = val; SetMixerVolume("UIVolume", val); }
+    public void SetMasterVolume(float val) { settings.masterVolume = val; SetMixerVolume("MasterVolume", val); SaveSettings(); }
+    public void SetMusicVolume(float val) { settings.musicVolume = val; SetMixerVolume("MusicVolume", val); SaveSettings();}
+    public void SetSFXVolume(float val) { settings.sfxVolume = val; SetMixerVolume("SFXVolume", val); SaveSettings();}
+    public void SetUIVolume(float val) { settings.uiVolume = val; SetMixerVolume("UIVolume", val); SaveSettings(); }
     
     #endregion
 
@@ -316,6 +333,7 @@ public class SettingsSystem : MonoBehaviour
     {
         settings.useCenterDot = newValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void OnDotSizeChanged(float newValue)
@@ -323,16 +341,15 @@ public class SettingsSystem : MonoBehaviour
         float realValue = Mathf.Lerp(3, 18, newValue);
         settings.centerDotSize = realValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void OnDotOpacityChanged(float newValue)
     {
         settings.centerDotOpacity = newValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
-
-    
-
 
 
     public void OnInnerThicknessChanged(float newValue)
@@ -340,12 +357,14 @@ public class SettingsSystem : MonoBehaviour
         float realValue = Mathf.Lerp(1, 60, newValue);
         settings.innerThickness = realValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void OnInnerOpacityChanged(float newValue)
     {
         settings.innerOpacity = newValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void OnInnerLenghtChanged(float newValue)
@@ -353,6 +372,7 @@ public class SettingsSystem : MonoBehaviour
         float realValue = Mathf.Lerp(1, 50, newValue);
         settings.innerLenght = realValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void OnInnerOffsetChanged(float newValue)
@@ -360,12 +380,14 @@ public class SettingsSystem : MonoBehaviour
         float realValue = Mathf.Lerp(1, 65, newValue);
         settings.innerOffset = realValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void OnShowInner(bool newValue)
     {
         settings.showInnerLines = newValue;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void UpdateRGBColor(float valueIgnored) 
@@ -374,6 +396,7 @@ public class SettingsSystem : MonoBehaviour
 
         settings.crosshairColor = finalColor;
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
+        SaveSettings();
     }
 
     public void OnNormalSensibilityChange(float newValue)
@@ -382,6 +405,7 @@ public class SettingsSystem : MonoBehaviour
 
         settings.sensitivity = realValue;
         settings.OnSensitivityChanged?.Invoke();
+        SaveSettings();
     }
 
     public void OnAimingSensibilityChange(float newValue)
@@ -390,6 +414,7 @@ public class SettingsSystem : MonoBehaviour
 
         settings.aimingSensitivity = realValue;
         settings.OnSensitivityChanged?.Invoke();
+        SaveSettings();
     }
 
     public void OnSniperSensibilityChange(float newValue)
@@ -398,7 +423,67 @@ public class SettingsSystem : MonoBehaviour
 
         settings.sniperSensitivity = realValue;
         settings.OnSensitivityChanged?.Invoke();
+        SaveSettings();
     }
+    #endregion
+
+    #region Sistema de guardado
+
+    public void SaveSettings()
+    {
+        try 
+        {
+            string json = JsonUtility.ToJson(settings);
+            File.WriteAllText(SettingsPath, json);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"No se pudo guardar: {e.Message}");
+        }
+    }
+
+    public void LoadSettings()
+    {
+        if (File.Exists(SettingsPath))
+        {
+            try 
+            {
+                string json = File.ReadAllText(SettingsPath);
+                JsonUtility.FromJsonOverwrite(json, settings);
+                Debug.Log("<color=green>Ajustes cargados desde el disco.</color>");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error al leer el archivo de ajustes: {e.Message}");
+            }
+        }
+        else 
+        {
+            // Si no existe, guardamos uno inicial con los valores por defecto
+            Debug.Log("<color=yellow>No se encontró archivo de ajustes. Creando uno inicial...</color>");
+            SaveSettings();
+        }
+    }
+
+    private void ApplyAllSettings()
+    {
+        SetMasterVolume(settings.masterVolume);
+        SetMusicVolume(settings.musicVolume);
+        SetSFXVolume(settings.sfxVolume);
+        SetUIVolume(settings.uiVolume);
+
+
+        SetFullscreen(settings.isFullscreen);
+        SetQuality(settings.qualityIndex);
+        SetGamma(settings.gamma);
+        
+        if(filteredResolutions != null && settings.resolutionIndex < filteredResolutions.Length)
+            SetResolution(settings.resolutionIndex);
+
+        foreach (var c in crosshairControllers) c.UpdateCrosshair();
+    }
+
+
     #endregion
     
 }

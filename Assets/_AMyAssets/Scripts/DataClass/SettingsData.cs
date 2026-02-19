@@ -17,6 +17,7 @@ public class SettingsData : ScriptableObject
     public int qualityIndex = 2;
     public bool isFullscreen = true;
     public float gamma = 1f;
+    public int targetFPS;
 
     // Configuracion de audio
     public float masterVolume = 0.8f;

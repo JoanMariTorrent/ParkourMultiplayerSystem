@@ -129,33 +129,6 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Shoot"",
-                    ""type"": ""Button"",
-                    ""id"": ""d1d694c0-9d48-47d4-9ed3-6cb1f83ff397"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Aim"",
-                    ""type"": ""Button"",
-                    ""id"": ""adf51e59-c2b0-437d-961d-4b0a9b0e2bd5"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""ChangeGun"",
-                    ""type"": ""Button"",
-                    ""id"": ""76650283-5940-46d6-8253-9b60c6a666eb"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""Running"",
                     ""type"": ""Button"",
                     ""id"": ""d6223ac0-b684-4da4-8561-51d5b4357b56"",
@@ -165,9 +138,9 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Interact"",
+                    ""name"": ""Shoot"",
                     ""type"": ""Button"",
-                    ""id"": ""d37f5b1e-0bbc-42f2-a021-88fa5a713971"",
+                    ""id"": ""d1d694c0-9d48-47d4-9ed3-6cb1f83ff397"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -183,6 +156,24 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""adf51e59-c2b0-437d-961d-4b0a9b0e2bd5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""d37f5b1e-0bbc-42f2-a021-88fa5a713971"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""DropGun"",
                     ""type"": ""Button"",
                     ""id"": ""39280814-0b39-4fd0-81f0-f388048a2655"",
@@ -190,6 +181,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeGun"",
+                    ""type"": ""Button"",
+                    ""id"": ""76650283-5940-46d6-8253-9b60c6a666eb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""ChangeHand"",
@@ -204,15 +204,6 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                     ""name"": ""Emote"",
                     ""type"": ""Button"",
                     ""id"": ""c3a10a97-1515-4b56-932b-557773caeaf7"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""New action"",
-                    ""type"": ""Button"",
-                    ""id"": ""f1151a62-0c36-49ae-951f-ac7b5c754ba8"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -471,17 +462,6 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f90c0237-7bcb-45ce-b6ce-30005a12b9d3"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""New action"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""f4efb65a-e396-4c97-a9c7-ce5467e401c3"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
@@ -519,16 +499,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         m_GamePlay_Move = m_GamePlay.FindAction("Move", throwIfNotFound: true);
         m_GamePlay_Jump = m_GamePlay.FindAction("Jump", throwIfNotFound: true);
         m_GamePlay_Crouch = m_GamePlay.FindAction("Crouch", throwIfNotFound: true);
-        m_GamePlay_Shoot = m_GamePlay.FindAction("Shoot", throwIfNotFound: true);
-        m_GamePlay_Aim = m_GamePlay.FindAction("Aim", throwIfNotFound: true);
-        m_GamePlay_ChangeGun = m_GamePlay.FindAction("ChangeGun", throwIfNotFound: true);
         m_GamePlay_Running = m_GamePlay.FindAction("Running", throwIfNotFound: true);
-        m_GamePlay_Interact = m_GamePlay.FindAction("Interact", throwIfNotFound: true);
+        m_GamePlay_Shoot = m_GamePlay.FindAction("Shoot", throwIfNotFound: true);
         m_GamePlay_Reload = m_GamePlay.FindAction("Reload", throwIfNotFound: true);
+        m_GamePlay_Aim = m_GamePlay.FindAction("Aim", throwIfNotFound: true);
+        m_GamePlay_Interact = m_GamePlay.FindAction("Interact", throwIfNotFound: true);
         m_GamePlay_DropGun = m_GamePlay.FindAction("DropGun", throwIfNotFound: true);
+        m_GamePlay_ChangeGun = m_GamePlay.FindAction("ChangeGun", throwIfNotFound: true);
         m_GamePlay_ChangeHand = m_GamePlay.FindAction("ChangeHand", throwIfNotFound: true);
         m_GamePlay_Emote = m_GamePlay.FindAction("Emote", throwIfNotFound: true);
-        m_GamePlay_Newaction = m_GamePlay.FindAction("New action", throwIfNotFound: true);
         m_GamePlay_OpenInventory = m_GamePlay.FindAction("OpenInventory", throwIfNotFound: true);
         m_GamePlay_OpenScoreBoard = m_GamePlay.FindAction("OpenScoreBoard", throwIfNotFound: true);
     }
@@ -615,16 +594,15 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Move;
     private readonly InputAction m_GamePlay_Jump;
     private readonly InputAction m_GamePlay_Crouch;
-    private readonly InputAction m_GamePlay_Shoot;
-    private readonly InputAction m_GamePlay_Aim;
-    private readonly InputAction m_GamePlay_ChangeGun;
     private readonly InputAction m_GamePlay_Running;
-    private readonly InputAction m_GamePlay_Interact;
+    private readonly InputAction m_GamePlay_Shoot;
     private readonly InputAction m_GamePlay_Reload;
+    private readonly InputAction m_GamePlay_Aim;
+    private readonly InputAction m_GamePlay_Interact;
     private readonly InputAction m_GamePlay_DropGun;
+    private readonly InputAction m_GamePlay_ChangeGun;
     private readonly InputAction m_GamePlay_ChangeHand;
     private readonly InputAction m_GamePlay_Emote;
-    private readonly InputAction m_GamePlay_Newaction;
     private readonly InputAction m_GamePlay_OpenInventory;
     private readonly InputAction m_GamePlay_OpenScoreBoard;
     /// <summary>
@@ -655,33 +633,33 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Crouch => m_Wrapper.m_GamePlay_Crouch;
         /// <summary>
-        /// Provides access to the underlying input action "GamePlay/Shoot".
-        /// </summary>
-        public InputAction @Shoot => m_Wrapper.m_GamePlay_Shoot;
-        /// <summary>
-        /// Provides access to the underlying input action "GamePlay/Aim".
-        /// </summary>
-        public InputAction @Aim => m_Wrapper.m_GamePlay_Aim;
-        /// <summary>
-        /// Provides access to the underlying input action "GamePlay/ChangeGun".
-        /// </summary>
-        public InputAction @ChangeGun => m_Wrapper.m_GamePlay_ChangeGun;
-        /// <summary>
         /// Provides access to the underlying input action "GamePlay/Running".
         /// </summary>
         public InputAction @Running => m_Wrapper.m_GamePlay_Running;
         /// <summary>
-        /// Provides access to the underlying input action "GamePlay/Interact".
+        /// Provides access to the underlying input action "GamePlay/Shoot".
         /// </summary>
-        public InputAction @Interact => m_Wrapper.m_GamePlay_Interact;
+        public InputAction @Shoot => m_Wrapper.m_GamePlay_Shoot;
         /// <summary>
         /// Provides access to the underlying input action "GamePlay/Reload".
         /// </summary>
         public InputAction @Reload => m_Wrapper.m_GamePlay_Reload;
         /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Aim".
+        /// </summary>
+        public InputAction @Aim => m_Wrapper.m_GamePlay_Aim;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/Interact".
+        /// </summary>
+        public InputAction @Interact => m_Wrapper.m_GamePlay_Interact;
+        /// <summary>
         /// Provides access to the underlying input action "GamePlay/DropGun".
         /// </summary>
         public InputAction @DropGun => m_Wrapper.m_GamePlay_DropGun;
+        /// <summary>
+        /// Provides access to the underlying input action "GamePlay/ChangeGun".
+        /// </summary>
+        public InputAction @ChangeGun => m_Wrapper.m_GamePlay_ChangeGun;
         /// <summary>
         /// Provides access to the underlying input action "GamePlay/ChangeHand".
         /// </summary>
@@ -690,10 +668,6 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "GamePlay/Emote".
         /// </summary>
         public InputAction @Emote => m_Wrapper.m_GamePlay_Emote;
-        /// <summary>
-        /// Provides access to the underlying input action "GamePlay/Newaction".
-        /// </summary>
-        public InputAction @Newaction => m_Wrapper.m_GamePlay_Newaction;
         /// <summary>
         /// Provides access to the underlying input action "GamePlay/OpenInventory".
         /// </summary>
@@ -740,36 +714,33 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @Crouch.started += instance.OnCrouch;
             @Crouch.performed += instance.OnCrouch;
             @Crouch.canceled += instance.OnCrouch;
-            @Shoot.started += instance.OnShoot;
-            @Shoot.performed += instance.OnShoot;
-            @Shoot.canceled += instance.OnShoot;
-            @Aim.started += instance.OnAim;
-            @Aim.performed += instance.OnAim;
-            @Aim.canceled += instance.OnAim;
-            @ChangeGun.started += instance.OnChangeGun;
-            @ChangeGun.performed += instance.OnChangeGun;
-            @ChangeGun.canceled += instance.OnChangeGun;
             @Running.started += instance.OnRunning;
             @Running.performed += instance.OnRunning;
             @Running.canceled += instance.OnRunning;
-            @Interact.started += instance.OnInteract;
-            @Interact.performed += instance.OnInteract;
-            @Interact.canceled += instance.OnInteract;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @Aim.started += instance.OnAim;
+            @Aim.performed += instance.OnAim;
+            @Aim.canceled += instance.OnAim;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
             @DropGun.started += instance.OnDropGun;
             @DropGun.performed += instance.OnDropGun;
             @DropGun.canceled += instance.OnDropGun;
+            @ChangeGun.started += instance.OnChangeGun;
+            @ChangeGun.performed += instance.OnChangeGun;
+            @ChangeGun.canceled += instance.OnChangeGun;
             @ChangeHand.started += instance.OnChangeHand;
             @ChangeHand.performed += instance.OnChangeHand;
             @ChangeHand.canceled += instance.OnChangeHand;
             @Emote.started += instance.OnEmote;
             @Emote.performed += instance.OnEmote;
             @Emote.canceled += instance.OnEmote;
-            @Newaction.started += instance.OnNewaction;
-            @Newaction.performed += instance.OnNewaction;
-            @Newaction.canceled += instance.OnNewaction;
             @OpenInventory.started += instance.OnOpenInventory;
             @OpenInventory.performed += instance.OnOpenInventory;
             @OpenInventory.canceled += instance.OnOpenInventory;
@@ -799,36 +770,33 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
             @Crouch.started -= instance.OnCrouch;
             @Crouch.performed -= instance.OnCrouch;
             @Crouch.canceled -= instance.OnCrouch;
-            @Shoot.started -= instance.OnShoot;
-            @Shoot.performed -= instance.OnShoot;
-            @Shoot.canceled -= instance.OnShoot;
-            @Aim.started -= instance.OnAim;
-            @Aim.performed -= instance.OnAim;
-            @Aim.canceled -= instance.OnAim;
-            @ChangeGun.started -= instance.OnChangeGun;
-            @ChangeGun.performed -= instance.OnChangeGun;
-            @ChangeGun.canceled -= instance.OnChangeGun;
             @Running.started -= instance.OnRunning;
             @Running.performed -= instance.OnRunning;
             @Running.canceled -= instance.OnRunning;
-            @Interact.started -= instance.OnInteract;
-            @Interact.performed -= instance.OnInteract;
-            @Interact.canceled -= instance.OnInteract;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @Aim.started -= instance.OnAim;
+            @Aim.performed -= instance.OnAim;
+            @Aim.canceled -= instance.OnAim;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
             @DropGun.started -= instance.OnDropGun;
             @DropGun.performed -= instance.OnDropGun;
             @DropGun.canceled -= instance.OnDropGun;
+            @ChangeGun.started -= instance.OnChangeGun;
+            @ChangeGun.performed -= instance.OnChangeGun;
+            @ChangeGun.canceled -= instance.OnChangeGun;
             @ChangeHand.started -= instance.OnChangeHand;
             @ChangeHand.performed -= instance.OnChangeHand;
             @ChangeHand.canceled -= instance.OnChangeHand;
             @Emote.started -= instance.OnEmote;
             @Emote.performed -= instance.OnEmote;
             @Emote.canceled -= instance.OnEmote;
-            @Newaction.started -= instance.OnNewaction;
-            @Newaction.performed -= instance.OnNewaction;
-            @Newaction.canceled -= instance.OnNewaction;
             @OpenInventory.started -= instance.OnOpenInventory;
             @OpenInventory.performed -= instance.OnOpenInventory;
             @OpenInventory.canceled -= instance.OnOpenInventory;
@@ -917,27 +885,6 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCrouch(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Shoot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnShoot(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Aim" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnAim(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "ChangeGun" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnChangeGun(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "Running" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -945,12 +892,12 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRunning(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Shoot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnInteract(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Reload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -959,12 +906,33 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnReload(InputAction.CallbackContext context);
         /// <summary>
+        /// Method invoked when associated input action "Aim" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAim(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInteract(InputAction.CallbackContext context);
+        /// <summary>
         /// Method invoked when associated input action "DropGun" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDropGun(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ChangeGun" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnChangeGun(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ChangeHand" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -979,13 +947,6 @@ public partial class @PlayerInputsAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEmote(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "New action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnNewaction(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "OpenInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

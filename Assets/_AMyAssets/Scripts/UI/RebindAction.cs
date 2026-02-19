@@ -1,24 +1,32 @@
 using System;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class RebindAction : MonoBehaviour
 {
+    [Header("Configuración de Acción")]
     [SerializeField] private InputActionReference actionReference;
-    [SerializeField] private TextMeshProUGUI displayKeyText;
     [SerializeField] private int bindingIndex = 0;
+    [Header("Refrencias UI")]
+    [SerializeField] private TextMeshProUGUI nameInputText;
+    [SerializeField] private TextMeshProUGUI displayKeyText;
+    [Header("Referencia Jugador")]
     [SerializeField] private Player player;
 
     private InputActionRebindingExtensions.RebindingOperation rebindingOperation;
+    private string FilePath => SavePathManager.GetPath("rebinds.json");
 
     void OnEnable()
     {
-        string rebinds = PlayerPrefs.GetString("rebinds", string.Empty);
-        if(!string.IsNullOrEmpty(rebinds))
+        if (File.Exists(FilePath))
         {
-            actionReference.asset.LoadBindingOverridesFromJson(rebinds);
+            string json = File.ReadAllText(FilePath);
+            actionReference.asset.LoadBindingOverridesFromJson(json);
         }
+
+        if(nameInputText != null) nameInputText.text = actionReference.action.name;
 
         RefreshDisplay();
     }
@@ -39,15 +47,33 @@ public class RebindAction : MonoBehaviour
             .Start();
     }
 
+    public void ResetBinding()
+    {
+        if(actionReference == null) return;
+
+        actionReference.action.RemoveBindingOverride(bindingIndex);
+        FinishRebind();
+    }
+
+
+
     private void FinishRebind()
     {
-        rebindingOperation.Dispose();
+        rebindingOperation?.Dispose();
+
         string currentRebinds = actionReference.asset.SaveBindingOverridesAsJson();
 
-        PlayerPrefs.SetString("rebinds", currentRebinds);
-        PlayerPrefs.Save();
+        try 
+        {
+            File.WriteAllText(FilePath, currentRebinds);
+            Debug.Log($"<color=green>Inputs guardados en: {FilePath}</color>");
+        }
+        catch (Exception e) 
+        {
+            Debug.LogError($"No se pudo guardar el archivo de controles: {e.Message}");
+        }
 
-        player.ApplyInputOverrides(currentRebinds);
+        if(player != null)player.ApplyInputOverrides(currentRebinds);
 
         actionReference.action.actionMap.Enable();
         RefreshDisplay();
@@ -70,4 +96,4 @@ public class RebindAction : MonoBehaviour
             }
         }
     }
-}
+}   

@@ -43,33 +43,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Shoot",
-                    "type": "Button",
-                    "id": "d1d694c0-9d48-47d4-9ed3-6cb1f83ff397",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Aim",
-                    "type": "Button",
-                    "id": "adf51e59-c2b0-437d-961d-4b0a9b0e2bd5",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ChangeGun",
-                    "type": "Button",
-                    "id": "76650283-5940-46d6-8253-9b60c6a666eb",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Running",
                     "type": "Button",
                     "id": "d6223ac0-b684-4da4-8561-51d5b4357b56",
@@ -79,9 +52,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Interact",
+                    "name": "Shoot",
                     "type": "Button",
-                    "id": "d37f5b1e-0bbc-42f2-a021-88fa5a713971",
+                    "id": "d1d694c0-9d48-47d4-9ed3-6cb1f83ff397",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -97,6 +70,24 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Aim",
+                    "type": "Button",
+                    "id": "adf51e59-c2b0-437d-961d-4b0a9b0e2bd5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "d37f5b1e-0bbc-42f2-a021-88fa5a713971",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "DropGun",
                     "type": "Button",
                     "id": "39280814-0b39-4fd0-81f0-f388048a2655",
@@ -104,6 +95,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ChangeGun",
+                    "type": "Button",
+                    "id": "76650283-5940-46d6-8253-9b60c6a666eb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "ChangeHand",
@@ -118,15 +118,6 @@
                     "name": "Emote",
                     "type": "Button",
                     "id": "c3a10a97-1515-4b56-932b-557773caeaf7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "New action",
-                    "type": "Button",
-                    "id": "f1151a62-0c36-49ae-951f-ac7b5c754ba8",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -380,17 +371,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Emote",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f90c0237-7bcb-45ce-b6ce-30005a12b9d3",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "New action",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

@@ -35,6 +35,9 @@ public class Player : NetworkBehaviour
 
     public bool cameraActive = true;
 
+    //Sistema de guardado
+    private string RebindFilePath => SavePathManager.GetPath("rebinds.json");
+
     void Awake()
     {
         InstanceHandler.RegisterInstance(this);
@@ -85,7 +88,7 @@ public class Player : NetworkBehaviour
         cameraSpring.Initialize();
         cameraLean.Initialize();
         
-        if (isOwner)
+        if (isOwner)   
         {
             _inputActions = new PlayerInputsAction();
             LoadInputOverrides();
@@ -338,10 +341,18 @@ public class Player : NetworkBehaviour
 
     private void LoadInputOverrides()
     {
-        string jsonFile = PlayerPrefs.GetString("rebinds", string.Empty);
-        if(!string.IsNullOrEmpty(jsonFile))
+        if (System.IO.File.Exists(RebindFilePath))
         {
-            _inputActions.asset.LoadBindingOverridesFromJson(jsonFile);
+            try 
+            {
+                string jsonFile = System.IO.File.ReadAllText(RebindFilePath);
+                _inputActions.asset.LoadBindingOverridesFromJson(jsonFile);
+                Debug.Log("<color=cyan>Jugador: Controles cargados desde archivo rebinds.json</color>");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error al cargar rebinds en el Jugador: {e.Message}");
+            }
         }
     }
 
