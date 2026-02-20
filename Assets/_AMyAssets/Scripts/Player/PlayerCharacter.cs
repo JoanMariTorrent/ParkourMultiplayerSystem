@@ -192,6 +192,16 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     private Quaternion latestReceivedRotation;
     private bool hasReceivedRemote = false;
 
+
+
+    [Header("Tutorial Progression")]
+    public bool canJumpTutorial = true;
+    public bool canSprintTutorial = true;
+    public bool canCrouchTutorial = true;
+    public bool canSlideTutorial = true;
+    public bool canWallRunTutorial = true;
+    public bool canClimbTutorial = true;
+
     protected override void OnSpawned()
     {
         base.OnSpawned();
@@ -652,7 +662,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 bool isMoving = groundedMovement.sqrMagnitude > 0f;
                 bool isCrouching = _state.Stance == Stance.Crouch;
                 
-                if (isMoving && isCrouching && _requestedRun && (_lastState.Stance == Stance.Stand || !_lastState.Grounded) && _state.Stance != Stance.Wall && _timeSinceLastSlide >= slideCooldown)
+                if (canSlideTutorial && isMoving && isCrouching && _requestedRun && (_lastState.Stance == Stance.Stand || !_lastState.Grounded) && _state.Stance != Stance.Wall && _timeSinceLastSlide >= slideCooldown)
                 {
                     _state.Stance = Stance.Slide;
                     _timeSinceLastSlide = 0f; 
@@ -683,7 +693,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
                 // 4. Determinar si podemos correr
                 // Debe querer correr + moverse hacia adelante + NO disparar + NO estar apuntando
-                bool canSprint = _requestedRun && isMovingForward && !isShooting && !isAiming;
+                bool canSprint = _requestedRun && canSprintTutorial && isMovingForward && !isShooting && !isAiming;
 
                 // 5. Calcular velocidad final
                 float targetSpeed;
@@ -762,7 +772,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 }
             }
             //WALL RUN (Si no estamos escalando)
-            else if (_currentWallSide != WallSide.None && !_state.Grounded && _requestedMovement.magnitude > 0.1f && isMovingForward)
+            else if (canWallRunTutorial && _currentWallSide != WallSide.None && !_state.Grounded && _requestedMovement.magnitude > 0.1f && isMovingForward)
             {
                 if (_requestedCrouch || _requestedCrouchInAir)
                 {
@@ -793,7 +803,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             }
 
             // WALL CLIMB
-            if (_state.Stance == Stance.Climb)
+            if (canClimbTutorial && _state.Stance == Stance.Climb)
             {
                 jumps = 1;
                 _currentClimbTimer += deltaTime;
@@ -894,7 +904,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         }
 
         // --- JUMPING LOGIC ---
-        if (_requestedJump)
+        if (_requestedJump && canJumpTutorial)
         {
             if (_state.Stance == Stance.Climb)
             {

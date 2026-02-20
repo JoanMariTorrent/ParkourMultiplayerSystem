@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: sand_stylized
+  m_Name: TESTSand
   m_Shader: {fileID: 4800000, guid: bee44b4a58655ee4cbff107302a3e131, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -35,8 +35,8 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: cd3d2608c16962e4dbb2196ae79eb0ae, type: 3}
-        m_Scale: {x: -0.1, y: -0.1}
+        m_Texture: {fileID: 2800000, guid: 9e3f01b84ef97be4b9ecd6cb4884c88e, type: 3}
+        m_Scale: {x: 1, y: 8.78}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}

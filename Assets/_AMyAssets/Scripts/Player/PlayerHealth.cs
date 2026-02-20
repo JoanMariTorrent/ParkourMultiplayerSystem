@@ -1,7 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using PurrNet;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerHealth : NetworkBehaviour
@@ -15,6 +15,10 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private WeaponManager weaponManager;
     [SerializeField] private Canvas canvas;
     [SerializeField] private GameObject deathVFX;
+
+    [Header("Health stats")]
+    [SerializeField] private float startHealDelay;
+    [SerializeField] private float delayBeetwenHeal;
 
     [Header("Weapon Logic")]
     private WeaponsDataManager _weaponsData;
@@ -39,12 +43,26 @@ public class PlayerHealth : NetworkBehaviour
     public float lastTimeTakenDamage { get; private set; } = -10f;
     private int _oldHealth;
     public float lastHitIntensity { get; private set; }
+    private float nextHealTick;
 
 
     void Start()
     {
         InstanceHandler.TryGetInstance(out WeaponsDataManager wm);
         _weaponsData = wm;
+    }
+
+    void Update()
+    {
+        if(!isServer) return;
+        if(Time.time - lastTimeTakenDamage > startHealDelay)
+        {
+            if(health < maxHealth && Time.time >= nextHealTick)
+            {
+                _health.value++;
+                nextHealTick = Time.time + delayBeetwenHeal;
+            }
+        }
     }
 
 
@@ -109,6 +127,12 @@ public class PlayerHealth : NetworkBehaviour
         if (IsDead) return;
         if(!_canTakeDamage.value) return;
         if (playerCharacter.GodMode) return;
+
+        if (_amount < 0)
+        {
+            lastTimeTakenDamage = Time.time;
+            nextHealTick = Time.time + startHealDelay + delayBeetwenHeal;
+        }
 
         _health.value += _amount;
 

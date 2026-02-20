@@ -14,6 +14,8 @@ public class SettingsData : ScriptableObject
 
     // Configuracion de pantalla / video
     public int resolutionIndex;
+    public int resWidth;
+    public int resHeight;
     public int qualityIndex = 2;
     public bool isFullscreen = true;
     public float gamma = 1f;

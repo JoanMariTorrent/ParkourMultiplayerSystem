@@ -11,7 +11,10 @@ public static class SavePathManager
         string userId = "DefaultUser";
         
         
-        userId = SteamUser.GetSteamID().m_SteamID.ToString();
+        if (SteamManager.Initialized)
+        {
+            userId = SteamUser.GetSteamID().m_SteamID.ToString();
+        }
         
 
         string directory = Path.Combine(Application.persistentDataPath, BASE_FOLDER, userId);

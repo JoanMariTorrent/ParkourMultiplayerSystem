@@ -239,16 +239,17 @@ public class SettingsSystem : MonoBehaviour
     public void SetResolution(int resolutionIndex)
     {
         if (filteredResolutions == null || resolutionIndex >= filteredResolutions.Length) return;
-        
+
         Resolution res = filteredResolutions[resolutionIndex];
-        
         Screen.SetResolution(res.width, res.height, Screen.fullScreen);
-        
+
+        // GUARDA LOS VALORES REALES, NO SOLO EL ÍNDICE
+        settings.resWidth = res.width;
+        settings.resHeight = res.height;
         settings.resolutionIndex = resolutionIndex;
 
         SaveSettings();
     }
-
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
@@ -260,6 +261,7 @@ public class SettingsSystem : MonoBehaviour
 
     public void SetFullscreen(bool isFullscreen)
     {
+        Screen.fullScreenMode = isFullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed;
         Screen.fullScreen = isFullscreen;
         settings.isFullscreen = isFullscreen;
         SaveSettings();
@@ -477,8 +479,25 @@ public class SettingsSystem : MonoBehaviour
         SetQuality(settings.qualityIndex);
         SetGamma(settings.gamma);
         
-        if(filteredResolutions != null && settings.resolutionIndex < filteredResolutions.Length)
-            SetResolution(settings.resolutionIndex);
+        if (filteredResolutions != null)
+        {
+            int foundIndex = -1;
+            for (int i = 0; i < filteredResolutions.Length; i++)
+            {
+                if (filteredResolutions[i].width == settings.resWidth && 
+                    filteredResolutions[i].height == settings.resHeight)
+                {
+                    foundIndex = i;
+                    break;
+                }
+            }
+
+            if (foundIndex != -1)
+            {
+                SetResolution(foundIndex);
+                if(resolutionDropdown) resolutionDropdown.value = foundIndex;
+            }
+        }
 
         foreach (var c in crosshairControllers) c.UpdateCrosshair();
     }

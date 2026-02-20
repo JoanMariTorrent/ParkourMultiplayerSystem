@@ -32,8 +32,12 @@ public class Player : NetworkBehaviour
     [Space][Header("Settings")]
     [SerializeField] private SettingsData settings;
     [SerializeField] private Volume globalVolume;
-
     public bool cameraActive = true;
+
+    [Space(20f)][Header("TUTORIAL")]
+    public bool tutorialMode;
+
+    
 
     //Sistema de guardado
     private string RebindFilePath => SavePathManager.GetPath("rebinds.json");
@@ -96,6 +100,7 @@ public class Player : NetworkBehaviour
             _inputActions.Enable();
 
             settingsSystem.Intialize(globalVolume);
+            if(tutorialMode) canMove = true;
         }
     }
     void Update()
@@ -105,6 +110,9 @@ public class Player : NetworkBehaviour
             HandleInputs(); 
 
             playerCharacter.UpdateBody(Time.deltaTime);
+
+            if(Input.GetKeyDown(KeyCode.H))
+                playerHealth.ChangeHealth(-5);
         }
     }
 

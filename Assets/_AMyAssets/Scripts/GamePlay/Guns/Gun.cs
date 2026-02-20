@@ -122,16 +122,8 @@ public class Gun : EquippableItem, ITakeGun
         _originalPosition = initPos;
         _originalRotation = transform.localRotation;
 
-        if (!isOwner)
-        {
-            enabled = false;
-            SetLayerRecursive(gameObject, otherPlayerGunTag);
-        }
-        else
-        {
-            enabled = true;
-            SetLayerRecursive(gameObject, ownerGunTag);
-        }
+        int targetLayer = isOwner ? ownerGunTag : otherPlayerGunTag;
+        SetLayerRecursive(gameObject, targetLayer);
     }
 
     void OnDisable()
@@ -205,12 +197,24 @@ public class Gun : EquippableItem, ITakeGun
 
     protected virtual void Update()
     {
-        if (!isOwner || !equipedGun || reloading) return;
-        HandleInput();
-
-
-        if(Input.GetKeyDown(KeyCode.J))
-            _ammo.value += 20;
+        if (!equipedGun) return;
+    
+        // 1. LÓGICA PARA TODOS (Dueño y Observadores)
+        // Si no estamos haciendo recoil, aseguramos que el arma esté en su sitio
+        if (_recoilCoroutine == null)
+        {
+            transform.localPosition = _originalPosition;
+            transform.localRotation = _originalRotation;
+        }
+    
+        // 2. LÓGICA SOLO PARA EL DUEÑO
+        if (isOwner && !reloading)
+        {
+            HandleInput();
+    
+            if(Input.GetKeyDown(KeyCode.J))
+                _ammo.value += 20;
+        }
     }
 
     /// <summary>
