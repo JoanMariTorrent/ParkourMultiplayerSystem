@@ -456,6 +456,7 @@ MonoBehaviour:
   prueba: 0
   pruebasRPC: {fileID: 0}
   weaponDataBase: {fileID: 11400000, guid: 345f17e1d2874594c8099d43d12a2912, type: 2}
+  utilityDatabase: {fileID: 11400000, guid: 8e3556f71c0dd5c4d95858a02f243bfd, type: 2}
   settings: {fileID: 11400000, guid: 5d3c494490a26574e848b5dc7815c4da, type: 2}
   globalVolume: {fileID: 8923904780618152784}
   cameraActive: 1

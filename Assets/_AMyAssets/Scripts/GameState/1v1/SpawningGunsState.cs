@@ -2,6 +2,7 @@ using PurrNet;
 using PurrNet.StateMachine;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum randomType
 {
@@ -9,6 +10,14 @@ public enum randomType
     Secondary,
     Utility,
     All
+}
+
+
+[Serializable]
+public partial struct WeaponSpinRound
+{
+    public int winnerID;
+    public int[] poolIDs;
 }
 
 
@@ -26,8 +35,10 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     [SerializeField] private List<WeaponScripteableObject> weapons;
     [SerializeField] private List<WeaponScripteableObject> filteredWeapons = new List<WeaponScripteableObject>();
     [SerializeField] private WeaponDatabase weaponDataBase;
+    [SerializeField] private UtilityDatabase utilityDatabase;
     [SerializeField] private WeaponScripteableObject selectedWeapon;
     [SerializeField] private randomType randomType;
+    [SerializeField] private bool giveSecondary = false;
     private List<PlayerHealth> _playersDataCache = new List<PlayerHealth>();
     private List<PlayerID> _players = new();
     
@@ -86,13 +97,26 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
     {
         foreach (var player in normalPlayers)
         {
-            var filtered = filteredWeaponsList();
-            var selected = ChooseWeaponByChance(filtered);
-
-            int[] filteredIDs = filtered.ConvertAll(w => weaponDataBase.GetIdOfWeapon(w)).ToArray();
-
-            int IDSelectedWeapon = weaponDataBase.GetIdOfWeapon(selected);
-            player.TargetStartSpin(player.owner.Value, IDSelectedWeapon, filteredIDs);
+            var r1 = CreateWeaponRound(randomType.Primary, weaponDataBase);
+            var r3 = CreateUtilityRound(randomType.Utility, utilityDatabase);
+    
+            int[] winners;
+            int[] p2_data;
+    
+            if (giveSecondary) 
+            {
+                var r2 = CreateWeaponRound(randomType.Secondary, weaponDataBase);
+                winners = new int[] { r1.winnerID, r2.winnerID, r3.winnerID };
+                p2_data = r2.poolIDs;
+            } 
+            else 
+            {
+                // Mandamos -1 para "apagar" la columna central
+                winners = new int[] { r1.winnerID, -1, r3.winnerID };
+                p2_data = new int[0]; 
+            }
+    
+            player.TargetStartSpin(player.owner.Value, winners, r1.poolIDs, p2_data, r3.poolIDs);
         }
     }
 
@@ -133,7 +157,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         foreach (var w in weaponList)
             totalChance += w.dropChance;
 
-        float r = Random.Range(0f, totalChance);
+        float r = UnityEngine.Random.Range(0f, totalChance);
         float accum = 0f;
 
         foreach (var w in weaponList)
@@ -172,6 +196,49 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
             filteredWeapons = new List<WeaponScripteableObject>(weapons);
 
         return filteredWeapons;
+    }
+
+
+
+    private WeaponSpinRound CreateWeaponRound(randomType type, WeaponDatabase db)
+    {
+        var filtered = db.weapons.FindAll(w => w.weaponType == (WeaponScripteableType)type);
+        if (filtered.Count == 0) filtered = db.weapons;
+
+        var selected = db.GetRandomWeaponWeighted(filtered);
+
+        return new WeaponSpinRound {
+            winnerID = db.GetIdOfWeapon(selected),
+            poolIDs = filtered.ConvertAll(w => db.GetIdOfWeapon(w)).ToArray()
+        };
+    }
+
+    private WeaponSpinRound CreateUtilityRound(randomType type, UtilityDatabase db)
+    {
+        var all = db.allUtilities;
+
+        var selected = db.GetRandomUtilityWeighted(all);
+
+        return new WeaponSpinRound {
+            winnerID = db.GetIdOfUtility(selected),
+            poolIDs = all.ConvertAll(u => db.GetIdOfUtility(u)).ToArray()
+        };
+    }
+
+    private List<WeaponScripteableObject> GetFilteredList(randomType type)
+    {
+        List<WeaponScripteableObject> list = new List<WeaponScripteableObject>();
+
+        foreach(var w in weapons)
+        {
+            if  ((type == randomType.Primary && w.weaponType == WeaponScripteableType.Primary ) ||
+                (type == randomType.Secondary && w.weaponType == WeaponScripteableType.Secondary ) ||
+                (type == randomType.Utility && w.weaponType == WeaponScripteableType.Utility))
+            {
+                list.Add(w);
+            }
+        }
+        return list.Count > 0 ? list : new List<WeaponScripteableObject>(weapons);
     }
 
 }

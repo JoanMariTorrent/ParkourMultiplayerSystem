@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PurrNet;
+using System.Linq;
 
 public class SlotMachine : View
 {
     [Space]
+    [Header("Multi-Reel Setup")]
+    [SerializeField] private RectTransform[] itemsContainer;
+    [SerializeField] private WeaponDatabase weaponDatabase;
+    [SerializeField] private UtilityDatabase utilityDatabase;
+    
+    [Space]
     [Header("Content")]
     [SerializeField] private GameObject slotPrefab;
-    [SerializeField] private RectTransform itemsContainer;
     [SerializeField] private RectTransform maskArea;
 
     [Space]
@@ -34,9 +40,10 @@ public class SlotMachine : View
     [SerializeField] private float minPitch = 0.9f;
     [SerializeField] private float maxPitch = 1.1f;
 
-    private List<RectTransform> slotList = new List<RectTransform>();
-    private bool isSpinning = false;
+    private int reelsFinished = 0;
+    public bool allFinished = false;
     public WeaponScripteableObject finalWeapon;
+    private int roundsCountInLastSpin;
 
 
     private void Awake()
@@ -49,105 +56,112 @@ public class SlotMachine : View
         //InstanceHandler.UnregisterInstance<SlotMachine>();
     }
 
-
-    public void startSpin(WeaponScripteableObject selectedWeapon, List<WeaponScripteableObject> filteredWeapons)
+    public void startMultiSpinFlat(int[] winners, int[] p1, int[] p2, int[] p3)
     {
-        StopAllCoroutines(); 
-        isSpinning = false;
+        StopAllCoroutines();
+        reelsFinished = 0;
+        allFinished = false;
+        
+        roundsCountInLastSpin = 0;
+        foreach(var w in winners) if(w != -1) roundsCountInLastSpin++;
 
-        StartCoroutine(Spin(selectedWeapon, filteredWeapons));
+        List<int[]> pools = new List<int[]> { p1, p2, p3 };
+
+        for (int i = 0; i < winners.Length; i++)
+        {
+            if (i >= itemsContainer.Length) break;
+
+            itemsContainer[i].gameObject.SetActive(true);
+
+            if (winners[i] == -1) 
+            {
+                // Apagamos la Mask/Columna entera para que no se vea el hueco vacío
+                itemsContainer[i].gameObject.SetActive(false);
+                continue;
+            }
+
+            Sprite winnerIcon;
+            List<Sprite> poolIcons;
+
+            if (i == 2) // LA TERCERA COLUMNA: UTILIDADES
+            {
+                var utility = utilityDatabase.GetUtilityByID(winners[i]);
+                winnerIcon = utility.icon;
+                poolIcons = pools[i].Select(id => utilityDatabase.GetUtilityByID(id).icon).ToList();
+            }
+            else // COLUMNAS 1 Y 2: ARMAS
+            {
+                var weapon = weaponDatabase.GetWeaponByID(winners[i]);
+                winnerIcon = weapon.icon;
+                poolIcons = pools[i].Select(id => weaponDatabase.GetWeaponByID(id).icon).ToList();
+            }
+
+            // Lanzamos la rutina pasándole solo los Sprites, así no importa de qué DB vengan
+            StartCoroutine(SpinRoutineMulti(i, winnerIcon, poolIcons));
+        }
     }
 
-    public IEnumerator Spin(WeaponScripteableObject selectedWeapon, List<WeaponScripteableObject> filteredWeapons)
+
+    private IEnumerator SpinRoutineMulti(int index, Sprite winnerIcon, List<Sprite> poolIcons)
     {
-        finalWeapon = null; 
-        
-        itemsContainer.anchoredPosition = Vector2.zero;
-        
-        yield return StartCoroutine(SpinRoutine(selectedWeapon, filteredWeapons));
-    }
+        RectTransform container = itemsContainer[index];
 
+        // 1. Limpieza
+        foreach (Transform child in container) Destroy(child.gameObject);
+        List<RectTransform> currentSlotList = new List<RectTransform>();
 
-    private IEnumerator SpinRoutine(WeaponScripteableObject selectedWeapon, List<WeaponScripteableObject> filteredWeapons)
-    {
-        isSpinning = true;
-
-
-        // Borramos todos los iconos anteriores
-        foreach (Transform child in itemsContainer)
-            Destroy(child.gameObject);
-        slotList.Clear();
-
-        // Creamos los nuevos iconos
+        // 2. Creación de iconos
         int winnerIndex = Random.Range(totalSlots - 14, totalSlots - 5);
 
         for (int i = 0; i < totalSlots; i++)
         {
-            // Si es el indice del ganador -> usar el arma ganadora
-            var w = (i == winnerIndex)
-            ? selectedWeapon
-            : filteredWeapons[Random.Range(0, filteredWeapons.Count)];
-
-            // Crear el icono en la UI
-            var slot = Instantiate(slotPrefab, itemsContainer).GetComponent<RectTransform>();
-            slot.GetComponent<Image>().sprite = w.icon;
-
-            // Colocar el icono uno debajo del otro
+            Sprite s = (i == winnerIndex) ? winnerIcon : poolIcons[Random.Range(0, poolIcons.Count)];
+            
+            var slot = Instantiate(slotPrefab, container).GetComponent<RectTransform>();
+            slot.GetComponent<Image>().sprite = s;
             slot.anchoredPosition = new Vector2(0, spawnHeight - (-i * slotSpacing));
-            slotList.Add(slot);
+            currentSlotList.Add(slot);
         }
 
-        // Calcular a donda mover el contenedor
-        // El objetivo es que el icono ganador termine justo en el centro de la mascara
-        RectTransform winnerRect = slotList[winnerIndex];
-        float maskCenterY = maskArea.anchoredPosition.y;
-        float winnerLocalY = winnerRect.anchoredPosition.y;
-        float desiredContainerY = maskCenterY - winnerLocalY;
+        // 3. Posicionamiento y Animación
+        float desiredContainerY = maskArea.anchoredPosition.y - currentSlotList[winnerIndex].anchoredPosition.y;
+        Vector2 startPos = new Vector2(container.anchoredPosition.x, 0);
+        Vector2 endPos = new Vector2(container.anchoredPosition.x, desiredContainerY);
 
-        // Guardamos posiciones de inicio y final
-        Vector2 startPos = itemsContainer.anchoredPosition;
-        Vector2 endPos = new Vector2(itemsContainer.anchoredPosition.x, desiredContainerY);
-
-        // Animar el movimiento con la curva
         yield return new WaitForSeconds(0.3f);
 
+        float elapsed = 0f;
         float lastY = startPos.y;
         float distanceAccumulator = 0f;
 
-        float elapsed = 0f;
         while (elapsed < spinDuration)
         {
             float t = Mathf.Clamp01(elapsed / spinDuration);
-            float curveT = spinCurve != null ? spinCurve.Evaluate(t) : t; // Valor modificado por la curva
-            itemsContainer.anchoredPosition = Vector2.Lerp(startPos, endPos, curveT);
+            float curveT = spinCurve != null ? spinCurve.Evaluate(t) : t;
+            container.anchoredPosition = Vector2.Lerp(startPos, endPos, curveT);
 
-            float currentY = itemsContainer.anchoredPosition.y;
-            float deltaMove = Mathf.Abs(currentY - lastY);
-
+            float deltaMove = Mathf.Abs(container.anchoredPosition.y - lastY);
             distanceAccumulator += deltaMove;
 
             if (distanceAccumulator >= slotSpacing)
             {
                 PlayTickSound();
-
-                while(distanceAccumulator >= slotSpacing)
-                {
-                    distanceAccumulator -= slotSpacing;
-                }
+                distanceAccumulator = 0;
             }
 
-            lastY = currentY;
-
+            lastY = container.anchoredPosition.y;
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // Asegurar que se qeuda exactamente donde debe
-        itemsContainer.anchoredPosition = endPos;
-
-        finalWeapon = selectedWeapon;
-        Debug.Log($"🎯 Ganador: {selectedWeapon.weaponName}(intex {winnerIndex})");
-        isSpinning = false;
+        container.anchoredPosition = endPos;
+        
+        // 4. Control de finalización
+        reelsFinished++;
+        if (reelsFinished >= roundsCountInLastSpin) 
+        {
+            allFinished = true;
+        }
     }
 
     private void PlayTickSound()
@@ -184,6 +198,8 @@ public class SlotMachine : View
 //
     //    return weaponList[weaponList.Count - 1];
     //}
+
+    
 
     public void Skip()
     {

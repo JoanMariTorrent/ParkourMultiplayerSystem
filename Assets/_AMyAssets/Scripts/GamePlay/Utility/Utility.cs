@@ -176,7 +176,7 @@ public abstract class Utility : EquippableItem, ITakeGun
         // Ammo
         if(!isInfinite)
         {
-            if(currentCharges.value <= 0) return;
+            if(currentCharges.value <= 0) {DepleteRoutine(); return;}
             currentCharges.value --;
         }
 
@@ -220,7 +220,9 @@ public abstract class Utility : EquippableItem, ITakeGun
     {
         if (weaponManager != null)
         {
+            Debug.Log("<color=red> DESTRUYENDO UTILIDAD</color>");
             weaponManager.RemoveUtility(this.gameObject);
+            weaponManager.StartUtilityCooldown();
         }
     }
 

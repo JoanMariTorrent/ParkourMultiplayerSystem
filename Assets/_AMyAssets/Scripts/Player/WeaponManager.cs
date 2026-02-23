@@ -1,9 +1,14 @@
 ﻿using PurrNet;
 using UnityEngine;
 using Unity.Cinemachine;
+using System.Collections;
 
 public class WeaponManager : NetworkBehaviour
 {
+    [Header("Stats")]
+    [SerializeField] private float utilityCooldown;
+    [Header("References")]
+    [SerializeField] private UtilityDatabase utilityDatabase;
     [SerializeField] private Transform _handTransform;
     [SerializeField] private Transform _handTransformWithoutAnim;
     [SerializeField] private CinemachineCamera _playerCamera;
@@ -11,8 +16,6 @@ public class WeaponManager : NetworkBehaviour
     [SerializeField] private RecoilCamera recoil;
     [SerializeField] private PlayerAnimationHandler animHandler;
 
-    // --- CAMBIO PRINCIPAL: Usamos la clase padre ---
-    // public Gun _currentGun; // (Viejo)
     public EquippableItem _currentItem;
     public Gun _currentGun 
 {
@@ -33,14 +36,14 @@ public class WeaponManager : NetworkBehaviour
     [SerializeField] private IKFollower leftIKFollower;
     [SerializeField] private IKFollower rightIKFollower;
 
-    [Header("TESTING")]
-    public GameObject grenade;
+
+    private Coroutine utilityCoroutine;
+
 
     protected override void OnSpawned()
     {
         GetPlayerScript();
         if(isServer) EnsureWeaponSlots();
-        if(isOwner) AddUtility(grenade);
     }
 
     void Update()
@@ -78,7 +81,6 @@ public class WeaponManager : NetworkBehaviour
             bool isPrimary = gun.weaponType == WeaponType.Primary;
             WeaponID newWeaponID = gun.weaponID;
     
-            // 1. ¿YA TENGO ESTA ARMA (Mismo ID)? 
             // Si tengo un Sniper y pillo otro Sniper, suelto el viejo esté donde esté.
             int duplicateIndex = IndexHasWeaponOfType(newWeaponID);
     
@@ -89,7 +91,7 @@ public class WeaponManager : NetworkBehaviour
             }
             else
             {
-                // 2. ¿HAY HUECO LIBRE?
+                // 2. HAY HUECO LIBRE?
                 int emptySlot = GetWeaponIndex(isPrimary);
     
                 if (emptySlot != -1)
@@ -100,7 +102,6 @@ public class WeaponManager : NetworkBehaviour
                 else
                 {
                     // 3. TODO LLENO: INTERCAMBIO FORZADO
-                    // Miramos qué tenemos en la mano
                     int heldIndex = _ownedWeapons.IndexOf(_currentItem?.gameObject);
                     
                     // Si lo que tengo en la mano es del mismo tipo (ej: Rifle pilla Sniper)
@@ -111,7 +112,6 @@ public class WeaponManager : NetworkBehaviour
                     else
                     {
                         // Si tengo en la mano algo de otro tipo (ej: Pistola pilla Sniper)
-                        // tiramos la primera arma de la categoría correspondiente (Slot 0 o 2)
                         targetIndex = isPrimary ? 0 : 2;
                     }
                     shouldDeleteOld = true;
@@ -122,6 +122,11 @@ public class WeaponManager : NetworkBehaviour
         {
             targetIndex = 4;
             if (_ownedWeapons.Count > 4 && _ownedWeapons[4] != null) shouldDeleteOld = true;
+            if(utilityCoroutine != null)
+            {
+                StopCoroutine(utilityCoroutine);
+                utilityCoroutine = null;
+            }
         }
     
         // --- EJECUCIÓN ---
@@ -153,7 +158,7 @@ public class WeaponManager : NetworkBehaviour
         PickupItem(finalObject);
     }
 
-    public void AddUtility(GameObject utilityPrefab)
+    public void AddUtility(GameObject utilityPrefab, bool equipNewUtility)
     {
         if (!isServer) return;
         EnsureWeaponSlots();
@@ -183,7 +188,12 @@ public class WeaponManager : NetworkBehaviour
         if (_ownedWeapons.Count <= 4) _ownedWeapons.Add(null);
         _ownedWeapons[4] = instance;
 
-        SwitchWeapon(4, instance);
+        if(equipNewUtility) SwitchWeapon(4, instance);
+        else
+        {
+            PrepareItemPhysics(instance);
+            instance.SetActive(false);
+        }
     }
 
     private void EquipWeapon(GameObject weaponPrefab, bool deleteWeapon, bool primaryWeapon, bool groundGun)
@@ -266,8 +276,6 @@ public class WeaponManager : NetworkBehaviour
             if (_ownedWeapons[i] != null) _ownedWeapons[i].SetActive(false);
         }
 
-        //ToggleNetworkTransform(weaponToSwitch, false);
-
         weaponToSwitch.SetActive(true);
         
         _currentItem = weaponToSwitch.GetComponent<EquippableItem>();
@@ -320,6 +328,35 @@ public class WeaponManager : NetworkBehaviour
         if (_currentItem != null) _currentItem.OnEquip();
 
         Debug.Log($"Cambio de item a {(_currentItem != null ? _currentItem.itemName : "Desconocido")} en el slot {index}");
+    }
+
+    [ObserversRpc(requireServer: false)]
+    private void PrepareItemPhysics(GameObject obj)
+    {
+        if (obj == null) return;
+
+        // Físicas: Kinematic y sin gravedad para que no se caiga del jugador
+        Rigidbody rb = obj.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        // Colisión: Desactivada para que no empuje al jugador ni a otros objetos
+        Collider col = obj.GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        // Ownership: Aseguramos que el dueño del objeto sea el jugador
+        var item = obj.GetComponent<EquippableItem>();
+        if (item != null) {
+            item.GiveOwnership(owner.Value);
+            item.OnUnequip();
+            }
+
+        
     }
 
     public void SwitchWeapon(int index) { SwitchWeapon(index, null); }
@@ -497,6 +534,8 @@ public class WeaponManager : NetworkBehaviour
 
     public void DropGun() 
     { 
+        if (_currentItem == null || _currentItem is Utility) return;
+        
         if(isServer) 
             DoDropGunLogic(); 
         else 
@@ -513,11 +552,13 @@ public class WeaponManager : NetworkBehaviour
         GameObject dropped = _currentItem.gameObject; 
 
         if (_currentItem is Gun g) g.SetDown();
-        else if (_currentItem is Utility u) u.SetDown();
+        else if (_currentItem is Utility u)
+        {
+            u.SetDown();
+            StartUtilityCooldown();
+        }
 
         dropped.transform.SetParent(null); 
-
-        //ToggleNetworkTransform(dropped, true);
 
         Rigidbody rb = dropped.GetComponent<Rigidbody>();
         if(rb)
@@ -566,7 +607,11 @@ public class WeaponManager : NetworkBehaviour
             if (!item) continue; 
             
             if (item is Gun g) g.SetDown();
-            else item.OnUnequip();
+            else if (item is Utility u)
+            {
+                u.OnUnequip();
+                continue;
+            }
 
             w.transform.SetParent(null); 
             w.SetActive(true); 
@@ -585,9 +630,6 @@ public class WeaponManager : NetworkBehaviour
         for (int i = 0; i < _ownedWeapons.Count; i++) 
             _ownedWeapons[i] = null; 
     }
-
-
-    // Añade esto en WeaponManager.cs
 
     public void RemoveUtility(GameObject utilityObj)
     {
@@ -612,10 +654,31 @@ public class WeaponManager : NetworkBehaviour
 
     private void GetPlayerScript() { player = GetComponent<Player>(); }
 
-
-    private void ToggleNetworkTransform(GameObject target, bool enabled)
+    [ServerRpc(requireOwnership: false)]
+    public void StartUtilityCooldown()
     {
-        var nt = target.GetComponent<NetworkTransform>();
-        if (nt != null) nt.enabled = enabled;
+        if(utilityCoroutine == null) utilityCoroutine = StartCoroutine(UtilityCooldown());
+    }
+
+    
+    private IEnumerator UtilityCooldown()
+    {
+        yield return new WaitForSeconds(utilityCooldown);
+
+        var newUtility = GetRandomUtility();
+        
+        Debug.Log($"<color=green>NUEVA UTILIDAD:{newUtility} </color>");
+        AddUtility(newUtility.utilityPrefab, false);
+
+        utilityCoroutine = null;
+    }
+
+
+    private UtilityScriptableObject GetRandomUtility()
+    {
+        var all = utilityDatabase.allUtilities;
+        var selected = utilityDatabase.GetRandomUtilityWeighted(all);
+
+        return selected;
     }
 }

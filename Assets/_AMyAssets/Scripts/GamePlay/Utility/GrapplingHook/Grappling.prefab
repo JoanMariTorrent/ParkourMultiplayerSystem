@@ -118,7 +118,7 @@ MonoBehaviour:
   isEquipped: 0
   utilityID: 4
   displayName: Grappling
-  utilityData: {fileID: 0}
+  utilityData: {fileID: 11400000, guid: d7df658a22f1adf4bb03a8c6d890fb2d, type: 2}
   currentCharges:
     _value: 0
     _ownerAuth: 0

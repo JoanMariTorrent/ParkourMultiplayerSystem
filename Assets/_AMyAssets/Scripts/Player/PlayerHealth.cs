@@ -23,6 +23,7 @@ public class PlayerHealth : NetworkBehaviour
     [Header("Weapon Logic")]
     private WeaponsDataManager _weaponsData;
     [SerializeField] private WeaponDatabase _weaponDatabase;
+    [SerializeField] private UtilityDatabase _utilityDatabase;
 
     [Header("Componentes para Desactivar/Activar")]
     [SerializeField] private List<GameObject> othersPlayersVisuals;
@@ -256,25 +257,35 @@ public class PlayerHealth : NetworkBehaviour
 
     private void CastToSpinFromServer()
     {
-        if (_weaponDatabase == null || player == null) 
+        if (_weaponDatabase == null || _utilityDatabase == null || player == null) 
         {
-            Debug.LogError("Falta WeaponDatabase o player en PlayerHealth");
+            Debug.LogError("Falta WeaponDatabase, UtilityDatabase o player en PlayerHealth");
             return;
         }
 
-        var candidates = _weaponDatabase.weapons;
+        // Filtrar armas principales
 
-        WeaponScripteableObject selectedWeapon = _weaponDatabase.GetRandomWeaponWeighted(candidates);
+        var primFiltered = _weaponDatabase.weapons.FindAll(w => w.weaponType == WeaponScripteableType.Primary);
+        if(primFiltered.Count == 0) primFiltered = _weaponDatabase.weapons;
 
-        int selectedID = _weaponDatabase.GetIdOfWeapon(selectedWeapon);
+        var primWinner = _weaponDatabase.GetRandomWeaponWeighted(primFiltered);
+        int primID = _weaponDatabase.GetIdOfWeapon(primWinner);
+        int[] primPool = primFiltered.ConvertAll(w => _weaponDatabase.GetIdOfWeapon(w)).ToArray();
 
-        int[] candidatesIDs = new int[candidates.Count];
-        for(int i = 0; i < candidates.Count; i++)
-        {
-            candidatesIDs[i] = _weaponDatabase.GetIdOfWeapon(candidates[i]);
-        }
+        // Filtar armas secundarias, de momento esta en -1 porque asi no salen
+        int secID = -1;
+        int[] secPool = new int[0];
 
-        player.TargetStartSpin(owner.Value, selectedID, candidatesIDs);
+        // Filtrar utilidades
+        var utilAll = _utilityDatabase.allUtilities;
+        var utilWinner = _utilityDatabase.GetRandomUtilityWeighted(utilAll);
+        int utilID = _utilityDatabase.GetIdOfUtility(utilWinner);
+        int[] utilPool = utilAll.ConvertAll(u => _utilityDatabase.GetIdOfUtility(u)).ToArray();
+
+        // Convertir los ganadores en un array
+        int[] winners = {primID, secID, utilID};
+
+        player.TargetStartSpin(owner.Value, winners, primPool, secPool, utilPool);
     }
 
 

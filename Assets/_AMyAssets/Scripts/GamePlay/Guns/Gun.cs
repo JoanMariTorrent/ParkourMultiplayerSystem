@@ -130,7 +130,7 @@ public class Gun : EquippableItem, ITakeGun
     {
         if(!isOwner) return;
         if(gunAnimHandler != null) gunAnimHandler.enabled = false;
-        if(gunAnimHandler != null) animHandler.UnRegisterWeaponAnimator();
+        if(animHandler != null) animHandler.UnRegisterWeaponAnimator();
     }
 
     public virtual void Setup(Transform cam, LayerMask mask, RecoilCamera rec, PlayerCharacter pc, Player p, WeaponManager wm, PlayerAnimationHandler _animHandler)

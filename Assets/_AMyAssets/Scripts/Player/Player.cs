@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.Rendering;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
+using System;
 
 public class Player : NetworkBehaviour
 {
@@ -28,6 +30,7 @@ public class Player : NetworkBehaviour
     public bool prueba = false;
     [SerializeField] private PruebasRPC pruebasRPC;
     [SerializeField] private WeaponDatabase weaponDataBase;
+    [SerializeField] private UtilityDatabase utilityDatabase;
 
     [Space][Header("Settings")]
     [SerializeField] private SettingsData settings;
@@ -240,13 +243,13 @@ public class Player : NetworkBehaviour
 
     // En Player.cs
     [TargetRpc(requireServer: false)]
-    public void TargetStartSpin(PlayerID target, int idWeapon, int[] filteredWeapons)
+    public void TargetStartSpin(PlayerID target, int[] winners, int[] p1, int[] p2, int[] p3)
     {
-        StartCoroutine(SpinCoroutine(target, idWeapon, filteredWeapons));
+        StartCoroutine(SpinCoroutine(target, winners, p1, p2, p3));
     }
 
 
-    private IEnumerator SpinCoroutine(PlayerID target, int idWeapon, int[] filteredWeapons)
+    private IEnumerator SpinCoroutine(PlayerID target, int[] winners, int[] p1, int[] p2, int[] p3)
     {
         if (slotMachine == null)
         {
@@ -260,29 +263,34 @@ public class Player : NetworkBehaviour
         }
         canMove = false;
         playerHealth.SetImmunityRpc(true);
-
-        var selectedWeapon = weaponDataBase.GetWeaponByID(idWeapon);
-        List<WeaponScripteableObject> filteredWeaponsList = new();
-        foreach (var id in filteredWeapons)
-            filteredWeaponsList.Add(weaponDataBase.GetWeaponByID(id));
-
-        
-
         isSpinning = true;
+
+
         slotMachine.GetComponent<CanvasGroup>().alpha = 1f;
         slotMachine.gameObject.SetActive(true);
 
-        slotMachine.startSpin(selectedWeapon, filteredWeaponsList);
-        while (slotMachine.finalWeapon == null)
+        slotMachine.startMultiSpinFlat(winners, p1, p2, p3);
+
+        while (!slotMachine.allFinished)
         {
-            Debug.Log("<color=red> Slot machine is running!");
             yield return null;
         }
 
         slotMachine.GetComponent<CanvasGroup>().alpha = 0f;
         slotMachine.gameObject.SetActive(false);
 
-        NotifySpinFinished_ServerRPC(owner.Value, idWeapon);
+        for (int i = 0; i < winners.Length; i++)
+        {
+            int currentID = winners[i];
+
+            if(currentID == -1) continue;
+
+            bool isUtility = (i == 2);
+
+            GiveGuncs_ServerRPC(owner.Value, currentID, isUtility);
+        }
+
+        NotifySpinFinished_ServerRPC(owner.Value);
 
         playerHealth.SetImmunityRpc(false);
         canMove = true;
@@ -290,12 +298,8 @@ public class Player : NetworkBehaviour
 
 
     [ServerRpc]
-    public void NotifySpinFinished_ServerRPC(PlayerID playerID, int idWeapon)
+    public void NotifySpinFinished_ServerRPC(PlayerID playerID)
     {
-        GiveGuns(idWeapon);
-
-        TargetSetArmsAnimations(playerID, idWeapon);
-        
         if(InstanceHandler.TryGetInstance(out SpawningGunsState spawningGunsState))
         {
             //spawningGunsState.OnPlayerFinishedSpin(playerID);
@@ -304,19 +308,40 @@ public class Player : NetworkBehaviour
                 SpawningGunsState.SpawningGunsStateActiveInstance.OnPlayerFinishedSpin(playerID);
             }
         }
+        
     }
 
-    private void GiveGuns(int idWeapon)
+    [ServerRpc]
+    public void GiveGuncs_ServerRPC(PlayerID playerID, int idWeapon, bool isUtility)
     {
-        var selectedWeapon = weaponDataBase.GetWeaponByID(idWeapon);
-        var weaponManager = GetComponent<WeaponManager>();
+        GiveGuns(idWeapon, isUtility);
 
-        if(selectedWeapon.weaponType == WeaponScripteableType.Primary)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, true, false, false);
-        else if (selectedWeapon.weaponType == WeaponScripteableType.Secondary)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, false, false);
-        else if (selectedWeapon.weaponType == WeaponScripteableType.Utility)
-            weaponManager.NewWeapon(selectedWeapon.gunPrefab, false, true, false);
+        TargetSetArmsAnimations(playerID, idWeapon);
+    }
+
+    private void GiveGuns(int id, bool isUtility)
+    {
+        var weaponManager = GetComponent<WeaponManager>();
+        if(weaponManager == null) return;
+
+        if(isUtility)
+        {
+            var selected = utilityDatabase.GetUtilityByID(id);
+            if(selected != null)
+            {
+                weaponManager.AddUtility(selected.utilityPrefab, false);
+            }
+        }
+        else
+        {
+            var selected = weaponDataBase.GetWeaponByID(id);
+            if(selected == null) return;
+
+            if(selected.weaponType == WeaponScripteableType.Primary)
+                weaponManager.NewWeapon(selected.gunPrefab, true, false, false);
+            else if (selected.weaponType == WeaponScripteableType.Secondary)
+                weaponManager.NewWeapon(selected.gunPrefab, false, false, false);
+        }        
     }
 
 

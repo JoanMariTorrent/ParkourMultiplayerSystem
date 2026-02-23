@@ -20082,8 +20082,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ca38fd879137b154f9f793d8a2f81076, type: 2}
   filteredWeapons: []
   weaponDataBase: {fileID: 11400000, guid: 345f17e1d2874594c8099d43d12a2912, type: 2}
+  utilityDatabase: {fileID: 0}
   selectedWeapon: {fileID: 0}
   randomType: 3
+  giveSecondary: 0
 --- !u!4 &842282251
 Transform:
   m_ObjectHideFlags: 0
@@ -62117,7 +62119,6 @@ MonoBehaviour:
   primaryWeapons:
   - {fileID: 11400000, guid: d51b72bfb57cea343906c734750492b9, type: 2}
   - {fileID: 11400000, guid: ca38fd879137b154f9f793d8a2f81076, type: 2}
-  - {fileID: 11400000, guid: ca38fd879137b154f9f793d8a2f81076, type: 2}
   secondaryWeapons:
   - {fileID: 11400000, guid: daa99adb72bf97a43a90b95a167883a1, type: 2}
   _primaryWeaponData:
@@ -75930,8 +75931,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ca38fd879137b154f9f793d8a2f81076, type: 2}
   filteredWeapons: []
   weaponDataBase: {fileID: 11400000, guid: 345f17e1d2874594c8099d43d12a2912, type: 2}
+  utilityDatabase: {fileID: 11400000, guid: 8e3556f71c0dd5c4d95858a02f243bfd, type: 2}
   selectedWeapon: {fileID: 0}
   randomType: 3
+  giveSecondary: 0
 --- !u!4 &2029495558
 Transform:
   m_ObjectHideFlags: 0
