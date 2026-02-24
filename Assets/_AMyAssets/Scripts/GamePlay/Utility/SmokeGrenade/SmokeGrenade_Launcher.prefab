@@ -148,10 +148,12 @@ MonoBehaviour:
   ownerLayer: 7
   otherPlayerLayer: 8
   equippedScale: {x: 0.4, y: 0.4, z: 0.4}
-  projectilePrefab: {fileID: 1884191687319604300, guid: ff4706abc54abcb478a7d78caa101cc0, type: 3}
+  droppedScale: {x: 1, y: 1, z: 1}
+  initPos: {x: 0, y: 0, z: 0}
   throwForce: 25
   upForce: 1.2
   torqueAmount: 5
+  greandeToThrow: {fileID: -492114243106901431, guid: ff4706abc54abcb478a7d78caa101cc0, type: 3}
 --- !u!54 &8171821984793299954
 Rigidbody:
   m_ObjectHideFlags: 0

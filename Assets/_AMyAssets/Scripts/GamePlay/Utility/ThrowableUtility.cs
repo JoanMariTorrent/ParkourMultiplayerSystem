@@ -4,22 +4,24 @@ using PurrNet;
 public class ThrowableUtility : Utility
 {
     [Header("Throwable settings")]
-    [SerializeField] private GameObject projectilePrefab; 
     [SerializeField] private float throwForce = 15f;
     [SerializeField] private float upForce = 2f;
     [SerializeField] private float torqueAmount = 10f;
 
+    
+    [Space(15)][Header("Grenade")]
+    [SerializeField] private GeneralGrenade greandeToThrow; 
+
 
     protected override void ExecuteUtilityLogic(Vector3 position, Vector3 direction)
     {
-        if (projectilePrefab == null) 
-        {
-            return;
-        }
+        if(isInCooldown) return;
+        if (greandeToThrow.projectilePrefab == null) return;
+        
 
         Vector3 spawnPos = position + (direction * 0.8f);
 
-        GameObject projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
+        GameObject projectile = Instantiate(greandeToThrow.projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
         
         Rigidbody projRb = projectile.GetComponent<Rigidbody>();
         if (projRb != null)
@@ -31,6 +33,18 @@ public class ThrowableUtility : Utility
             projRb.AddForce(force, ForceMode.Impulse);
             projRb.AddTorque(Random.insideUnitSphere * torqueAmount, ForceMode.Impulse);
         }
+
+        if(projectile != null)
+        {
+            projectile.SetActive(true);
+
+            GeneralGrenade grenadeScript = projectile.GetComponent<GeneralGrenade>();
+            if(grenadeScript != null)
+            {
+                grenadeScript.OnThrowed();
+            }
+        }
+        
 
         SetVisualsActive(false); 
     }

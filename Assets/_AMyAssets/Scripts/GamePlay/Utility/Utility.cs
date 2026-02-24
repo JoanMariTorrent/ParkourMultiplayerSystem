@@ -37,6 +37,8 @@ public abstract class Utility : EquippableItem, ITakeGun
     [SerializeField] private Vector3 droppedScale = Vector3.one;
     public Vector3 initPos = Vector3.zero;
 
+    
+
 
 
     // Referencias
@@ -164,7 +166,7 @@ public abstract class Utility : EquippableItem, ITakeGun
     protected void AttemptUse()
     {
         if (isInCooldown) return;
-        if (!isInfinite && currentCharges.value <= 0) return;
+        if(!isInfinite && currentCharges.value <= 0) {DepleteRoutine(); return;}
 
         StartCoroutine(CooldownRoutine());
 

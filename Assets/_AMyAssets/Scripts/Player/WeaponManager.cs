@@ -326,8 +326,6 @@ public class WeaponManager : NetworkBehaviour
 
         // Llamamos al OnEquip del padre
         if (_currentItem != null) _currentItem.OnEquip();
-
-        Debug.Log($"Cambio de item a {(_currentItem != null ? _currentItem.itemName : "Desconocido")} en el slot {index}");
     }
 
     [ObserversRpc(requireServer: false)]
