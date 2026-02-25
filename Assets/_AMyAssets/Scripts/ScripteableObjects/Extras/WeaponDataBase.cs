@@ -25,7 +25,7 @@ public class WeaponDatabase : ScriptableObject
         // 2. SEGURIDAD: Si la lista está vacía o es nula, salimos para evitar el crash
         if (listToUse == null || listToUse.Count == 0)
         {
-            Debug.LogError("❌ WeaponDatabase: ¡La lista de armas está vacía! Asegúrate de llenar 'All Weapons' en el Inspector.");
+
             return null;
         }
 

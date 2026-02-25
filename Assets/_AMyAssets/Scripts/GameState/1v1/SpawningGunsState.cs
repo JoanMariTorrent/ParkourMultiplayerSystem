@@ -81,7 +81,6 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         }
         else
         {
-            Debug.LogWarning("[SERVER] SpawningGunsState: No se encontraron jugadores, saltando...");
             machine.Next(data);
         }
     }

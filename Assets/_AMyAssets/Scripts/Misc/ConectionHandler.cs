@@ -34,7 +34,6 @@ public class GameWatchdog : MonoBehaviour
 
         if (_hasConnectedOnce && !isConnected)
         {
-            Debug.Log("Detectada desconexión. Volviendo al menú...");
             BackToMenu();
         }
         

@@ -159,7 +159,6 @@ public abstract class Utility : EquippableItem, ITakeGun
         if (inputUp && isCharging)
         {
             ReleaseAndThrow();
-            Debug.Log("DELETE UTILITY");
         }
     }
 
@@ -222,7 +221,6 @@ public abstract class Utility : EquippableItem, ITakeGun
 
         if (weaponManager != null)
         {
-            Debug.Log("<color=red> DESTRUYENDO UTILIDAD</color>");
             weaponManager.RemoveUtility(this.gameObject);
             weaponManager.StartUtilityCooldown();
         }

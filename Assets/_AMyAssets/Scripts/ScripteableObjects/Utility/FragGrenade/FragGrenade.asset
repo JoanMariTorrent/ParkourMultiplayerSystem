@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56cacf92015cc824d949da67b6c97d54, type: 3}
-  m_Name: ImpulseGrenade
+  m_Name: FragGrenade
   m_EditorClassIdentifier: 
-  utilityName: 
-  icon: {fileID: 21300000, guid: c6d1ed6eb5fb35d498fd073177aef781, type: 3}
-  description: 
+  utilityName: Frag grenade
+  icon: {fileID: 21300000, guid: ec71dc4e37b01434882c79fce8228efd, type: 3}
+  description: asdasd
   utilityType: 0
-  utilityPrefab: {fileID: 1884191687319604300, guid: cfd0aff2a6e15044b98548cb9cabc0d7, type: 3}
+  utilityPrefab: {fileID: 1884191687319604300, guid: 8877979925a0d7f4b94400a404ccea37, type: 3}
   cooldown: 10
   maxCharges: 1
   isInfinite: 0
-  dropChance: 0
+  dropChance: 1
   chargeTime: 0
   throwOnRelease: 1

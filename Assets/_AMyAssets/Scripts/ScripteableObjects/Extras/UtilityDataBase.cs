@@ -27,7 +27,6 @@ public class UtilityDatabase : ScriptableObject
         // 2. SEGURIDAD
         if (listToUse == null || listToUse.Count == 0)
         {
-            Debug.LogError("UtilityDatabase: ¡La lista de utilidades está vacía!");
             return null;
         }
 

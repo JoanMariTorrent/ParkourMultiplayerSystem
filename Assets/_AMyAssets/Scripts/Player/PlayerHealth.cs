@@ -173,7 +173,7 @@ public class PlayerHealth : NetworkBehaviour
 
             if (InstanceHandler.TryGetInstance(out ScoreManager scoreManager))
             {
-                if(attackerID != null || attackerID.HasValue) scoreManager.Addkills(attackerID.Value);
+                if((attackerID != null || attackerID.HasValue) && attackerID.Value != owner.Value) scoreManager.Addkills(attackerID.Value);
                 if(owner.HasValue)
                     scoreManager.AddDeath(owner.Value);
             }
@@ -259,7 +259,6 @@ public class PlayerHealth : NetworkBehaviour
     {
         if (_weaponDatabase == null || _utilityDatabase == null || player == null) 
         {
-            Debug.LogError("Falta WeaponDatabase, UtilityDatabase o player en PlayerHealth");
             return;
         }
 

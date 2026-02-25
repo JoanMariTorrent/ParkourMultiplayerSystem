@@ -80,3 +80,9 @@ MonoBehaviour:
   - prefab: {fileID: 1884191687319604300, guid: e1b25de04eaead341b923d6fa88b6f17, type: 3}
     pooled: 0
     warmupCount: 5
+  - prefab: {fileID: 1884191687319604300, guid: 8877979925a0d7f4b94400a404ccea37, type: 3}
+    pooled: 0
+    warmupCount: 5
+  - prefab: {fileID: 1884191687319604300, guid: a611c1b4c3b96f54f97da0b1134859bb, type: 3}
+    pooled: 0
+    warmupCount: 5

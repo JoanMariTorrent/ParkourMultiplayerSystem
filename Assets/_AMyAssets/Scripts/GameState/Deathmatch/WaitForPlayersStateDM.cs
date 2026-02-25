@@ -14,9 +14,6 @@ public class WaitForPlayersStateDM : StateNode
         if (!asServer)
             return;
 
-
-        Debug.Log($"Cantidad de jugadores guardado en memoria: <color=green> {MatchData.PlayerCount} </color>");
-
         if(testingStart == false)
         {
             if (MatchData.PlayerCount != 0)

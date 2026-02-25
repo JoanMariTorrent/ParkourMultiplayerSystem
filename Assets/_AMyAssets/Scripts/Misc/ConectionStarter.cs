@@ -77,7 +77,6 @@ public class ConnectionStarter : MonoBehaviour
 
     private void StartFromLobby()
     {
-        Debug.Log("start form lobby");
         _networkManager.transport = _steamTransport;
         if (!_lobbyDataHolder)
         {
