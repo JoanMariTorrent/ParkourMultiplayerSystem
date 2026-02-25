@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7380710897936422771}
   - component: {fileID: 8171821984793299954}
   m_Layer: 10
-  m_Name: SmokeGrenade_Launcher
+  m_Name: ImpulseGrenade_Launcher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -131,11 +131,11 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  itemName: Smoke grenade
+  itemName: Impulse grenade
   isEquipped: 0
   utilityID: 1
   displayName: Frag grenade
-  utilityData: {fileID: 11400000, guid: 159a07159798c984bb43bddaf919c2c5, type: 2}
+  utilityData: {fileID: 11400000, guid: 6e2e89b2591d93a4d85867c17569d928, type: 2}
   currentCharges:
     _value: 0
     _ownerAuth: 0

@@ -8,6 +8,7 @@ public class PlayerSpawningState : StateNode
 {
     [SerializeField] private PlayerHealth _playerPrefab;
     [SerializeField] private List<Transform> _spawnPoints = new();
+    [SerializeField] private List<PlayerHealth> _spawnedPlayers = new();
 
     public override void Enter(bool asServer)
     {
@@ -22,7 +23,7 @@ public class PlayerSpawningState : StateNode
 
     private IEnumerator SpawnPlayersRoutine()
     {
-        var _spawnedPlayers = new List<PlayerHealth>();
+        _spawnedPlayers = new List<PlayerHealth>();
 
         List<Transform> _availablePoints = new List<Transform>(_spawnPoints);
 

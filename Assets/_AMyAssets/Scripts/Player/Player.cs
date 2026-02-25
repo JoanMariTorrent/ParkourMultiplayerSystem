@@ -239,6 +239,7 @@ public class Player : NetworkBehaviour
     [TargetRpc(requireServer: false)]
     public void TargetStartSpin(PlayerID target, int[] winners, int[] p1, int[] p2, int[] p3)
     {
+        Debug.Log("RULEEEETAAAAAAAAAAAA");
         StartCoroutine(SpinCoroutine(target, winners, p1, p2, p3));
     }
 
@@ -266,6 +267,7 @@ public class Player : NetworkBehaviour
 
         while (!slotMachine.allFinished)
         {
+            Debug.Log("WAAAAAAAIIIIIITTTTTT");
             yield return null;
         }
 

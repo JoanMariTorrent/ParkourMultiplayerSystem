@@ -37133,6 +37133,7 @@ MonoBehaviour:
   - {fileID: 1630471295}
   - {fileID: 29949948}
   - {fileID: 69756116}
+  _spawnedPlayers: []
 --- !u!1 &1591070355
 GameObject:
   m_ObjectHideFlags: 0
@@ -43908,6 +43909,7 @@ MonoBehaviour:
   - {fileID: 1630471295}
   - {fileID: 29949948}
   - {fileID: 69756116}
+  _spawnedPlayers: []
 --- !u!4 &1618040074
 Transform:
   m_ObjectHideFlags: 0

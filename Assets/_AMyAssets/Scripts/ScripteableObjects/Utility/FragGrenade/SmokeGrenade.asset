@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56cacf92015cc824d949da67b6c97d54, type: 3}
-  m_Name: FragGrenade
+  m_Name: SmokeGrenade
   m_EditorClassIdentifier: 
-  utilityName: Frag grenade
+  utilityName: Smoke grenade
   icon: {fileID: 21300000, guid: bc7f19b60afb5844daed81ac024c039a, type: 3}
   description: asdasd
   utilityType: 0
@@ -20,6 +20,6 @@ MonoBehaviour:
   cooldown: 2
   maxCharges: 1
   isInfinite: 0
-  dropChance: 1
+  dropChance: 0
   chargeTime: 0
   throwOnRelease: 1

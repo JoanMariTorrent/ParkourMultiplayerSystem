@@ -56,41 +56,37 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
 
         SpawningGunsStateActiveInstance = this;
 
-        if (!asServer)
-            return;
-        if (data.Count <= 0)
-            return;
+        if (!asServer) return;
 
 
 
         // Reset de variables
         normalPlayers.Clear();
-        PlayersSlotMachines.Clear();
-        filteredWeapons.Clear();
-        _players.Clear();
-        _playersDataCache.Clear();
 
         playerEndedSpinCount = 0;
-        totalPlayers = 0;
 
         _playersDataCache = data;
-        totalPlayers = data.Count;
 
-        foreach (var player in data)
+        foreach (var playerHealth in data)
         {
-            var getPlayer = player.GetComponent<Player>();
-            if (getPlayer == null)
-                continue;
-            normalPlayers.Add(getPlayer);
-            _players.Add(player.owner.Value);
+            var p = playerHealth.GetComponent<Player>();
+            if (p != null) normalPlayers.Add(p);
         }
 
-        ServerShowSlot();
-        TryGoNextState(data);
+        totalPlayers = normalPlayers.Count;
 
+        if (totalPlayers > 0)
+        {
+            ServerShowSlot();
+        }
+        else
+        {
+            Debug.LogWarning("[SERVER] SpawningGunsState: No se encontraron jugadores, saltando...");
+            machine.Next(data);
+        }
     }
 
-    [ObserversRpc]
+    //[ServerRpc]
     private void ServerShowSlot()
     {
         foreach (var player in normalPlayers)

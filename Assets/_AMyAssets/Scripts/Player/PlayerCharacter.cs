@@ -79,7 +79,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [Header("Movement Penalties")]
     [SerializeField] private float reloadSpeedMultiplier = 0.6f;
     [SerializeField] private float hitSlowdownMultiplier = 0.5f;
-[SerializeField] private float hitSlowdownDuration = 1.0f;
+    [SerializeField] private float hitSlowdownDuration = 1.0f;
     
     [Header("Wall Run Settings")]
     [SerializeField] private float wallRunSpeed = 18f; 
@@ -176,6 +176,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     private bool _isFacingWall = false; 
     private float _currentClimbTimer = 0f;
     private Vector3 _lastWallNormal;
+    private Vector3 _externalImpulse;
 
     // Slide vars
     private float _timeSinceLastSlide = 10f; 
@@ -672,17 +673,16 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             if (_state.Stance == Stance.Stand || _state.Stance == Stance.Crouch)
             {
 
-                // 2. Lógica: ¿Está disparando?
+                // Está disparando?
                 bool isShooting = _requestedShoot || _requestedShootThisFrame;
 
-                // 3. Lógica: ¿Se mueve hacia adelante?
+                // Se mueve hacia adelante?
                 bool isMovingForward = Vector3.Dot(_requestedMovement.normalized, motor.CharacterForward) > 0.3f;
 
-                // 4. Determinar si podemos correr
-                // Debe querer correr + moverse hacia adelante + NO disparar + NO estar apuntando
+                // Determinar si podemos correr
                 bool canSprint = _requestedRun && canSprintTutorial && isMovingForward && !isShooting && !isAiming;
 
-                // 5. Calcular velocidad final
+                // Calcular velocidad final
                 float targetSpeed;
                 float response;
 
@@ -888,6 +888,13 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 if (_requestedSustainedJump && verticalSpeed > 0f) effectiveGravity *= jumpSustainGravity;
                 currentVelocity += motor.CharacterUp * effectiveGravity * deltaTime;
             }
+
+
+            if(_externalImpulse.sqrMagnitude > 0.001f)
+            {
+                currentVelocity += _externalImpulse;
+                _externalImpulse = Vector3.zero;
+            }
         }
 
         // --- JUMPING LOGIC ---
@@ -1092,12 +1099,22 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         {
             _state.Stance = Stance.Stand;
             
-            // Titanfall Trick: Al soltar, mantienes tu momento y ganas un mini salto
-            // para salir disparado (Slingshot)
+            // Al soltar, mantienes tu momento y ganas un mini salto
+            // para salir disparado
             _state.Velocity += Vector3.up * 3f;
             
             // Reseteamos saltos para permitir doble salto tras el gancho
             jumps = 1; 
+        }
+    }
+
+
+    public void AddExplosionForce(Vector3 force)
+    {
+        if(isOwner)
+        {
+            _externalImpulse += force;
+            motor.ForceUnground();
         }
     }
     
