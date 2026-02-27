@@ -135,7 +135,7 @@ MonoBehaviour:
   isEquipped: 0
   utilityID: 1
   displayName: Impulse grenade
-  utilityData: {fileID: 11400000, guid: 159a07159798c984bb43bddaf919c2c5, type: 2}
+  utilityData: {fileID: 11400000, guid: 6e2e89b2591d93a4d85867c17569d928, type: 2}
   currentCharges:
     _value: 0
     _ownerAuth: 0
@@ -153,7 +153,7 @@ MonoBehaviour:
   throwForce: 25
   upForce: 1.2
   torqueAmount: 5
-  greandeToThrow: {fileID: 4996246033903556763, guid: e1b25de04eaead341b923d6fa88b6f17, type: 3}
+  greandeToThrow: {fileID: -492114243106901431, guid: ff4706abc54abcb478a7d78caa101cc0, type: 3}
 --- !u!54 &8171821984793299954
 Rigidbody:
   m_ObjectHideFlags: 0

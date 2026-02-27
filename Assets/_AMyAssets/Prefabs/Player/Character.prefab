@@ -500,7 +500,7 @@ MonoBehaviour:
   rb: {fileID: 6714405065655426304}
   playerHealth: {fileID: 6592323882771729509}
   walkSpeed: 6.5
-  runSpeed: 14.3
+  runSpeed: 13.8
   crouchSpeed: 5
   aimWalkSpeed: 4.5
   walkResponse: 13
@@ -508,10 +508,10 @@ MonoBehaviour:
   airSpeed: 9.5
   airAcceleration: 70
   jumps: 1
-  jumpSpeed: 25
+  jumpSpeed: 29
   coyoteTime: 0.1
-  jumpSustainGravity: 0.846
-  gravity: -87
+  jumpSustainGravity: 1
+  gravity: -92.7
   reloadSpeedMultiplier: 0.6
   hitSlowdownMultiplier: 0.25
   hitSlowdownDuration: 0.6

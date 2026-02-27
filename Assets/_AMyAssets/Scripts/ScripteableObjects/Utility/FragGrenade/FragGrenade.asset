@@ -20,6 +20,6 @@ MonoBehaviour:
   cooldown: 10
   maxCharges: 1
   isInfinite: 0
-  dropChance: 1
+  dropChance: 0
   chargeTime: 0
   throwOnRelease: 1

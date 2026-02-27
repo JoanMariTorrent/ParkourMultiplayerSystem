@@ -15,7 +15,7 @@ MonoBehaviour:
   utilityName: Grappling hook
   icon: {fileID: 21300000, guid: 09edca69fa79b5a48bf2f8f1b352af19, type: 3}
   description: asdasd
-  utilityType: 0
+  utilityType: 2
   utilityPrefab: {fileID: 1884191687319604300, guid: bfe831e609236e746bb248905bb65add, type: 3}
   cooldown: 3
   maxCharges: 2

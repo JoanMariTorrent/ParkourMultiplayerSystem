@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56cacf92015cc824d949da67b6c97d54, type: 3}
   m_Name: ImpulseGrenade
   m_EditorClassIdentifier: 
-  utilityName: 
+  utilityName: Impulse grenade
   icon: {fileID: 21300000, guid: c6d1ed6eb5fb35d498fd073177aef781, type: 3}
-  description: 
+  description: asdasd
   utilityType: 0
-  utilityPrefab: {fileID: 1884191687319604300, guid: cfd0aff2a6e15044b98548cb9cabc0d7, type: 3}
+  utilityPrefab: {fileID: 1884191687319604300, guid: 6404b5993c940b14da8791a4c70122f1, type: 3}
   cooldown: 10
   maxCharges: 1
   isInfinite: 0
