@@ -200,11 +200,13 @@ public class Gun : EquippableItem, ITakeGun
         if (!equipedGun) return;
     
         // 1. LÓGICA PARA TODOS (Dueño y Observadores)
-        // Si no estamos haciendo recoil, aseguramos que el arma esté en su sitio
         if (_recoilCoroutine == null)
         {
             transform.localPosition = _originalPosition;
             transform.localRotation = _originalRotation;
+
+            if(transform.localScale != equippedScale)
+                transform.localScale = equippedScale;
         }
     
         // 2. LÓGICA SOLO PARA EL DUEÑO
