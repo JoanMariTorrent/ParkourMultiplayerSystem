@@ -508,7 +508,7 @@ MonoBehaviour:
   airSpeed: 9.5
   airAcceleration: 70
   jumps: 1
-  jumpSpeed: 29.5
+  jumpSpeed: 31
   coyoteTime: 0.1
   jumpSustainGravity: 1
   gravity: -92.7
