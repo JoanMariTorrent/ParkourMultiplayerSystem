@@ -70,7 +70,7 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         foreach (var playerHealth in data)
         {
             var p = playerHealth.GetComponent<Player>();
-            if (p != null) normalPlayers.Add(p);
+            if (p != null && !normalPlayers.Contains(p)) normalPlayers.Add(p);
         }
 
         totalPlayers = normalPlayers.Count;
@@ -85,9 +85,11 @@ public class SpawningGunsState : StateNode<List<PlayerHealth>>
         }
     }
 
-    //[ServerRpc]
+
     private void ServerShowSlot()
     {
+        if(!isServer) return;
+
         foreach (var player in normalPlayers)
         {
             var r1 = CreateWeaponRound(randomType.Primary, weaponDataBase);

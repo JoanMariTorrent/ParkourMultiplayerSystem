@@ -65,10 +65,7 @@ public class PlayerSpawningState : StateNode
             }
 
             _spawnedPlayers.Add(_newPlayer);
-        }
-
-        foreach(var player in _spawnedPlayers)
-        
+        }        
         machine.Next(_spawnedPlayers);
     }
 

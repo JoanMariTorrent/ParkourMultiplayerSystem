@@ -131,6 +131,12 @@ public class Gun : EquippableItem, ITakeGun
         if(!isOwner) return;
         if(gunAnimHandler != null) gunAnimHandler.enabled = false;
         if(animHandler != null) animHandler.UnRegisterWeaponAnimator();
+        if(_reloadCoroutine != null) 
+        {
+            Debug.Log("CANCELANDO RELOAD");
+            StopCoroutine(_reloadCoroutine);
+            _reloadCoroutine = null;
+        }
     }
 
     public virtual void Setup(Transform cam, LayerMask mask, RecoilCamera rec, PlayerCharacter pc, Player p, WeaponManager wm, PlayerAnimationHandler _animHandler)
@@ -449,4 +455,8 @@ public class Gun : EquippableItem, ITakeGun
         if(lastHit)
             player.canvas.gameMainView.RequestKillAnimation();
     }
+
+
+    
+
 }

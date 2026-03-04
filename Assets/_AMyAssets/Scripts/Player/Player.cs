@@ -236,7 +236,7 @@ public class Player : NetworkBehaviour
 
 
     // En Player.cs
-    [TargetRpc(requireServer: false)]
+    [TargetRpc(requireServer: true)]
     public void TargetStartSpin(PlayerID target, int[] winners, int[] p1, int[] p2, int[] p3)
     {
         StartCoroutine(SpinCoroutine(target, winners, p1, p2, p3));
