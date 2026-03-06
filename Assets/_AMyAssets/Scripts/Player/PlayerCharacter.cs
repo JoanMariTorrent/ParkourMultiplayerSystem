@@ -70,11 +70,20 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
     [SerializeField] private float airSpeed = 15f;
     [SerializeField] private float airAcceleration = 70f;
     [Space]
-    [SerializeField] private int jumps = 2;
+    [Header("Jetpack")]
+    [SerializeField] private float maxJetpackFuel = 2.0f;
+    [SerializeField] private float jetpackThrust = 45f;
+    [SerializeField] private float jetpackFuelRegenDelay = 0.2f;
+    [SerializeField] private float jetpackFuelRegenSpeed = 1.5f;
+    [SerializeField] private float jetpackGravityMult = 0.3f;
+    private float currentJetpackFuel;
+    private bool firstJumpUsed;
+    private bool isJetpacking = false;
+    private float lastJetpackTime;
+
+    [Space][Header("Salto")]
     [SerializeField] private float jumpSpeed = 20f;
     [SerializeField] private float coyoteTime = 0.2f;
-    [Range(0f, 1f)]
-    [SerializeField] private float jumpSustainGravity = 0.4f;
     [SerializeField] private float gravity = -90f;
     [Header("Movement Penalties")]
     [SerializeField] private float reloadSpeedMultiplier = 0.6f;
@@ -230,6 +239,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
         _lastState = _state;
         _unCrouchOverlapResults = new Collider[8];
         motor.CharacterController = this;
+        currentJetpackFuel = maxJetpackFuel;
     }
 
     public void UpdateInput(CharacterInput input)
@@ -556,133 +566,95 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        // Reduccion de velocidad global
+        // 1. Reduccion de velocidad global (Tus modificadores de recarga y daño)
         float globalSlowdown = 1f;
-        
         if(weaponManager != null && weaponManager._currentGun != null && weaponManager._currentGun.IsReloading)
         {
             globalSlowdown *= reloadSpeedMultiplier;
         }
-
         if (playerHealth != null)
         {
             float tiempoDesdeGolpe = Time.time - playerHealth.lastTimeTakenDamage;
-        
             if (tiempoDesdeGolpe < hitSlowdownDuration)
             {
                 float t = tiempoDesdeGolpe / hitSlowdownDuration;
-                
                 float targetSlowdown = Mathf.Lerp(1f, hitSlowdownMultiplier, playerHealth.lastHitIntensity);
-        
-                float factorRecuperacion = Mathf.Lerp(targetSlowdown, 1f, t);
-                
-                globalSlowdown *= factorRecuperacion;
+                globalSlowdown *= Mathf.Lerp(targetSlowdown, 1f, t);
             }
         }
-        
+
         _state.Acceleration = Vector3.zero;
 
-        // --- LÓGICA DE GANCHO (GRAPPLE) ---
-            if (_state.Stance == Stance.Grapple)
+        // 2. LÓGICA DE GANCHO (GRAPPLE)
+        if (_state.Stance == Stance.Grapple)
+        {
+            Vector3 toHookVector = _grapplePoint - transform.position;
+            Vector3 directionToHook = toHookVector.normalized;
+            float distanceToHook = toHookVector.magnitude;
+            float currentPull = grapplePullSpeed;
+
+            if (transform.position.y < _grapplePoint.y) currentPull *= 1.5f; 
+            currentVelocity += directionToHook * currentPull * deltaTime;
+
+            float dot = Vector3.Dot(currentVelocity, directionToHook);
+            if (dot < 0) currentVelocity = Vector3.ProjectOnPlane(currentVelocity, directionToHook);
+
+            if (_requestedMovement.sqrMagnitude > 0f)
             {
-                // 1. Vectores
-                Vector3 toHookVector = _grapplePoint - transform.position;
-                Vector3 directionToHook = toHookVector.normalized;
-                float distanceToHook = toHookVector.magnitude;
-
-                // Si estás lejos, tiramos fuerte. Si estás cerca, suave.
-                float currentPull = grapplePullSpeed;
-                
-                // Boost de subida
-                if (transform.position.y < _grapplePoint.y)
-                {
-                    currentPull *= 1.5f; 
-                }
-
-                // Sumamos la velocidad hacia el gancho
-                currentVelocity += directionToHook * currentPull * deltaTime;
-
-                // LA CUERDA 
-                float dot = Vector3.Dot(currentVelocity, directionToHook);
-                
-                if (dot < 0) // Si la velocidad es negativa (nos alejamos)
-                {
-                    // Anulamos SOLO la velocidad que nos aleja
-                    currentVelocity = Vector3.ProjectOnPlane(currentVelocity, directionToHook);
-                }
-
-                // Balanceo
-                if (_requestedMovement.sqrMagnitude > 0f)
-                {
-                    var planarInput = Vector3.ProjectOnPlane(_requestedMovement, motor.CharacterUp).normalized;
-                    currentVelocity += planarInput * grappleAirControl * deltaTime;
-                }
-
-                // Si estás muy cerca del punto, evita que vibres u orbitres locamente
-                if (distanceToHook < 1.5f)
-                {
-                    // Frenado suave al llegar
-                    currentVelocity *= 0.9f; 
-                }
-
-                // limitar velocidad
-                if (currentVelocity.magnitude > maxGrappleSpeed)
-                {
-                    currentVelocity = currentVelocity.normalized * maxGrappleSpeed;
-                }
-
-                return; 
+                var planarInput = Vector3.ProjectOnPlane(_requestedMovement, motor.CharacterUp).normalized;
+                currentVelocity += planarInput * grappleAirControl * deltaTime;
             }
 
+            if (distanceToHook < 1.5f) currentVelocity *= 0.9f; 
+            if (currentVelocity.magnitude > maxGrappleSpeed) currentVelocity = currentVelocity.normalized * maxGrappleSpeed;
+
+            return; // Salimos de la función si estamos usando el gancho
+        }
+
+        // 3. ESTADO DE SUELO NORMAL (Correr, andar, agacharse, deslizarse)
         if (motor.GroundingStatus.IsStableOnGround)
         {
             _timeSinceUngrounded = 0f;
             _ungroundedDueToJump = false;
             _currentClimbTimer = 0f; 
-            
+
+            // RESET DE JETPACK
+            firstJumpUsed = false;
+            isJetpacking = false;
+
+            if (Time.time > lastJetpackTime + jetpackFuelRegenDelay)
+            {
+                currentJetpackFuel = Mathf.MoveTowards(currentJetpackFuel, maxJetpackFuel, jetpackFuelRegenSpeed * deltaTime);
+            }
+
             if (_state.Stance == Stance.Wall || _state.Stance == Stance.Climb) 
                 _state.Stance = Stance.Stand;
 
             var groundedMovement = motor.GetDirectionTangentToSurface(_requestedMovement, motor.GroundingStatus.GroundNormal) * _requestedMovement.magnitude;
 
-            // SLIDING 
+            // Sliding
+            bool isMoving = groundedMovement.sqrMagnitude > 0f;
+            bool isCrouching = _state.Stance == Stance.Crouch;
+
+            if (canSlideTutorial && isMoving && isCrouching && _requestedRun && (_lastState.Stance == Stance.Stand || !_lastState.Grounded) && _state.Stance != Stance.Wall && _timeSinceLastSlide >= slideCooldown)
             {
-                bool isMoving = groundedMovement.sqrMagnitude > 0f;
-                bool isCrouching = _state.Stance == Stance.Crouch;
-                
-                if (canSlideTutorial && isMoving && isCrouching && _requestedRun && (_lastState.Stance == Stance.Stand || !_lastState.Grounded) && _state.Stance != Stance.Wall && _timeSinceLastSlide >= slideCooldown)
-                {
-                    _state.Stance = Stance.Slide;
-                    _timeSinceLastSlide = 0f; 
-
-                    if (!_lastState.Grounded)
-                        currentVelocity = Vector3.ProjectOnPlane(_lastState.Velocity, motor.GroundingStatus.GroundNormal);
-
-                    var effectiveSliderStartSpeed = (!_lastState.Grounded && !_requestedCrouchInAir) ? 0f : slideStartSpeed;
-
-                    effectiveSliderStartSpeed *= globalSlowdown;
-
-                    if (!_lastState.Grounded && !_requestedCrouchInAir) _requestedCrouchInAir = false;
-
-                    var slideSpeed = Mathf.Max(effectiveSliderStartSpeed, currentVelocity.magnitude);
-                    currentVelocity = motor.GetDirectionTangentToSurface(currentVelocity, motor.GroundingStatus.GroundNormal) * slideSpeed;
-                }
+                _state.Stance = Stance.Slide;
+                _timeSinceLastSlide = 0f; 
+                if (!_lastState.Grounded) currentVelocity = Vector3.ProjectOnPlane(_lastState.Velocity, motor.GroundingStatus.GroundNormal);
+                var effectiveSliderStartSpeed = (!_lastState.Grounded && !_requestedCrouchInAir) ? 0f : slideStartSpeed;
+                effectiveSliderStartSpeed *= globalSlowdown;
+                if (!_lastState.Grounded && !_requestedCrouchInAir) _requestedCrouchInAir = false;
+                var slideSpeed = Mathf.Max(effectiveSliderStartSpeed, currentVelocity.magnitude);
+                currentVelocity = motor.GetDirectionTangentToSurface(currentVelocity, motor.GroundingStatus.GroundNormal) * slideSpeed;
             }
 
-            // Move
+            // Movimiento base
             if (_state.Stance == Stance.Stand || _state.Stance == Stance.Crouch)
             {
-
-                // Está disparando?
                 bool isShooting = _requestedShoot || _requestedShootThisFrame;
-
-                // Se mueve hacia adelante?
                 bool isMovingForward = Vector3.Dot(_requestedMovement.normalized, motor.CharacterForward) > 0.3f;
-
-                // Determinar si podemos correr
                 bool canSprint = _requestedRun && canSprintTutorial && isMovingForward && !isShooting && !isAiming;
 
-                // Calcular velocidad final
                 float targetSpeed;
                 float response;
 
@@ -691,51 +663,49 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     if (canSprint) targetSpeed = runSpeed;
                     else if (isAiming) targetSpeed = aimWalkSpeed; 
                     else targetSpeed = walkSpeed;
-                    
                     response = walkResponse;
                 }
-                else // Crouch
+                else 
                 {
                     targetSpeed = crouchSpeed;
                     response = crouchResponse;
                 }
 
                 targetSpeed *= globalSlowdown;
-
                 var targetVelocity = groundedMovement * targetSpeed;
                 var moveVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 1f - Mathf.Exp(-response * deltaTime));
                 _state.Acceleration = moveVelocity - currentVelocity;
                 currentVelocity = moveVelocity;
             }
-            // Sliding Continue
+            // Fricción de deslizamiento
             else
             {
                 currentVelocity -= currentVelocity * (slideFriction * deltaTime);
                 currentVelocity -= Vector3.ProjectOnPlane(-motor.CharacterUp, motor.GroundingStatus.GroundNormal) * slideGravity * deltaTime; 
-
                 var currentSpeed = currentVelocity.magnitude;
-
-
                 var targetVelocity = groundedMovement * (currentSpeed * globalSlowdown);
                 var steerForce = (targetVelocity - currentVelocity) * slideSteerAcceleration * deltaTime;
                 var newVelocity = currentVelocity + steerForce;
-                
                 currentVelocity = Vector3.ClampMagnitude(newVelocity, currentSpeed);
                 _state.Acceleration = (currentVelocity - newVelocity) / deltaTime; 
-
                 if (currentVelocity.magnitude < (slideEndSpeed * globalSlowdown)) _state.Stance = Stance.Crouch;
             }
         }
-        // AIR MOVEMENT / WALL MECHANICS 
+        // 4. ESTADO DE AIRE (Caída, Jetpack, Wallrun, Climb)
         else
         {
             _timeSinceUngrounded += deltaTime;
-            bool isMovingForward = Vector3.Dot(_requestedMovement, motor.CharacterForward) > 0.1f;
 
+            if (!firstJumpUsed && _timeSinceUngrounded > coyoteTime)
+            {
+                firstJumpUsed = true; 
+            }
+
+            bool isMovingForward = Vector3.Dot(_requestedMovement, motor.CharacterForward) > 0.1f;
             float lookAngle = Vector3.Angle(motor.CharacterForward, -_wallNormal);
             bool isLookingAtWall = lookAngle < maxClimbAngle;
 
-            // WALL CLIMB
+            // Wall Climb
             if (_isFacingWall && isLookingAtWall && !_state.Grounded && isMovingForward && _currentClimbTimer < maxClimbDuration)
             {
                 if (_requestedCrouch || _requestedCrouchInAir)
@@ -743,24 +713,28 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     _requestedCrouch = false;
                     _requestedCrouchInAir = false;
                 }
-
                 if (_state.Stance != Stance.Climb)
                 {
                     if (!Physics.Raycast(transform.position, -Vector3.up, wallEnterMinHeight, LayerMask.GetMask("Ground", "Default")))
                     {
                         _state.Stance = Stance.Climb;
                         motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
-                        
                         currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
                         currentVelocity.y = climbSpeed * globalSlowdown;
-                        
-                        jumps = 1; 
                     }
                 }
             }
-            //WALL RUN (Si no estamos escalando)
+            // Wall Run
             else if (canWallRunTutorial && _currentWallSide != WallSide.None && !_state.Grounded && _requestedMovement.magnitude > 0.1f && isMovingForward)
             {
+                firstJumpUsed = false;
+                isJetpacking = false;
+    
+                if (Time.time > lastJetpackTime + jetpackFuelRegenDelay)
+                {
+                    currentJetpackFuel = Mathf.MoveTowards(currentJetpackFuel, maxJetpackFuel, jetpackFuelRegenSpeed * deltaTime);
+                }
+
                 if (_requestedCrouch || _requestedCrouchInAir)
                 {
                     _requestedCrouch = false;
@@ -774,10 +748,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                         _state.Stance = Stance.Wall;
                         motor.SetCapsuleDimensions(motor.Capsule.radius, standheight, standheight * 0.5f);
                         currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _wallNormal);
-                        
                         currentVelocity.y = 0; 
-
-                        jumps = 1; 
                     }
                 }
             }
@@ -789,42 +760,31 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 }
             }
 
-            // WALL CLIMB
+            // Movimiento de Wall Climb
             if (canClimbTutorial && _state.Stance == Stance.Climb)
             {
-                jumps = 1;
                 _currentClimbTimer += deltaTime;
-
                 float effectiveClimbSpeed = climbSpeed * globalSlowdown;
                 float deceleration = effectiveClimbSpeed / maxClimbDuration; 
                 currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, 0f, deceleration * deltaTime);
-                
                 Vector3 horizontalVel = Vector3.ProjectOnPlane(currentVelocity, Vector3.up);
                 currentVelocity -= horizontalVel * 5f * deltaTime; 
-
                 currentVelocity += -_wallNormal * 2f; 
             }
-            // WALL RUN 
+            // Movimiento de Wall Run
             else if (_state.Stance == Stance.Wall)
             {
                 if (Vector3.Dot(_lastWallNormal, _wallNormal) < 0.5f && _lastWallNormal != Vector3.zero)
                 {
-                    _state.Stance = Stance.Stand; // Rompemos el wallrun
-                    return;
+                    _state.Stance = Stance.Stand; 
+                    return; // OJO AQUÍ, el return interrumpe el salto si lo dejas dentro.
                 }
-                jumps = 1;
                 _currentClimbTimer = 0f; 
-
                 float verticalVelocity = currentVelocity.y;
                 Vector3 horizontalVelocity = Vector3.ProjectOnPlane(currentVelocity, Vector3.up);
                 float horizontalSpeed = horizontalVelocity.magnitude;
-
                 Vector3 tangentDir = Vector3.ProjectOnPlane(horizontalVelocity, _wallNormal).normalized;
-
-                if (horizontalSpeed > 0.1f && tangentDir.sqrMagnitude > 0.01f)
-                {
-                    horizontalVelocity = tangentDir * horizontalSpeed;
-                }
+                if (horizontalSpeed > 0.1f && tangentDir.sqrMagnitude > 0.01f) horizontalVelocity = tangentDir * horizontalSpeed;
 
                 Vector3 wallRunDirection = Vector3.ProjectOnPlane(motor.CharacterForward, _wallNormal).normalized;
                 wallRunDirection.y = 0; wallRunDirection.Normalize();
@@ -842,14 +802,12 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
 
                 currentVelocity = horizontalVelocity + (Vector3.up * verticalVelocity);
                 currentVelocity += Vector3.down * (Mathf.Abs(wallGravity) * deltaTime);
-                
                 float speedFactor = horizontalSpeed * 0.5f; 
                 currentVelocity += -_wallNormal * (2f + speedFactor); 
             }
-            
-            // AIRE NORMAL
+            // Aire libre y Jetpack
             else
-            {   
+            { 
                 if (_requestedMovement.sqrMagnitude > 0f)
                 {
                     float effectiveAirAcceleration = airAcceleration * globalSlowdown;
@@ -858,7 +816,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     var planarMovement = Vector3.zero;
                     var projected = Vector3.ProjectOnPlane(_requestedMovement, motor.CharacterUp);
                     if (projected.sqrMagnitude > 0) planarMovement = projected.normalized;
-                    
+
                     var currentPlanarVelocity = Vector3.ProjectOnPlane(currentVelocity, motor.CharacterUp);
                     var movementForce = planarMovement * effectiveAirAcceleration * deltaTime;
 
@@ -884,24 +842,51 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 }
 
                 float effectiveGravity = gravity;
-                float verticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
-                if (_requestedSustainedJump && verticalSpeed > 0f) effectiveGravity *= jumpSustainGravity;
-                currentVelocity += motor.CharacterUp * effectiveGravity * deltaTime;
-            }
 
-
-            if(_externalImpulse.sqrMagnitude > 0.001f)
-            {
-                currentVelocity += _externalImpulse;
-                _externalImpulse = Vector3.zero;
-            }
+                // Lógica Jetpack
+                if (isJetpacking && _requestedSustainedJump && currentJetpackFuel > 0)
+                {
+                    // 1. Calculamos qué porcentaje del tanque nos queda (1 = Lleno, 0 = Vacío)
+                    float fuelRatio = currentJetpackFuel / maxJetpackFuel;
+    
+                    // 2. EMPUJE DINÁMICO: 
+                    // Al principio (fuelRatio=1) el empuje es del 150% (1.5). 
+                    // Al final (fuelRatio=0) el empuje cae al 20% (0.2).
+                    float thrustMultiplier = Mathf.Lerp(0.2f, 1.5f, fuelRatio);
+                    currentVelocity.y += (jetpackThrust * thrustMultiplier) * deltaTime;
+    
+                    // 3. Consumo de fuel
+                    currentJetpackFuel = Mathf.Max(0, currentJetpackFuel - deltaTime);
+                    lastJetpackTime = Time.time; 
+                    
+                    // Límite de seguridad
+                    if (currentVelocity.y > jumpSpeed) currentVelocity.y = jumpSpeed;
+    
+                    // 4. GRAVEDAD DINÁMICA:
+                    // Al principio flotas mucho (usa tu jetpackGravityMult, ej: 0.3).
+                    // Conforme se acaba el gas, vuelve suavemente a la gravedad normal (1.0).
+                    float dynamicGravity = Mathf.Lerp(1f, jetpackGravityMult, fuelRatio);
+                    effectiveGravity *= dynamicGravity; 
+                }
+                else
+                {
+                    if (!_requestedSustainedJump || currentJetpackFuel <= 0) 
+                    {
+                        isJetpacking = false;
+                    }
+                }
+    
+                    currentVelocity += motor.CharacterUp * effectiveGravity * deltaTime;
+                }
         }
 
-        // --- JUMPING LOGIC ---
+
+        // 5. LÓGICA DE SALTO (COMPLETAMENTE INDEPENDIENTE)
         if (_requestedJump && canJumpTutorial)
         {
             if (_state.Stance == Stance.Climb)
             {
+                // TU CÓDIGO ORIGINAL DE CLIMB
                 Vector3 jumpDirection = (_wallNormal * climbJumpBackForce) + (Vector3.up * climbJumpUpForce);
                 currentVelocity = jumpDirection; 
                 
@@ -910,9 +895,14 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 _ungroundedDueToJump = true;
                 _timeSinceWallJump = 0f;
                 _currentClimbTimer = maxClimbDuration; 
+                
+                // Bloqueamos el salto normal para que lo siguiente sea Jetpack
+                firstJumpUsed = true;
+                isJetpacking = false;
             }
             else if (_state.Stance == Stance.Wall)
             {
+                // TU CÓDIGO ORIGINAL DE WALL RUN
                 Vector3 velocityForward = Vector3.ProjectOnPlane(currentVelocity, motor.CharacterUp);
                 velocityForward = Vector3.ProjectOnPlane(velocityForward, _wallNormal);
 
@@ -923,14 +913,18 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                 _requestedJump = false;
                 _ungroundedDueToJump = true;
                 _timeSinceWallJump = 0f; 
+                
+                // Bloqueamos el salto normal para que lo siguiente sea Jetpack
+                firstJumpUsed = true;
+                isJetpacking = false;
             }
             else
             {
                 bool grounded = motor.GroundingStatus.IsStableOnGround;
                 bool canCoyoteJump = _timeSinceUngrounded < coyoteTime && !_ungroundedDueToJump;
-                if (grounded) jumps = 2;
 
-                if (jumps > 0 || canCoyoteJump)
+                // SALTO NORMAL (Suelo o Coyote Time)
+                if (!firstJumpUsed && (grounded || canCoyoteJump))
                 {
                     _requestedJump = false;
                     _requestedCrouch = false;
@@ -939,21 +933,46 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
                     motor.ForceUnground(time: 0f);
                     _ungroundedDueToJump = true;
 
+                    // TU MATEMÁTICA ORIGINAL PARA EL SUELO
                     float currentVerticalSpeed = Vector3.Dot(currentVelocity, motor.CharacterUp);
-
                     float effectiveJumpSpeed = jumpSpeed * globalSlowdown;
                     float targetVerticalSpeed = Mathf.Max(currentVerticalSpeed, effectiveJumpSpeed);
 
                     currentVelocity += motor.CharacterUp * (targetVerticalSpeed - currentVerticalSpeed);
 
-                    jumps -= 1;
+                    firstJumpUsed = true;
+                    isJetpacking = false;
+                }
+                // JETPACK (Ya gastaste el primer salto, estás en el aire y pulsas de nuevo)
+                else if (firstJumpUsed && currentJetpackFuel > 0)
+                {
+                    isJetpacking = true;
+                    _requestedJump = false;
+                    _requestedCrouch = false;
+                    _requestedCrouchInAir = false;
+                    
+                    // Empuje explosivo inicial:
+                    // Si estás cayendo o subiendo muy lento, te impulsamos al instante 
+                    // a la mitad de tu velocidad máxima de salto para que responda super rápido.
+                    if (currentVelocity.y < jumpSpeed * 0.5f)
+                    {
+                        currentVelocity.y = jumpSpeed * 0.5f;
+                    }
                 }
                 else
                 {
+                    // TU CÓDIGO ORIGINAL DE COYOTE TIME BUFFERING
                     _timeSinceJumpRequest += deltaTime;
                     _requestedJump = _timeSinceJumpRequest < coyoteTime;
                 }
             }
+        }
+
+        // IMPULSOS EXTERNOS (Granadas)
+        if(_externalImpulse.sqrMagnitude > 0.001f)
+        {
+            currentVelocity += _externalImpulse;
+            _externalImpulse = Vector3.zero;
         }
     }
 
@@ -1033,7 +1052,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             rb.useGravity = false;
             gravity = 0;
             airAcceleration = 0;
-            jumps = 0;
+            //jumps = 0;
         }
         else
         {
@@ -1104,7 +1123,7 @@ public class PlayerCharacter : NetworkBehaviour, ICharacterController
             _state.Velocity += Vector3.up * 3f;
             
             // Reseteamos saltos para permitir doble salto tras el gancho
-            jumps = 1; 
+            //jumps = 1; 
         }
     }
 

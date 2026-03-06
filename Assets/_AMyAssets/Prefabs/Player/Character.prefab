@@ -507,15 +507,18 @@ MonoBehaviour:
   crouchResponse: 9
   airSpeed: 9.5
   airAcceleration: 70
-  jumps: 1
-  jumpSpeed: 31
+  maxJetpackFuel: 0.65
+  jetpackThrust: 50
+  jetpackFuelRegenDelay: 0
+  jetpackFuelRegenSpeed: 1000
+  jetpackGravityMult: 0.4
+  jumpSpeed: 25
   coyoteTime: 0.1
-  jumpSustainGravity: 1
-  gravity: -92.7
+  gravity: -90
   reloadSpeedMultiplier: 0.6
   hitSlowdownMultiplier: 0.25
   hitSlowdownDuration: 0.6
-  wallRunSpeed: 20
+  wallRunSpeed: 14.3
   wallGravity: -2.5
   wallCheckDistance: 0.65
   wallLayer:
