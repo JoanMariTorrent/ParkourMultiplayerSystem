@@ -5,15 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: Assets/_AMyAssets/ZScenes/TutorialScene.unity
+    guid: 5c6829cbad776ff47bfed9c51e5a8157
   - enabled: 1
     path: Assets/PurrLobby/LobbyScenes/LobbySample.unity
     guid: 163ab76a47bff6646b7627336bc33bdf
-  - enabled: 0
-    path: Assets/PurrLobby/LobbyScenes/NetworkedScene.unity
-    guid: e6ba6bbd3072e63449ec09bda4a1b5e6
   - enabled: 1
     path: Assets/_AMyAssets/ZScenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 0
+    path: Assets/PurrLobby/LobbyScenes/NetworkedScene.unity
+    guid: e6ba6bbd3072e63449ec09bda4a1b5e6
   - enabled: 0
     path: Assets/_AMyAssets/ZScenes/TestScene.unity
     guid: 1a62b3b8a66aa534c8bdaa16303df6b1

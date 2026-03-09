@@ -108,4 +108,9 @@ public class MainSettingsView : View
     {
         PlaySound(audio);
     }
+
+    public void SkipTutorial()
+    {
+        SceneManager.LoadScene(1);
+    }
 }

@@ -518,8 +518,8 @@ MonoBehaviour:
   maxAmmo: 1
   _automatic: 0
   _fireRate: 0.5
-  timeToReload: 4
-  _gunDamage: 70
+  timeToReload: 2.5
+  _gunDamage: 100
   canAim: 1
   aimCurve:
     serializedVersion: 2
