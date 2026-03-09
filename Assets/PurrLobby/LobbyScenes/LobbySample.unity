@@ -6930,9 +6930,9 @@ MonoBehaviour:
       Rotation:
         value:
           x: 0.059579965
-          y: 0.9831427
-          z: -0.008714994
-          w: -0.17264089
+          y: 0.98314255
+          z: -0.008714997
+          w: -0.1726409
     - Position:
         x: 1.3114457
         y: -4.200001
@@ -11680,37 +11680,6 @@ MonoBehaviour:
   moveAmount: 10
   waveDistance: 5.6
   speed: 3
---- !u!1 &1477255494
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1477255496}
-  m_Layer: 0
-  m_Name: SteamManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1477255496
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1477255494}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1487335973
 GameObject:
   m_ObjectHideFlags: 0
@@ -16786,4 +16755,3 @@ SceneRoots:
   - {fileID: 1576417063}
   - {fileID: 908563508}
   - {fileID: 189969987}
-  - {fileID: 1477255496}
