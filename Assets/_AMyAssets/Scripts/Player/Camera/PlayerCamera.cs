@@ -61,7 +61,7 @@ public class PlayerCamera : NetworkBehaviour
     public void UpdateRotation(CameraInput input)
     {
         _pitch -= input.Look.y * _currentSensitivity;
-        _pitch = Mathf.Clamp(_pitch, -89f, 89f); 
+        _pitch = Mathf.Clamp(_pitch, -85f, 85f); 
         _yaw += input.Look.x * _currentSensitivity;
 
         transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);

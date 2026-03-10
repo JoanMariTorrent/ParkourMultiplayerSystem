@@ -60283,63 +60283,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 6017764170051027945, guid: b2449d98d444bb544b3ebf3f49842697, type: 3}
---- !u!1001 &1266690732
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -16.521866
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.00003610468
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 45.10967
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
-      propertyPath: m_Name
-      value: Character_01_UV_SinExplode (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b17a9905c7879274dae7f04ad7c4ef12, type: 3}
 --- !u!4 &1267872439 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8807052876052110657, guid: 2b12769d5a5aadb45ab12b51dd9e3131, type: 3}
@@ -106476,4 +106419,3 @@ SceneRoots:
   - {fileID: 1228969939}
   - {fileID: 571374951}
   - {fileID: 617781086}
-  - {fileID: 1266690732}
