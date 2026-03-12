@@ -51,13 +51,13 @@ public class FlameThrowerGun : Gun
         {
             if (victim.owner.Value != this.owner.Value)
             {
-                ApplyDamageOnServerRpc(victim, _gunDamage);
+                ApplyDamageOnServerRpc(victim, _boddyDamage);
             }
         }
 
         foreach (var obj in objectsInZone)
         {
-            ApplyDamageObjectServerRpc(obj, _gunDamage);
+            ApplyDamageObjectServerRpc(obj, _boddyDamage);
         }
     }
 

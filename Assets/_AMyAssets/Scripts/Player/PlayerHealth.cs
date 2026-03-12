@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using PurrNet;
 using UnityEngine;
 
+public enum BodyPartEnum{ Head, Boddy, Legs}
 public class PlayerHealth : NetworkBehaviour
 {
     [SerializeField] private SyncVar<int> _health = new(100);

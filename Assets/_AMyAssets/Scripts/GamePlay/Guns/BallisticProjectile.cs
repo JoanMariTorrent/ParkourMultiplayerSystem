@@ -11,14 +11,18 @@ public class BallisticProjectile : NetworkBehaviour
     private Collider ownCollider;
 
     private Vector3 _velocity;
-    private int _damage;
+    private int _headdamage;
+    private int _boddydamage;
+    private int _legsdamage;
     private ProjectileGun _ownerGun;
     private bool _isActive = false;
 
     // Inicializamos pasando la referencia del ProjectileGun
-    public void Initialize(int damage, Vector3 direction, ProjectileGun gunScript, Collider ownCollider)
+    public void Initialize(int headDamage, int boddyDamage, int legsDamage, Vector3 direction, ProjectileGun gunScript, Collider ownCollider)
     {
-        _damage = damage;
+        _headdamage = headDamage;
+        _boddydamage = boddyDamage;
+        _legsdamage = legsDamage;
         _velocity = direction * speed;
         _ownerGun = gunScript; 
         _isActive = true;
@@ -57,18 +61,40 @@ public class BallisticProjectile : NetworkBehaviour
         // Ignorar colisión con el dueño del arma
         if (hit.collider == ownCollider) return;
 
+        Debug.Log($"<color=orange>Nombre de la collision: {hit.transform.name}</color>");
+
+
         // --- LÓGICA DE IMPACTO ---
         
-        // 1. Si golpeamos a un jugador
-        if (hit.collider.TryGetComponent(out PlayerHealth ph))
+        // 1. Si golpeamos una parte del jugador
+        if (hit.collider.TryGetComponent(out BodyPart bodyPart))
         {
-            _ownerGun.ReportPlayerHit(ph, _damage);
+            Debug.Log($"<color=orange>Parte del cuerpo: {bodyPart.bodyPartEnum}</color>");
+            
+            var hitPart = bodyPart.bodyPartEnum;
+
+            switch (hitPart)
+            {
+                case BodyPartEnum.Head:
+                _ownerGun.ReportPlayerHit(bodyPart.playerHealth, _headdamage);
+                break;
+                case BodyPartEnum.Boddy:
+                _ownerGun.ReportPlayerHit(bodyPart.playerHealth, _boddydamage);
+                break;
+                case BodyPartEnum.Legs:
+                _ownerGun.ReportPlayerHit(bodyPart.playerHealth, _legsdamage);
+                break;
+            }
         }
+
+
         // 2. Si golpeamos un objeto destructible
         else if (hit.collider.TryGetComponent(out HealthObject obj))
         {
-            _ownerGun.ReportObjectHit(obj, _damage, hit.point);
+            _ownerGun.ReportObjectHit(obj, _boddydamage, hit.point);
         }
+
+        
 
         // Efectos visuales
         

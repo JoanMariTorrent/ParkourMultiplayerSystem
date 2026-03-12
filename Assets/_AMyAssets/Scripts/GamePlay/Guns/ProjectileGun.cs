@@ -25,7 +25,7 @@ public class ProjectileGun : Gun
         Collider ownCollider = GetComponent<Collider>();
         if (bulletScript != null)
         {
-            bulletScript.Initialize(_gunDamage, directionToTarget, this, ownCollider);
+            bulletScript.Initialize(_headshootDamage ,_boddyDamage, _legDamage, directionToTarget, this, ownCollider);
         }
     }
 

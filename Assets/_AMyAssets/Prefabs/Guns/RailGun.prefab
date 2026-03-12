@@ -519,7 +519,9 @@ MonoBehaviour:
   _automatic: 0
   _fireRate: 0.5
   timeToReload: 2.5
-  _gunDamage: 100
+  _headshootDamage: 200
+  _boddyDamage: 100
+  _legDamage: 70
   canAim: 1
   aimCurve:
     serializedVersion: 2

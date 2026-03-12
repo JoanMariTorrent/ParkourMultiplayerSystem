@@ -7,7 +7,7 @@ public class QuickGizmo : MonoBehaviour
     [Header("Configuración")]
     public GizmoType shape = GizmoType.Sphere;
     public Color color = new Color(0, 1, 0, 0.5f); // Verde semitransparente por defecto
-    [Range(0.01f, 1f)] public float size = 0.1f;
+    [Range(0.001f, 1f)] public float size = 0.1f;
     
     [Header("Opciones")]
     public bool alwaysShow = true; // Si es false, solo se ve al seleccionarlo

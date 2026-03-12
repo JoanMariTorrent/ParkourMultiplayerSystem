@@ -27,7 +27,9 @@ public class Gun : EquippableItem, ITakeGun
     [SerializeField] protected bool _automatic; 
     [SerializeField] protected float _fireRate = 0.5f;
     [SerializeField] protected float timeToReload = 3f;
-    [SerializeField] protected int _gunDamage = 10;
+    [SerializeField] protected int _headshootDamage = 20;
+    [SerializeField] protected int _boddyDamage = 10;
+    [SerializeField] protected int _legDamage = 7;
 
     [Header("Aiming system")]
     public bool canAim = true;

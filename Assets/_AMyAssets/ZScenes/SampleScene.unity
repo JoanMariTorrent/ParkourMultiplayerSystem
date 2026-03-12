@@ -19706,8 +19706,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _minPlayers: 0
-  testingStart: 0
+  _minPlayers: 2
+  testingStart: 1
 --- !u!64 &511678685
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -53,15 +53,28 @@ public class HitscanGun : Gun
     {
         if (playerCharacter != null && hit.collider.gameObject == playerCharacter.gameObject) return;
 
-        if (hit.transform.TryGetComponent(out PlayerHealth victim))
+        if (hit.transform.TryGetComponent(out BodyPart victim))
         {
-            if (victim.owner.Value == this.owner.Value) return;
+            if (victim.playerHealth.owner.Value == this.owner.Value) return;
 
-            float currentHealth = victim.health;
+            float currentHealth = victim.playerHealth.health;
 
-            victim.ChangeHealth(-_gunDamage, owner.Value);
+            var hitPart = victim.bodyPartEnum;
+
+            switch (hitPart)
+            {
+                case BodyPartEnum.Head:
+                victim.playerHealth.ChangeHealth(-_headshootDamage, owner.Value);
+                break;
+                case BodyPartEnum.Boddy:
+                victim.playerHealth.ChangeHealth(-_boddyDamage, owner.Value);
+                break;
+                case BodyPartEnum.Legs:
+                victim.playerHealth.ChangeHealth(-_legDamage, owner.Value);
+                break;
+            }
             
-            float predictedHealth = currentHealth - _gunDamage;
+            float predictedHealth = currentHealth - _boddyDamage;
 
             bool playerdeath = predictedHealth <= 0;
 
@@ -70,7 +83,7 @@ public class HitscanGun : Gun
             HitMarker(playerdeath);
 
             if (InstanceHandler.TryGetInstance(out ScoreManager sm)) 
-                sm.AddDamageServerRpc(victim.PlayerID, owner.Value, _gunDamage);
+                sm.AddDamageServerRpc(victim.playerHealth.PlayerID, owner.Value, _boddyDamage);
 
             if(hitMarker != null)
                 AudioManager.Instance.PlaySound2D(hitMarker, AudioType.SFX, 0.22f, Random.Range(minPitch, maxPitch));
@@ -82,9 +95,9 @@ public class HitscanGun : Gun
         {
             float currentHealth = objVictim.health.value;
 
-            objVictim.ChangeHealth(-_gunDamage, hit.point);
+            objVictim.ChangeHealth(-_boddyDamage, hit.point);
 
-            float predictedHealth = currentHealth - _gunDamage;
+            float predictedHealth = currentHealth - _boddyDamage;
 
             bool objDeath = predictedHealth <= 0;
             
