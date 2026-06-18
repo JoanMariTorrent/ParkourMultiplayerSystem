@@ -21,4 +21,4 @@ Como el vídeo pesa bastante para GitHub, puedes ver el juego en movimiento aqu�
 * **Optimización:** Control de Draw Calls (batching) y optimización de Skinned Meshes/animaciones para mantener los FPS estables.
 * **Arquitectura:** Código en C# desacoplado y estructurado por sistemas (combate, movimiento, UI, red) para que sea fácil de escalar.
 
-*Nota: El juego está montado en Steam. Si quieres probar la build actual, avísame y te paso una clave de Playtest.*
+*Nota: El juego está montado en Steam. Buscad "CLANKOUT" en la tienda y añadidlo a la wishlist 😉.*
